@@ -109,8 +109,8 @@ class FaceDataset(torch.utils.data.Dataset):
         embed = np.zeros((len(s_f), self.word_emb_dim))
         for i in range(len(s_f)):
             embed[i, :] = self.word_vec[sentence[i]]
-        # return (text description, embeddings, latent vector, face image)
-        return (txt_desc, embed, l_vec, img)
+        # return (text embeddings, latent vector, face image)
+        return (embed, l_vec, img)
 
     def __len__(self):
         # return dataset length
