@@ -64,6 +64,7 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
 
     # define dataset
     train_dataset = FaceDataset(dataset_path, w2v_path, word_emb_dim, model_version)
+    train_dataset.build_dataset()
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
                                                batch_size=batch_size, num_workers=num_workers,
                                                shuffle=True)

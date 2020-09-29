@@ -108,7 +108,7 @@ class FaceDataset(torch.utils.data.Dataset):
         # extract embeddings from text description
         embed = np.zeros((len(s_f), self.word_emb_dim))
         for i in range(len(s_f)):
-            embed[i, :] = self.word_vec[sentence[i]]
+            embed[i, :] = self.word_vec[s_f[i]]
         # return (text embeddings, latent vector, face image)
         return (embed, l_vec, img)
 
