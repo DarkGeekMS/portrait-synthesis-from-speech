@@ -87,9 +87,17 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
 
             # forward pass
             out_embed = infersent_model((embeds, seq_len))
+            out_embed = torch.unsqueeze(out_embed, 1)
 
             # latent loss
+            l_loss = latent_loss(out_embed, l_vecs)
+
             # reconstruction loss
+            r_loss = torch.tensor([0.0], requires_grad=True)
+            for i in range(batch_size):
+                recons_img = stylegan_gen.generate_images(out_embed[i])
+                r_loss += recons_loss(recons_img, images[i])
+            
             # back-propagation on all losses
             # write training logs
         # LR scheduler step
