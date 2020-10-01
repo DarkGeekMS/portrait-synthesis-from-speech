@@ -74,7 +74,8 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
     recons_loss = ReconstructionLoss()
 
     # training loop
-    print(f'Training on {len(train_loader)} samples')
+    print(f'Training on {len(train_dataset)} samples')
+    total_step = len(train_loader)
     for epoch in range(num_epoch):
         i = 0
         for embeds, seq_len, l_vecs, images in tqdm(train_loader):
@@ -99,7 +100,17 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
                 r_loss += recons_loss(recons_img, images[i])
             
             # back-propagation on all losses
-            # write training logs
+            total_loss = l_loss + r_loss
+            optimizer.zero_grad()
+            total_loss.backward()
+            optimizer.step()
+
+            # write training logs to tensorboard writer
+            if (i + 1) % 10 == 0:
+                writer.add_scalar('latent loss', l_loss.item(), epoch*total_step+i)
+                writer.add_scalar('reconstruction loss', r_loss.item(), epoch*total_step+i)
+                writer.add_scalar('total loss', total_loss.item(), epoch*total_step+i)
+            
         # LR scheduler step
         scheduler.step()
         # save model checkpoint per epoch
