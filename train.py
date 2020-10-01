@@ -78,6 +78,7 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
     total_step = len(train_loader)
     for epoch in range(num_epoch):
         i = 0
+        viz_samples = []
         for embeds, seq_len, l_vecs, images in tqdm(train_loader):
             i += 1
             # data to device
@@ -94,10 +95,13 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
             l_loss = latent_loss(out_embed, l_vecs)
 
             # reconstruction loss
+            rand_idx = np.random.randint(batch_size)
             r_loss = torch.tensor([0.0], requires_grad=True)
             for i in range(batch_size):
                 recons_img = stylegan_gen.generate_images(out_embed[i])
-                r_loss += recons_loss(recons_img, images[i])
+                r_loss += recons_loss(recons_img.to(device), images[i])
+                if i == rand_idx:
+                    viz_samples.append(recons_img)
             
             # back-propagation on all losses
             total_loss = l_loss + r_loss
@@ -110,6 +114,10 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
                 writer.add_scalar('latent loss', l_loss.item(), epoch*total_step+i)
                 writer.add_scalar('reconstruction loss', r_loss.item(), epoch*total_step+i)
                 writer.add_scalar('total loss', total_loss.item(), epoch*total_step+i)
+
+        # write visualization samples to tensorboard writer
+        viz_data = np.stack(viz_samples, axis=0)
+        writer.add_images('output samples', torch.from_numpy(viz_data), global_step=epoch+1)
             
         # LR scheduler step
         scheduler.step()
