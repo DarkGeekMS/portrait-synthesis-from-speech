@@ -11,7 +11,7 @@ import numpy as np
 import cv2
 import os
 
-from dataset import FaceDataset
+from dataset import FaceDataset, collate_fn
 from infersent import InferSent
 from stylegan2.stylegan2_lib import StyleGAN2Generator
 
@@ -67,7 +67,7 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
     train_dataset.build_dataset()
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
                                                batch_size=batch_size, num_workers=num_workers,
-                                               shuffle=True)
+                                               shuffle=True, collate_fn=collate_fn)
                                                
     # define losses
     latent_loss = nn.MSELoss()

@@ -109,9 +109,44 @@ class FaceDataset(torch.utils.data.Dataset):
         embed = np.zeros((len(s_f), self.word_emb_dim))
         for i in range(len(s_f)):
             embed[i, :] = self.word_vec[s_f[i]]
-        # return (text embeddings, latent vector, face image)
+        # return (
+        # text embeddings -> (sentence_length x self.word_emb_dim), 
+        # latent vector -> (1 x 512), 
+        # face image -> (1024 x 1024 x 3))
         return (embed, l_vec, img)
 
     def __len__(self):
         # return dataset length
         return len(os.listdir(self.img_path))
+
+def collate_fn(batch):
+    # process batch and convert to tensors
+    # list all batch samples
+    embed_list, l_vec_list, img_list = [], [], []
+    for _embed, _l_vec, _img in batch:
+        embed_list.append(_embed)
+        l_vec_list.append(_l_vec)
+        img_list.append(_img)
+    # sort batch by sentence length
+    len_list = [embed.shape[0] for embed in embed_list]
+    sorted_idx = sorted(range(len(len_list)), key=lambda k: len_list[k])
+    sorted_embed_list, sorted_len_list, sorted_l_vec_list, sorted_img_list = [], [], [], []
+    for idx in sorted_idx:
+        sorted_embed_list.append(embed_list[idx])
+        sorted_len_list.append(len_list[idx])
+        sorted_l_vec_list.append(l_vec_list[idx])
+        sorted_img_list.append(img_list[idx])
+    # handle padding of text embeddings to max length
+    embed_tensor = np.zeros((max(len_list), len(sorted_embed_list), len(sorted_embed_list[0][0])))
+    for i in range(len(sorted_embed_list)):
+        for j in range(max(sorted_embed_list[i])):
+            embed_tensor[j, i, :] = sorted_embed_list[i][j]
+    # convert other batch components to tensors
+    len_tensor = np.array(sorted_len_list)
+    l_vec_tensor = np.stack(sorted_l_vec_list, axis=0)
+    img_tensor = np.stack(sorted_img_list, axis=0)
+    # return torch tensors of the processed numpy arrays
+    return (torch.from_numpy(embed_tensor).float(),
+            torch.from_numpy(len_tensor).long(),
+            torch.from_numpy(l_vec_tensor).float(),
+            torch.from_numpy(img_tensor).float())
