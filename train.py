@@ -43,12 +43,14 @@ class ReconstructionLoss(nn.Module):
 def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, result_dir):
     # perform networks initialization and training
     # define infersent model
+    print('Loading infersent model ...')
     infersent_params = {'word_emb_dim': word_emb_dim, 'enc_lstm_dim': enc_lstm_dim,
                     'pool_type': pool_type, 'dpout_model': dpout_model}
     infersent_model = InferSent(infersent_params)
     infersent_model.train()
 
     # define stylegan2 generator
+    print('Loading stylegan2 generator ...')
     stylegan_gen = StyleGAN2Generator(network_pkl, truncation_psi, result_dir)
 
     # define log writer
@@ -78,6 +80,9 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
     total_step = len(train_loader)
     for epoch in range(num_epoch):
         i = 0
+        epoch_l_loss = 0.0
+        epoch_r_loss = 0.0
+        epoch_total_loss = 0.0
         viz_samples = []
         for embeds, seq_len, l_vecs, images in tqdm(train_loader):
             i += 1
@@ -109,11 +114,20 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
             total_loss.backward()
             optimizer.step()
 
+            # add current losses to total epoch losses
+            epoch_l_loss += l_loss.item()
+            epoch_r_loss += r_loss.item()
+            epoch_total_loss += total_loss.item()
+
             # write training logs to tensorboard writer
             if (i + 1) % 10 == 0:
                 writer.add_scalar('latent loss', l_loss.item(), epoch*total_step+i)
                 writer.add_scalar('reconstruction loss', r_loss.item(), epoch*total_step+i)
                 writer.add_scalar('total loss', total_loss.item(), epoch*total_step+i)
+
+        # print logs of total epoch losses
+        print('Epoch [{}/{}], Total Epoch Loss: \n latent loss: {:.4f}, reconstruction loss: {:.4f}, total loss: {:.4f}'
+                .format(epoch + 1, num_epoch, epoch_l_loss, epoch_r_loss, epoch_total_loss))
 
         # write visualization samples to tensorboard writer
         viz_data = np.stack(viz_samples, axis=0)
@@ -125,6 +139,7 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
         torch.save(infersent_model, os.path.join(os.path.join(result_dir, 'models'), f'model_{epoch}.pt'))
     
     # save final model checkpoint
+    print('Finalizing training process ...')
     torch.save(infersent_model, os.path.join(os.path.join(result_dir, 'models'), 'model_final.pt'))
     writer.close()
 
