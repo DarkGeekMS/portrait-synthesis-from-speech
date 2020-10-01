@@ -77,22 +77,29 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
     print(f'Training on {len(train_loader)} samples')
     for epoch in range(num_epoch):
         i = 0
-        for embeds, l_vecs, images in tqdm(train_loader):
+        for embeds, seq_len, l_vecs, images in tqdm(train_loader):
             i += 1
             # data to device
             embeds = embeds.to(device)
+            seq_len = seq_len.to(device)
             l_vecs = l_vecs.to(device)
             images = images.to(device)
 
             # forward pass
+            out_embed = infersent_model((embeds, seq_len))
+
             # latent loss
             # reconstruction loss
             # back-propagation on all losses
             # write training logs
         # LR scheduler step
+        scheduler.step()
         # save model checkpoint per epoch
+        torch.save(infersent_model, os.path.join(os.path.join(result_dir, 'models'), f'model_{epoch}.pt'))
+    
     # save final model checkpoint
-
+    torch.save(infersent_model, os.path.join(os.path.join(result_dir, 'models'), 'model_final.pt'))
+    writer.close()
 
 if __name__ == '__main__':
     # arguments parsing
@@ -110,5 +117,6 @@ if __name__ == '__main__':
         os.mkdir(args.result_dir)
         os.mkdir(os.path.join(args.result_dir, 'images'))
         os.mkdir(os.path.join(args.result_dir, 'log'))
+        os.mkdir(os.path.join(args.result_dir, 'models'))
 
     train(args.dataset_path, args.w2v_path, args.model_version, args.network_pkl, args.truncation_psi, args.result_dir)
