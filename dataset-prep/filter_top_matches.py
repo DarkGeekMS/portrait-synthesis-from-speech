@@ -9,9 +9,18 @@ def filter_matches(json_file):
     for line in open(json_file, 'r'):
         data.append(json.loads(line))
 
+    if os.path.exists('final_match.json'):
+        with open('final_match.json', 'r') as outfile:
+            selection = json.load(outfile)
+    else:
+        selection = dict()
     selection = dict()    
-    count = 0
+        selection = dict()
+
+    count = len(selection)
     for sample in data:
+        if sample['img_path'].split('/')[-1] in selection.keys():
+            continue
         orig_img = cv2.resize(cv2.imread(sample['img_path']), (256,256))
         sim_img_1 = cv2.resize(cv2.imread(sample['sim_imgs_paths'][0]), (256,256))
         sim_img_2 = cv2.resize(cv2.imread(sample['sim_imgs_paths'][1]), (256,256))
@@ -23,8 +32,10 @@ def filter_matches(json_file):
         complete_img = np.concatenate([upper_row, lower_row], axis=0)
         cv2.imshow("Current Sample", complete_img)
         cv2.waitKey(0)
-        select_idx = int(input("Enter index of best match [1|2|3|4|5]"))
+        select_idx = int(input(f"({count}) Enter index of best match [1|2|3|4|5]"))
         selection[sample['img_path'].split('/')[-1]] = sample['sim_imgs_paths'][select_idx-1].split('/')[-1]
+        with open('final_match.json', 'w') as outfile:
+            json.dump(selection, outfile)
         count += 1
 
     with open('final_match.json', 'w') as outfile:

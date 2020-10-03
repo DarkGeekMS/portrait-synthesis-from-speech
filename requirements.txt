@@ -1,0 +1,10 @@
+torch torchvision
+tensorboardX
+tensorflow-gpu
+opencv-python
+opencv-contrib-python
+skimage
+tqdm
+progressbar
+mtcnn
+facenet-pytorch
