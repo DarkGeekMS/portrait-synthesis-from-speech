@@ -14,8 +14,6 @@ def filter_matches(json_file):
             selection = json.load(outfile)
     else:
         selection = dict()
-    selection = dict()    
-        selection = dict()
 
     count = len(selection)
     for sample in data:
