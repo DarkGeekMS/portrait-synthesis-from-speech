@@ -13,7 +13,7 @@ import os
 
 from dataset import FaceDataset, collate_fn
 from infersent import InferSent
-from stylegan2lib.stylegan2_generator import StyleGAN2Generator
+from stylegan2_generator import StyleGAN2Generator
 
 ## GLOBAL VARIABLES
 
@@ -162,6 +162,7 @@ if __name__ == '__main__':
     # create experiment folder
     exp_name = f'exp-{len(os.listdir(args.result_dir))}'
     exp_dir = os.path.join(args.result_dir, exp_name)
+    os.mkdir(exp_dir)
     os.mkdir(os.path.join(exp_dir, 'log'))
     os.mkdir(os.path.join(exp_dir, 'models'))
 
