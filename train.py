@@ -13,7 +13,7 @@ import os
 
 from dataset import FaceDataset, collate_fn
 from infersent import InferSent
-from stylegan2.stylegan2_lib import StyleGAN2Generator
+from stylegan2lib.stylegan2_generator import StyleGAN2Generator
 
 ## GLOBAL VARIABLES
 

@@ -1,13 +1,13 @@
 import argparse
 import numpy as np
 import PIL.Image
-import dnnlib
-import dnnlib.tflib as tflib
+import stylegan2lib.dnnlib
+import stylegan2lib.dnnlib.tflib as tflib
 import re
 import os
 import sys
 
-import pretrained_networks
+import stylegan2lib.pretrained_networks
 
 #----------------------------------------------------------------------------
 
