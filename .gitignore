@@ -130,5 +130,8 @@ dmypy.json
 
 # data folders
 dataset/
+datasets/
 results/
 w2v-models/
+networks/
+.stylegan2-cache/
