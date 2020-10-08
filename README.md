@@ -16,6 +16,12 @@ This repository contains the main code for face synthesis from text and its expe
     docker build . -t face_syn
     ```
 
+-   Run the following `python` snippet once, in order to have the `NLTK` tokenizer :
+    ```python
+    import nltk
+    nltk.download('punkt')
+    ```
+
 ## Usage
 
 -   Refer to `dataset-prep` folder for utilities of dataset preparation.

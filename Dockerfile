@@ -12,3 +12,4 @@ RUN pip install tqdm
 RUN pip install progressbar
 RUN pip install mtcnn
 RUN pip install facenet-pytorch
+RUN pip install nltk
