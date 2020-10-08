@@ -95,8 +95,8 @@ class FaceDataset(torch.utils.data.Dataset):
         # read latent vctor
         l_vec = np.load(self.latent_list[index])
         # read text description (NOTE : only the first description is considered)
-        with open(self.text_list[index], "rb") as f:
-            txt_desc = f.readline()
+        with open(self.text_list[index]) as f:
+            txt_desc = f.readline().strip()
         # process text description to extract embeddings
         sentence = [self.bos] + self.tokenize(txt_desc) + [self.eos]
         # filters words without w2v vectors
@@ -139,7 +139,7 @@ def collate_fn(batch):
     # handle padding of text embeddings to max length
     embed_tensor = np.zeros((max(len_list), len(sorted_embed_list), len(sorted_embed_list[0][0])))
     for i in range(len(sorted_embed_list)):
-        for j in range(max(sorted_embed_list[i])):
+        for j in range(len(sorted_embed_list[i])):
             embed_tensor[j, i, :] = sorted_embed_list[i][j]
     # convert other batch components to tensors
     len_tensor = np.array(sorted_len_list)
