@@ -30,12 +30,10 @@ class FaceDataset(torch.utils.data.Dataset):
         if self.model_version == 1:
             self.bos = '<s>'
             self.eos = '</s>'
-            self.max_pad = True
             self.moses_tok = False
         elif self.model_version == 2:
             self.bos = '<p>'
             self.eos = '</p>'
-            self.max_pad = False
             self.moses_tok = True
 
     def tokenize(self, s):
@@ -129,7 +127,7 @@ def collate_fn(batch):
         img_list.append(_img)
     # sort batch by sentence length
     len_list = [embed.shape[0] for embed in embed_list]
-    sorted_idx = sorted(range(len(len_list)), key=lambda k: len_list[k])
+    sorted_idx = sorted(range(len(len_list)), key=lambda k: len_list[k], reverse=True)
     sorted_embed_list, sorted_len_list, sorted_l_vec_list, sorted_img_list = [], [], [], []
     for idx in sorted_idx:
         sorted_embed_list.append(embed_list[idx])

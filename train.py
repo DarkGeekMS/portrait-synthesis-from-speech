@@ -28,8 +28,8 @@ initial_lr = 0.1
 momentum = 0.9
 weight_decay = 5e-4
 num_epoch = 100
-batch_size = 64
-num_workers = 4
+batch_size = 32
+num_workers = 0
 
 # reconstruction loss
 class ReconstructionLoss(nn.Module):
@@ -44,8 +44,9 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
     # perform networks initialization and training
     # define infersent model
     print('Loading infersent model ...')
+    max_pad = True if model_version == 1 else False
     infersent_params = {'word_emb_dim': word_emb_dim, 'enc_lstm_dim': enc_lstm_dim,
-                    'pool_type': pool_type, 'dpout_model': dpout_model}
+                    'pool_type': pool_type, 'dpout_model': dpout_model, 'max_pad': max_pad}
     infersent_model = InferSent(infersent_params)
     infersent_model.train()
 
@@ -65,6 +66,7 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
     infersent_model.to(device)
 
     # define dataset
+    print('Building dataset ...')
     train_dataset = FaceDataset(dataset_path, w2v_path, word_emb_dim, model_version)
     train_dataset.build_dataset()
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
@@ -101,7 +103,7 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
 
             # reconstruction loss
             rand_idx = np.random.randint(batch_size)
-            r_loss = torch.tensor([0.0], requires_grad=True)
+            r_loss = torch.tensor([0.0], requires_grad=True).to(device)
             for i in range(batch_size):
                 recons_img = stylegan_gen.generate_images(out_embed[i])
                 r_loss += recons_loss(recons_img.to(device), images[i])
