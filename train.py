@@ -37,7 +37,7 @@ class ReconstructionLoss(nn.Module):
         super(ReconstructionLoss, self).__init__()
         self.mse_loss = nn.MSELoss(reduction='none')
     def forward(self, recon_x, x):
-        d = 1 if len(recon_x.shape) == 2 else (1,2,3)
+        d = (0,1) if len(recon_x.shape) == 2 else (0,1,2)
         return torch.sum(self.mse_loss(recon_x, x), dim=d)
 
 def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, result_dir):
@@ -104,11 +104,11 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
             # reconstruction loss
             rand_idx = np.random.randint(batch_size)
             r_loss = torch.tensor([0.0], requires_grad=True).to(device)
-            for i in range(batch_size):
-                recons_img = stylegan_gen.generate_images(out_embed[i])
-                r_loss += recons_loss(recons_img.to(device), images[i])
+            for i in range(len(out_embed)):
+                recons_img = stylegan_gen.generate_images(out_embed[i].cpu().detach().numpy())
+                r_loss += recons_loss(torch.from_numpy(recons_img).to(device), images[i])
                 if i == rand_idx:
-                    viz_samples.append(recons_img)
+                    viz_samples.append(recons_img.transpose(2, 1, 0))
             
             # back-propagation on all losses
             total_loss = l_loss + r_loss
