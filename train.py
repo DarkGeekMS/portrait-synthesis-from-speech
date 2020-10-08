@@ -155,10 +155,15 @@ if __name__ == '__main__':
 
     args = argparser.parse_args()
 
+    # create results directory
     if not os.path.isdir(args.result_dir):
         os.mkdir(args.result_dir)
-        os.mkdir(os.path.join(args.result_dir, 'images'))
-        os.mkdir(os.path.join(args.result_dir, 'log'))
-        os.mkdir(os.path.join(args.result_dir, 'models'))
+    
+    # create experiment folder
+    exp_name = f'exp-{len(os.listdir(args.result_dir))}'
+    exp_dir = os.path.join(args.result_dir, exp_name)
+    os.mkdir(os.path.join(exp_dir, 'log'))
+    os.mkdir(os.path.join(exp_dir, 'models'))
 
-    train(args.dataset_path, args.w2v_path, args.model_version, args.network_pkl, args.truncation_psi, args.result_dir)
+    # call main training driver
+    train(args.dataset_path, args.w2v_path, args.model_version, args.network_pkl, args.truncation_psi, exp_dir)
