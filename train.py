@@ -122,10 +122,9 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
             epoch_total_loss += total_loss.item()
 
             # write training logs to tensorboard writer
-            if (i + 1) % 10 == 0:
-                writer.add_scalar('latent loss', l_loss.item(), epoch*total_step+i)
-                writer.add_scalar('reconstruction loss', r_loss.item(), epoch*total_step+i)
-                writer.add_scalar('total loss', total_loss.item(), epoch*total_step+i)
+            writer.add_scalar('latent loss', l_loss.item(), epoch*total_step+i)
+            writer.add_scalar('reconstruction loss', r_loss.item(), epoch*total_step+i)
+            writer.add_scalar('total loss', total_loss.item(), epoch*total_step+i)
 
         # print logs of total epoch losses
         print('Epoch [{}/{}], Total Epoch Loss: \n latent loss: {:.4f}, reconstruction loss: {:.4f}, total loss: {:.4f}'
