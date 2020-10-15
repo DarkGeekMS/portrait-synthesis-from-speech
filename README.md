@@ -6,9 +6,7 @@ This repository contains the main code for `portrait synthesis from speech` proj
 -   Face Refinement.
 -   Multiple Head Poses Generation.
 
-<div align="center" style="color:red;">
-Refer to the wiki for more information about the project application, architecture and workflow.
-</div>
+__Refer to the wiki for more information about the project application, architecture and workflow.__
 
 ## Installation
 
