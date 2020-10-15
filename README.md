@@ -6,6 +6,10 @@ This repository contains the main code for `portrait synthesis from speech` proj
 -   Face Refinement.
 -   Multiple Head Poses Generation.
 
+<div align="center" style="color:red;">
+Refer to the wiki for more information about the project application, architecture and workflow.
+</div>
+
 ## Installation
 
 -   Install `python3` and `python3-pip`.
