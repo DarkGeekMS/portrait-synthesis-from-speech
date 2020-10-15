@@ -1,6 +1,10 @@
-# Face Synthesis From Text
+# Portrait Synthesis From Speech
 
-This repository contains the main code for face synthesis from text and its experiments.
+This repository contains the main code for `portrait synthesis from speech` project and its experiments. The project mainly consists of :
+-   Speech Recognition.
+-   Face generation from Text.
+-   Face Refinement.
+-   Multiple Head Poses Generation.
 
 ## Installation
 
@@ -13,7 +17,7 @@ This repository contains the main code for face synthesis from text and its expe
 
 -   Alternatively, `Dockerfile` is provided with all required dependencies :
     ```bash
-    docker build . -t face_syn
+    docker build . -t portrait_syn_from_speech
     ```
 
 -   Run the following `python` snippet once, in order to have the `NLTK` tokenizer :
