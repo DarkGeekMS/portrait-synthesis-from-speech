@@ -40,7 +40,7 @@ class ReconstructionLoss(nn.Module):
         d = (0,1) if len(recon_x.shape) == 2 else (0,1,2)
         return torch.sum(self.mse_loss(recon_x, x), dim=d)
 
-def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, result_dir):
+def train(dataset_path, model_version, model_path, w2v_path, network_pkl, truncation_psi, result_dir):
     # perform networks initialization and training
     # define infersent model
     print('Loading infersent model ...')
@@ -48,6 +48,8 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
     infersent_params = {'word_emb_dim': word_emb_dim, 'enc_lstm_dim': enc_lstm_dim,
                     'pool_type': pool_type, 'dpout_model': dpout_model, 'max_pad': max_pad}
     infersent_model = InferSent(infersent_params)
+    if model_path:
+        infersent_model.load_state_dict(torch.load(model_path))
     infersent_model.train()
 
     # define stylegan2 generator
@@ -137,22 +139,23 @@ def train(dataset_path, w2v_path, model_version, network_pkl, truncation_psi, re
         # LR scheduler step
         scheduler.step()
         # save model checkpoint per epoch
-        torch.save(infersent_model, os.path.join(os.path.join(result_dir, 'models'), f'model_{epoch}.pt'))
+        torch.save(infersent_model.state_dict(), os.path.join(os.path.join(result_dir, 'models'), f'model_{epoch}.pt'))
     
     # save final model checkpoint
     print('Finalizing training process ...')
-    torch.save(infersent_model, os.path.join(os.path.join(result_dir, 'models'), 'model_final.pt'))
+    torch.save(infersent_model.state_dict(), os.path.join(os.path.join(result_dir, 'models'), 'model_final.pt'))
     writer.close()
 
 if __name__ == '__main__':
     # arguments parsing
     argparser = argparse.ArgumentParser(description=__doc__)
-    argparser.add_argument('-dsp', '--dataset_path', type=str, help='root directory of chosen dataset')
-    argparser.add_argument('-w2v', '--w2v_path', type=str, help='path to word2vec file')
+    argparser.add_argument('-dsp', '--dataset_path', type=str, help='root directory of chosen dataset', required=True)
     argparser.add_argument('-mv', '--model_version', type=int, help='model version : (1) GloVe (2) FastText', default=1)
-    argparser.add_argument('-pkl', '--network_pkl', type=str, help='path to stylegan2 model pickle file')
+    argparser.add_argument('-mp', '--model_path', type=str, help='path to initial weights of sentence embedding model')
+    argparser.add_argument('-w2v', '--w2v_path', type=str, help='path to word2vec file', required=True)
+    argparser.add_argument('-pkl', '--network_pkl', type=str, help='path to stylegan2 model pickle file', required=True)
     argparser.add_argument('-psi', '--truncation_psi', type=float, help='stylegan2 generator truncation psi', default=1.0)
-    argparser.add_argument('-rd', '--result_dir', type=str, help='directory to save logs and stylegan2 generated images')
+    argparser.add_argument('-rd', '--result_dir', type=str, help='directory to save logs and stylegan2 generated images', default='results/')
 
     args = argparser.parse_args()
 
@@ -168,4 +171,4 @@ if __name__ == '__main__':
     os.mkdir(os.path.join(exp_dir, 'models'))
 
     # call main training driver
-    train(args.dataset_path, args.w2v_path, args.model_version, args.network_pkl, args.truncation_psi, exp_dir)
+    train(args.dataset_path, args.model_version, args.model_path, args.w2v_path, args.network_pkl, args.truncation_psi, exp_dir)
