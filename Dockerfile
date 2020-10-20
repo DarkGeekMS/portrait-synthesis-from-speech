@@ -7,7 +7,7 @@ RUN pip install requests==2.22.0
 RUN pip install Pillow==6.2.1
 RUN pip install opencv-python
 RUN pip install opencv-contrib-python
-RUN pip install skimage
+RUN pip install scikit-image
 RUN pip install tqdm
 RUN pip install progressbar
 RUN pip install mtcnn

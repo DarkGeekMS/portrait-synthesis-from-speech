@@ -3,7 +3,7 @@ tensorboardX
 tensorflow-gpu
 opencv-python
 opencv-contrib-python
-skimage
+scikit-image
 tqdm
 progressbar
 mtcnn
