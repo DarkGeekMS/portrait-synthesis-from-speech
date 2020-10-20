@@ -18,3 +18,8 @@ This folder contains some utilities for dataset preparation using __face matchin
     ```bash
     python filter_top_matches.py -jf /path/to/matches/json
     ```
+
+-   Process dataset using Facenet :
+    ```bash
+    python process_dataset.py -facedir /path/to/dataset
+    ```
