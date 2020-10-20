@@ -15,7 +15,7 @@ import numpy as np
 from nltk.tokenize import word_tokenize
 
 class FaceDataset(torch.utils.data.Dataset):
-
+    """Face dataset class for loading data triplets (text + latent + image)"""
     def __init__(self, dataset_path, w2v_path, word_emb_dim=300, model_version=1):
         # initialize dataset object and read data lists
         super(FaceDataset, self).__init__()

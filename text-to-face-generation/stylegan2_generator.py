@@ -12,7 +12,7 @@ import pretrained_networks
 #----------------------------------------------------------------------------
 
 class StyleGAN2Generator(object):
-
+    """StyleGAN2 generator class, used for NLP module training"""
     def __init__(self, network_pkl, truncation_psi=1.0, result_dir='results/nlp-training'):
         # initialize network and other class attributes
         print('Loading networks from "%s"...' % network_pkl)

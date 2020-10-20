@@ -6,6 +6,7 @@ import torchvision.transforms as transforms
 
 # reconstruction loss
 class ReconstructionLoss(nn.Module):
+    """Simple reconstruction loss for face images"""
     def __init__(self):
         super(ReconstructionLoss, self).__init__()
         self.mse_loss = nn.MSELoss(reduction='none')
@@ -15,6 +16,14 @@ class ReconstructionLoss(nn.Module):
 
 # latent space vector loss
 class LatentLoss(nn.Module):
+    """
+    Custom loss for latent space vectors.
+    One or a combination of :
+        - L1Loss (l1).
+        - MSELoss (mse).
+        - KLDivLoss (kl).
+        - Cosine Similarity (cosine).
+    """
     def __init__(self, loss_list, reduction='mean'):
         super(LatentLoss, self).__init__()
         self.losses = list()

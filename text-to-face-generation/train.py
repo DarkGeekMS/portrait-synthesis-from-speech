@@ -1,3 +1,5 @@
+"""Training script for sentence embedding NLP module"""
+
 import torch
 import torchvision
 import torch.nn as nn
