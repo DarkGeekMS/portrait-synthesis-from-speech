@@ -14,6 +14,7 @@ import os
 from dataset import FaceDataset, collate_fn
 from infersent import InferSent
 from stylegan2_generator import StyleGAN2Generator
+from loss import ReconstructionLoss, LatentLoss
 
 ## GLOBAL VARIABLES
 
@@ -30,15 +31,6 @@ weight_decay = 5e-4
 num_epoch = 100
 batch_size = 32
 num_workers = 0
-
-# reconstruction loss
-class ReconstructionLoss(nn.Module):
-    def __init__(self):
-        super(ReconstructionLoss, self).__init__()
-        self.mse_loss = nn.MSELoss(reduction='none')
-    def forward(self, recon_x, x):
-        d = (0,1) if len(recon_x.shape) == 2 else (0,1,2)
-        return torch.sum(self.mse_loss(recon_x, x), dim=d)
 
 def train(dataset_path, model_version, model_path, w2v_path, network_pkl, truncation_psi, result_dir):
     # perform networks initialization and training
@@ -76,7 +68,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
                                                shuffle=True, collate_fn=collate_fn)
                                                
     # define losses
-    latent_loss = nn.MSELoss()
+    latent_loss = LatentLoss(['kl'], reduction='mean')
     recons_loss = ReconstructionLoss()
 
     # training loop
