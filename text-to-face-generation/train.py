@@ -118,9 +118,9 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
             epoch_total_loss += total_loss.item()
 
             # write training logs to tensorboard writer
-            writer.add_scalar('latent loss', l_loss.item(), epoch*total_step+i)
-            writer.add_scalar('reconstruction loss', r_loss.item(), epoch*total_step+i)
-            writer.add_scalar('total loss', total_loss.item(), epoch*total_step+i)
+            writer.add_scalar('latent_loss', l_loss.item(), epoch*total_step+i)
+            writer.add_scalar('reconstruction_loss', r_loss.item(), epoch*total_step+i)
+            writer.add_scalar('total_loss', total_loss.item(), epoch*total_step+i)
 
         # print logs of total epoch losses
         print('Epoch [{}/{}], Total Epoch Loss: \n latent loss: {:.4f}, reconstruction loss: {:.4f}, total loss: {:.4f}'
@@ -128,7 +128,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
 
         # write visualization samples to tensorboard writer
         viz_data = np.stack(viz_samples, axis=0)
-        writer.add_images('output samples', torch.from_numpy(viz_data), global_step=epoch+1)
+        writer.add_images('output_samples', torch.from_numpy(viz_data), global_step=epoch+1)
             
         # LR scheduler step
         scheduler.step()

@@ -36,7 +36,7 @@ class LatentLoss(nn.Module):
         if 'cosine' in loss_list:
             self.losses.append(nn.CosineSimilarity(dim=1))
     def forward(self, output, target):
-        total_loss = torch.tensor([0.0], requires_grad=True)
-        for loss in self.losses:
-            total_loss += loss(output, target)
+        total_loss = self.losses[0](output, target)
+        for idx in range(1, len(self.losses)):
+            total_loss += self.losses[idx](output, target)
         return total_loss
