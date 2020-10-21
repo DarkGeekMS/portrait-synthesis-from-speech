@@ -27,7 +27,7 @@ pool_type = 'max'
 dpout_model = 0.0
 
 # training hyperparameters
-initial_lr = 0.1
+initial_lr = 1e-3
 momentum = 0.9
 weight_decay = 5e-4
 num_epoch = 100
@@ -54,7 +54,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
     writer = SummaryWriter(logdir=os.path.join(result_dir, 'log'), comment='training log')
 
     # define optimizer
-    optimizer = torch.optim.SGD(infersent_model.parameters(), lr=initial_lr, momentum=momentum, weight_decay=weight_decay)
+    optimizer = torch.optim.Adam(infersent_model.parameters(), lr=initial_lr, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
     # device selection

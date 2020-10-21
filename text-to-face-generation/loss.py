@@ -8,12 +8,13 @@ import torchvision.transforms as transforms
 # reconstruction loss
 class ReconstructionLoss(nn.Module):
     """Simple reconstruction loss for face images"""
-    def __init__(self):
+    def __init__(self, reduction='mean'):
         super(ReconstructionLoss, self).__init__()
-        self.mse_loss = nn.MSELoss(reduction='none')
+        self.mse_loss = nn.MSELoss(reduction=reduction)
     def forward(self, recon_x, x):
-        d = (0,1) if len(recon_x.shape) == 2 else (0,1,2)
-        return torch.sum(self.mse_loss(recon_x, x), dim=d)
+        recon_x_norm = torch.div(recon_x, 255.0)
+        x_norm = torch.div(x, 255.0)
+        return self.mse_loss(recon_x_norm, x_norm)
 
 # KL-divergence loss
 class KLDLoss(nn.Module):
