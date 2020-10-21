@@ -38,4 +38,4 @@ class StyleGAN2Generator(object):
         tflib.set_vars({var: rnd.randn(*var.shape.as_list()) for var in noise_vars}) # [height, width]
         images = self.Gs.run(z, None, **Gs_kwargs) # [minibatch, height, width, channel]
         
-        return images[0]
+        return images

@@ -146,5 +146,5 @@ def collate_fn(batch):
     # return torch tensors of the processed numpy arrays
     return (torch.from_numpy(embed_tensor).float(),
             torch.from_numpy(len_tensor).long(),
-            torch.from_numpy(l_vec_tensor).float(),
-            torch.from_numpy(img_tensor).float())
+            torch.squeeze(torch.from_numpy(l_vec_tensor).float(), 1),
+            torch.div(torch.from_numpy(img_tensor).float(), 255.0))

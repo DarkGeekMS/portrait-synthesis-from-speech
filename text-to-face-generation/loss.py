@@ -12,9 +12,7 @@ class ReconstructionLoss(nn.Module):
         super(ReconstructionLoss, self).__init__()
         self.mse_loss = nn.MSELoss(reduction=reduction)
     def forward(self, recon_x, x):
-        recon_x_norm = torch.div(recon_x, 255.0)
-        x_norm = torch.div(x, 255.0)
-        return self.mse_loss(recon_x_norm, x_norm)
+        return self.mse_loss(recon_x, x)
 
 # KL-divergence loss
 class KLDLoss(nn.Module):
@@ -23,7 +21,7 @@ class KLDLoss(nn.Module):
         super(KLDLoss, self).__init__()
         self.kld_loss_fn = nn.KLDivLoss(reduction=reduction)
     def forward(self, output, target):
-        return self.kld_loss_fn(F.log_softmax(output, dim=2), F.softmax(target, dim=2))
+        return self.kld_loss_fn(F.log_softmax(output, dim=1), F.softmax(target, dim=1))
 
 # latent space vector loss
 class LatentLoss(nn.Module):
@@ -48,7 +46,7 @@ class LatentLoss(nn.Module):
             else:
                 self.losses_fn.append(KLDLoss(reduction=reduction))
         if 'cosine' in losses_list:
-            self.losses_fn.append(nn.CosineSimilarity(dim=2))
+            self.losses_fn.append(nn.CosineSimilarity(dim=1))
 
     def forward(self, output, target):
         total_loss = self.losses_fn[0](output, target)

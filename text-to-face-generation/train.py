@@ -31,11 +31,14 @@ initial_lr = 1e-3
 momentum = 0.9
 weight_decay = 5e-4
 num_epoch = 100
-batch_size = 32
+batch_size = 8
 num_workers = 0
 
 def train(dataset_path, model_version, model_path, w2v_path, network_pkl, truncation_psi, result_dir):
     # perform networks initialization and training
+    # device selection
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
     # define infersent model
     print('Loading infersent model ...')
     max_pad = True if model_version == 1 else False
@@ -45,6 +48,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
     if model_path:
         infersent_model.load_state_dict(torch.load(model_path))
     infersent_model.train()
+    infersent_model.to(device)
 
     # define stylegan2 generator
     print('Loading stylegan2 generator ...')
@@ -56,10 +60,6 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
     # define optimizer
     optimizer = torch.optim.Adam(infersent_model.parameters(), lr=initial_lr, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
-
-    # device selection
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    infersent_model.to(device)
 
     # define dataset
     print('Building dataset ...')
@@ -92,19 +92,18 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
 
             # forward pass
             out_embed = infersent_model((embeds, seq_len))
-            out_embed = torch.unsqueeze(out_embed, 1)
 
             # latent loss
             l_loss = latent_loss(out_embed, l_vecs)
 
             # reconstruction loss
+            recons_imgs = stylegan_gen.generate_images(out_embed.cpu().detach().numpy())
+            r_loss = recons_loss(torch.div(torch.from_numpy(recons_imgs).to(device), 255.0), images)
+
+            # add a visualization sample to samples list
             rand_idx = np.random.randint(batch_size)
-            r_loss = torch.tensor([0.0], requires_grad=True).to(device)
-            for i in range(len(out_embed)):
-                recons_img = stylegan_gen.generate_images(out_embed[i].cpu().detach().numpy())
-                r_loss += recons_loss(torch.from_numpy(recons_img).to(device), images[i])
-                if i == rand_idx:
-                    viz_samples.append(recons_img.transpose(2, 1, 0))
+            if recons_imgs.shape[0] > rand_idx:
+                viz_samples.append(recons_imgs[rand_idx].transpose(2, 1, 0))
             
             # back-propagation on all losses
             total_loss = l_loss + r_loss
