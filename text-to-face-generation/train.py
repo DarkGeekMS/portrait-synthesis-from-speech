@@ -16,7 +16,7 @@ import os
 from dataset import FaceDataset, collate_fn
 from infersent import InferSent
 from stylegan2_generator import StyleGAN2Generator
-from loss import ReconstructionLoss, LatentLoss
+from loss import ReconstructionLoss, KLDLoss, LatentLoss
 
 ## GLOBAL VARIABLES
 
@@ -70,7 +70,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
                                                shuffle=True, collate_fn=collate_fn)
                                                
     # define losses
-    latent_loss = LatentLoss(['kl'], reduction='mean')
+    latent_loss = LatentLoss(losses_list=['kl'], reduction='mean')
     recons_loss = ReconstructionLoss()
 
     # training loop
