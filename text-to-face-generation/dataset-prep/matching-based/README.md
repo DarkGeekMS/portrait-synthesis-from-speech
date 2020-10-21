@@ -6,6 +6,7 @@ This folder contains some utilities for dataset preparation using __face matchin
 
 -   [CelebFaces Attributes (CelebA) Dataset](https://www.kaggle.com/jessicali9530/celeba-dataset).
 -   [Face2Text Dataset](https://drive.google.com/file/d/1cwcYbl0dhXEzmdbee_K_H6jcndbsxT2o/view).
+-   [Latent2Embedding Mapping Dataset](https://drive.google.com/file/d/1dQgFsYw3Faj6C3tsH8AnSrKhf9lLpSpN/view?usp=sharing).
 
 ## Usage
 
@@ -19,7 +20,7 @@ This folder contains some utilities for dataset preparation using __face matchin
     python filter_top_matches.py -jf /path/to/matches/json
     ```
 
--   Process dataset using Facenet :
+-   Process dataset using _FaceNet_ :
     ```bash
-    python process_dataset.py -facedir /path/to/dataset
+    python extract_face_embed.py -facedir /path/to/dataset
     ```
