@@ -16,7 +16,8 @@ import os
 from dataset import FaceDataset, collate_fn
 from infersent import InferSent
 from stylegan2_generator import StyleGAN2Generator
-from loss import ReconstructionLoss, KLDLoss, LatentLoss
+from vgg import Vgg16
+from loss import PixelwiseDistanceLoss, KLDLoss, LatentLoss
 
 ## GLOBAL VARIABLES
 
@@ -54,6 +55,11 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
     print('Loading stylegan2 generator ...')
     stylegan_gen = StyleGAN2Generator(network_pkl, truncation_psi, result_dir)
 
+    # define VGG-16 model
+    print('Loading VGG-16 pretrained model ...')
+    vgg_model = Vgg16(requires_grad=False)
+    vgg_model.to(device)
+
     # define log writer
     writer = SummaryWriter(logdir=os.path.join(result_dir, 'log'), comment='training log')
 
@@ -71,7 +77,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
                                                
     # define losses
     latent_loss = LatentLoss(losses_list=['kl'], reduction='mean')
-    recons_loss = ReconstructionLoss()
+    pixel_loss = PixelwiseDistanceLoss(reduction='mean')
 
     # training loop
     print(f'Training on {len(train_dataset)} samples')
@@ -80,6 +86,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
         i = 0
         epoch_l_loss = 0.0
         epoch_r_loss = 0.0
+        epoch_p_loss = 0.0
         epoch_total_loss = 0.0
         viz_samples = []
         for embeds, seq_len, l_vecs, images in tqdm(train_loader):
@@ -98,7 +105,15 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
 
             # reconstruction loss
             recons_imgs = stylegan_gen.generate_images(out_embed.cpu().detach().numpy())
-            r_loss = recons_loss(torch.div(torch.from_numpy(recons_imgs).to(device), 255.0), images)
+            r_loss = pixel_loss(torch.div(torch.from_numpy(recons_imgs).to(device), 255.0), images)
+
+            # perceptual loss
+            recons_features = vgg_model(torch.div(torch.from_numpy(recons_imgs).to(device), 255.0))
+            target_features = vgg_model(images)
+            p_loss = pixel_loss(recons_features.relu1_2, target_features.relu1_2) + \
+                    pixel_loss(recons_features.relu2_2, target_features.relu2_2) + \
+                    pixel_loss(recons_features.relu3_3, target_features.relu3_3) + \
+                    pixel_loss(recons_features.relu4_3, target_features.relu4_3)
 
             # add a visualization sample to samples list
             rand_idx = np.random.randint(batch_size)
@@ -106,7 +121,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
                 viz_samples.append(recons_imgs[rand_idx].transpose(2, 1, 0))
             
             # back-propagation on all losses
-            total_loss = l_loss + r_loss
+            total_loss = l_loss + r_loss + p_loss
             optimizer.zero_grad()
             total_loss.backward()
             optimizer.step()
@@ -114,16 +129,18 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
             # add current losses to total epoch losses
             epoch_l_loss += l_loss.item()
             epoch_r_loss += r_loss.item()
+            epoch_p_loss += p_loss.item()
             epoch_total_loss += total_loss.item()
 
             # write training logs to tensorboard writer
             writer.add_scalar('latent_loss', l_loss.item(), epoch*total_step+i)
             writer.add_scalar('reconstruction_loss', r_loss.item(), epoch*total_step+i)
+            writer.add_scalar('perceptual_loss', p_loss.item(), epoch*total_step+i)
             writer.add_scalar('total_loss', total_loss.item(), epoch*total_step+i)
 
         # print logs of total epoch losses
-        print('Epoch [{}/{}], Total Epoch Loss: \n latent loss: {:.4f}, reconstruction loss: {:.4f}, total loss: {:.4f}'
-                .format(epoch + 1, num_epoch, epoch_l_loss, epoch_r_loss, epoch_total_loss))
+        print('Epoch [{}/{}], Total Epoch Loss: \n latent loss: {:.4f}, reconstruction loss: {:.4f}, perceptual loss: {:.4f}, total loss: {:.4f}'
+                .format(epoch + 1, num_epoch, epoch_l_loss, epoch_r_loss, epoch_p_loss, epoch_total_loss))
 
         # write visualization samples to tensorboard writer
         viz_data = np.stack(viz_samples, axis=0)

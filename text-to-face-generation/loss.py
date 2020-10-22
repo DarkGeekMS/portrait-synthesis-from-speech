@@ -5,14 +5,14 @@ import torch.nn.functional as F
 import torch.utils.data
 import torchvision.transforms as transforms
 
-# reconstruction loss
-class ReconstructionLoss(nn.Module):
-    """Simple reconstruction loss for face images"""
+# pixel-wise distance loss
+class PixelwiseDistanceLoss(nn.Module):
+    """Simple pixel-wise l2 distance loss for face images and feature maps"""
     def __init__(self, reduction='mean'):
-        super(ReconstructionLoss, self).__init__()
+        super(PixelwiseDistanceLoss, self).__init__()
         self.mse_loss = nn.MSELoss(reduction=reduction)
-    def forward(self, recon_x, x):
-        return self.mse_loss(recon_x, x)
+    def forward(self, output, target):
+        return self.mse_loss(output, target)
 
 # KL-divergence loss
 class KLDLoss(nn.Module):
