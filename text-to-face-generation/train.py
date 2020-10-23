@@ -105,10 +105,10 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
 
             # reconstruction loss
             recons_imgs = stylegan_gen.generate_images(out_embed.cpu().detach().numpy())
-            r_loss = pixel_loss(torch.div(torch.from_numpy(recons_imgs).to(device), 255.0), images)
+            r_loss = pixel_loss(torch.div(torch.from_numpy(recons_imgs).to(device), 255.0).permute(0, 3, 1, 2), images)
 
             # perceptual loss
-            recons_features = vgg_model(torch.div(torch.from_numpy(recons_imgs).to(device), 255.0))
+            recons_features = vgg_model(torch.div(torch.from_numpy(recons_imgs).to(device).permute(0, 3, 1, 2), 255.0))
             target_features = vgg_model(images)
             p_loss = pixel_loss(recons_features.relu1_2, target_features.relu1_2) + \
                     pixel_loss(recons_features.relu2_2, target_features.relu2_2) + \

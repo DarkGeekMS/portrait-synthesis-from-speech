@@ -133,7 +133,7 @@ def collate_fn(batch):
         sorted_embed_list.append(embed_list[idx])
         sorted_len_list.append(len_list[idx])
         sorted_l_vec_list.append(l_vec_list[idx])
-        sorted_img_list.append(img_list[idx])
+        sorted_img_list.append(np.transpose(img_list[idx], (2, 1, 0)))
     # handle padding of text embeddings to max length
     embed_tensor = np.zeros((max(len_list), len(sorted_embed_list), len(sorted_embed_list[0][0])))
     for i in range(len(sorted_embed_list)):
