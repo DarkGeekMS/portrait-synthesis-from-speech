@@ -90,7 +90,7 @@ class FaceDataset(torch.utils.data.Dataset):
         # get a dataset item with index
         # read face image
         img = cv2.imread(self.img_list[index])
-        # read latent vctor
+        # read latent vector
         l_vec = np.load(self.latent_list[index])
         # read text description (NOTE : only the first description is considered)
         with open(self.text_list[index]) as f:
