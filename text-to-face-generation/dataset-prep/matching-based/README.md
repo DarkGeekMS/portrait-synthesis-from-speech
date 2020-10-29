@@ -28,3 +28,8 @@ This folder contains some utilities for dataset preparation using __face matchin
     ```bash
     python process_dataset.py -facedir /path/to/dataset
     ```
+
+-   Generate paraphrases for descriptions in Face2Text dataset :
+    ```bash
+    python paraphrase_generation.py -tj /path/to/Face2TextDataset -pn max_number_of_paraphrases_to_be_generated
+    ```
