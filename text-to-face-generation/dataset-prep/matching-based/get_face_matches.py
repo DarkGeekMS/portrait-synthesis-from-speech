@@ -1,3 +1,5 @@
+"""Get top k matching faces to a group of faces from a database"""
+
 from facenet_pytorch import MTCNN, InceptionResnetV1
 from PIL import Image
 import os

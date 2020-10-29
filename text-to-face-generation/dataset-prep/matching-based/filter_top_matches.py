@@ -1,3 +1,5 @@
+"""Helper script to allow the user to pick a single face match manually out of top matches"""
+
 import os
 import cv2
 import json
@@ -5,6 +7,7 @@ import argparse
 import numpy as np
 
 def filter_matches(json_file):
+    # display the top matches and select a single match manually
     data = []
     for line in open(json_file, 'r'):
         data.append(json.loads(line))

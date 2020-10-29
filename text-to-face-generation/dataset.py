@@ -15,7 +15,7 @@ import numpy as np
 from nltk.tokenize import word_tokenize
 
 class FaceDataset(torch.utils.data.Dataset):
-
+    """Face dataset class for loading data triplets (text + latent + image)"""
     def __init__(self, dataset_path, w2v_path, word_emb_dim=300, model_version=1):
         # initialize dataset object and read data lists
         super(FaceDataset, self).__init__()
@@ -90,7 +90,7 @@ class FaceDataset(torch.utils.data.Dataset):
         # get a dataset item with index
         # read face image
         img = cv2.imread(self.img_list[index])
-        # read latent vctor
+        # read latent vector
         l_vec = np.load(self.latent_list[index])
         # read text description (NOTE : only the first description is considered)
         with open(self.text_list[index]) as f:
@@ -133,7 +133,7 @@ def collate_fn(batch):
         sorted_embed_list.append(embed_list[idx])
         sorted_len_list.append(len_list[idx])
         sorted_l_vec_list.append(l_vec_list[idx])
-        sorted_img_list.append(img_list[idx])
+        sorted_img_list.append(np.transpose(img_list[idx], (2, 1, 0)))
     # handle padding of text embeddings to max length
     embed_tensor = np.zeros((max(len_list), len(sorted_embed_list), len(sorted_embed_list[0][0])))
     for i in range(len(sorted_embed_list)):
@@ -146,5 +146,5 @@ def collate_fn(batch):
     # return torch tensors of the processed numpy arrays
     return (torch.from_numpy(embed_tensor).float(),
             torch.from_numpy(len_tensor).long(),
-            torch.from_numpy(l_vec_tensor).float(),
-            torch.from_numpy(img_tensor).float())
+            torch.squeeze(torch.from_numpy(l_vec_tensor).float(), 1),
+            torch.div(torch.from_numpy(img_tensor).float(), 255.0))

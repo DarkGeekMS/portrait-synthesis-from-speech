@@ -12,7 +12,7 @@ import pretrained_networks
 #----------------------------------------------------------------------------
 
 class StyleGAN2Generator(object):
-
+    """StyleGAN2 generator class, used for NLP module training"""
     def __init__(self, network_pkl, truncation_psi=1.0, result_dir='results/nlp-training'):
         # initialize network and other class attributes
         print('Loading networks from "%s"...' % network_pkl)
@@ -38,4 +38,4 @@ class StyleGAN2Generator(object):
         tflib.set_vars({var: rnd.randn(*var.shape.as_list()) for var in noise_vars}) # [height, width]
         images = self.Gs.run(z, None, **Gs_kwargs) # [minibatch, height, width, channel]
         
-        return images[0]
+        return images

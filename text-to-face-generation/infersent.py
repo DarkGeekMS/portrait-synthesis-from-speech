@@ -5,7 +5,7 @@ import numpy as np
 import time
 
 class InferSent(nn.Module):
-
+    """Infersent sentence embedding model"""
     def __init__(self, config):
         # initialize infersent model
         super(InferSent, self).__init__()
