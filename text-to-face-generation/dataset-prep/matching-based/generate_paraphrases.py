@@ -1,3 +1,8 @@
+"""
+    Generate paraphrases of the provided text descriptions,
+    By running them through Google translate using different languages
+"""
+
 import json
 import googletrans
 from googletrans import Translator

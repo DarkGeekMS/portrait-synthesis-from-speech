@@ -26,7 +26,7 @@ This folder contains some utilities for dataset preparation using __face matchin
     python extract_face_embed.py -facedir /path/to/dataset
     ```
 
--   Generate paraphrases for descriptions in Face2Text dataset :
+-   Generate paraphrases for descriptions in _Face2Text_ dataset :
     ```bash
-    python paraphrase_generation.py -tj /path/to/Face2TextDataset -pn max_number_of_paraphrases_to_be_generated
+    python generate_paraphrases.py -tj /path/to/Face2TextDataset -pn max_number_of_paraphrases_to_be_generated
     ```
