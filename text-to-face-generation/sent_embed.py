@@ -13,11 +13,11 @@ class SentEmbedEncoder(torch.nn.Module):
         # initialize sentence embedding model
         super(SentEmbedEncoder,self).__init__()
         self.lstm = torch.nn.LSTM(config["emb_dim"], config["lstm_hid_dim"], 1, batch_first=True, dropout=config["dpout_model"], bidirectional=True)
-        self.linear_first = torch.nn.Linear(config["lstm_hid_dim"], config["dense_hid_dim"])
+        self.linear_first = torch.nn.Linear(config["lstm_hid_dim"]*2, config["dense_hid_dim"])
         self.linear_first.bias.data.fill_(0)
         self.linear_second = torch.nn.Linear(config["dense_hid_dim"], config["att_hops"])
         self.linear_second.bias.data.fill_(0)
-        self.linear_final = torch.nn.Linear(config["lstm_hid_dim"], config["out_dim"])
+        self.linear_final = torch.nn.Linear(config["lstm_hid_dim"]*2, config["out_dim"])
         self.batch_size = config["batch_size"]
         self.max_len = config["max_len"]
         self.lstm_hid_dim = config["lstm_hid_dim"]
