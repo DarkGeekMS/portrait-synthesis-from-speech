@@ -1,0 +1,9 @@
+{
+    "model_version": 1,
+    "emb_dim": 300,
+    "lstm_hid_dim": 256,
+    "dpout_model": 0,
+    "dense_hid_dim": 512,
+    "att_hops": 10,
+    "out_dim": 512
+}
