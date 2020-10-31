@@ -14,7 +14,7 @@ import cv2
 import os
 
 from dataset import FaceDataset, collate_fn
-from infersent import InferSent
+from sent_embed import SentEmbedEncoder
 from stylegan2_generator import StyleGAN2Generator
 from vgg import Vgg16
 from loss import PixelwiseDistanceLoss, KLDLoss, LatentLoss
@@ -40,16 +40,16 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
     # device selection
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # define infersent model
-    print('Loading infersent model ...')
+    # define sentence embedding model
+    print('Loading sentence embedding model ...')
     max_pad = True if model_version == 1 else False
-    infersent_params = {'word_emb_dim': word_emb_dim, 'enc_lstm_dim': enc_lstm_dim,
+    sent_embed_params = {'word_emb_dim': word_emb_dim, 'enc_lstm_dim': enc_lstm_dim,
                     'pool_type': pool_type, 'dpout_model': dpout_model, 'max_pad': max_pad}
-    infersent_model = InferSent(infersent_params)
+    sent_embed_model = SentEmbedEncoder(sent_embed_params)
     if model_path:
-        infersent_model.load_state_dict(torch.load(model_path))
-    infersent_model.train()
-    infersent_model.to(device)
+        sent_embed_model.load_state_dict(torch.load(model_path))
+    sent_embed_model.train()
+    sent_embed_model.to(device)
 
     # define stylegan2 generator
     print('Loading stylegan2 generator ...')
@@ -64,7 +64,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
     writer = SummaryWriter(logdir=os.path.join(result_dir, 'log'), comment='training log')
 
     # define optimizer
-    optimizer = torch.optim.Adam(infersent_model.parameters(), lr=initial_lr, weight_decay=weight_decay)
+    optimizer = torch.optim.Adam(sent_embed_model.parameters(), lr=initial_lr, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
     # define dataset
@@ -98,7 +98,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
             images = images.to(device)
 
             # forward pass
-            out_embed = infersent_model((embeds, seq_len))
+            out_embed = sent_embed_model((embeds, seq_len))
 
             # latent loss
             l_loss = latent_loss(out_embed, l_vecs)
@@ -149,11 +149,11 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
         # LR scheduler step
         scheduler.step()
         # save model checkpoint per epoch
-        torch.save(infersent_model.state_dict(), os.path.join(os.path.join(result_dir, 'models'), f'model_{epoch}.pt'))
+        torch.save(sent_embed_model.state_dict(), os.path.join(os.path.join(result_dir, 'models'), f'model_{epoch}.pt'))
     
     # save final model checkpoint
     print('Finalizing training process ...')
-    torch.save(infersent_model.state_dict(), os.path.join(os.path.join(result_dir, 'models'), 'model_final.pt'))
+    torch.save(sent_embed_model.state_dict(), os.path.join(os.path.join(result_dir, 'models'), 'model_final.pt'))
     writer.close()
 
 if __name__ == '__main__':

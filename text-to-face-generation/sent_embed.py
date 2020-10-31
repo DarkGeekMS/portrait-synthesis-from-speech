@@ -71,10 +71,10 @@ class BiLSTM(nn.Module):
                 Variable(weight.new(self.nlayers * 2, bsz, self.nhid).zero_()))
 
 
-class SelfAttentiveEncoder(nn.Module):
+class SentEmbedEncoder(nn.Module):
 
     def __init__(self, config):
-        super(SelfAttentiveEncoder, self).__init__()
+        super(SentEmbedEncoder, self).__init__()
         self.bilstm = BiLSTM(config)
         self.drop = nn.Dropout(config['dpout_model'])
         self.ws1 = nn.Linear(config['enc_lstm_dim'] * 2, config['attention_unit'], bias=False)
@@ -110,43 +110,3 @@ class SelfAttentiveEncoder(nn.Module):
 
     def init_hidden(self, bsz):
         return self.bilstm.init_hidden(bsz)
-
-
-class Classifier(nn.Module):
-
-    def __init__(self, config):
-        super(Classifier, self).__init__()
-        if config['pool_type'] == 'mean' or config['pool_type'] == 'max':
-            self.encoder = BiLSTM(config)
-            self.fc = nn.Linear(config['enc_lstm_dim'] * 2, config['nfc'])
-        elif config['pool_type'] == 'all':
-            self.encoder = SelfAttentiveEncoder(config)
-            self.fc = nn.Linear(config['enc_lstm_dim'] * 2 * config['attention_hops'], config['nfc'])
-        else:
-            raise Exception('Error when initializing Classifier')
-        self.drop = nn.Dropout(config['dpout_model'])
-        self.tanh = nn.Tanh()
-        self.pred = nn.Linear(config['nfc'], config['class_number'])
-        self.dictionary = config['dictionary']
-#        self.init_weights()
-
-    def init_weights(self, init_range=0.1):
-        self.fc.weight.data.uniform_(-init_range, init_range)
-        self.fc.bias.data.fill_(0)
-        self.pred.weight.data.uniform_(-init_range, init_range)
-        self.pred.bias.data.fill_(0)
-
-    def forward(self, inp, hidden):
-        outp, attention = self.encoder.forward(inp, hidden)
-        outp = outp.view(outp.size(0), -1)
-        fc = self.tanh(self.fc(self.drop(outp)))
-        pred = self.pred(self.drop(fc))
-        if type(self.encoder) == BiLSTM:
-            attention = None
-        return pred, attention
-
-    def init_hidden(self, bsz):
-        return self.encoder.init_hidden(bsz)
-
-    def encode(self, inp, hidden):
-        return self.encoder.forward(inp, hidden)[0]

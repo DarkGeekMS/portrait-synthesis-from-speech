@@ -14,7 +14,7 @@ from tqdm import tqdm
 from skimage.io import imsave
 from nltk.tokenize import word_tokenize
 
-from infersent import InferSent
+from sent_embed import SentEmbedEncoder
 from stylegan2_generator import StyleGAN2Generator
 
 def tokenize(sent, model_version):
@@ -64,15 +64,15 @@ def test(text_path, model_version, model_path, w2v_path, network_pkl, truncation
         bos = '<p>'
         eos = '</p>'
 
-    # define infersent model
-    print('Loading infersent model ...')
+    # define sentence embedding model
+    print('Loading sentence embedding model ...')
     max_pad = True if model_version == 1 else False
-    infersent_params = {'word_emb_dim': word_emb_dim, 'enc_lstm_dim': enc_lstm_dim,
+    sent_embed_params = {'word_emb_dim': word_emb_dim, 'enc_lstm_dim': enc_lstm_dim,
                     'pool_type': pool_type, 'dpout_model': dpout_model, 'max_pad': max_pad}
-    infersent_model = InferSent(infersent_params)
-    infersent_model.load_state_dict(torch.load(model_path))
-    infersent_model.eval()
-    infersent_model.to(device)
+    sent_embed_model = SentEmbedEncoder(sent_embed_params)
+    sent_embed_model.load_state_dict(torch.load(model_path))
+    sent_embed_model.eval()
+    sent_embed_model.to(device)
 
     # define stylegan2 generator
     print('Loading stylegan2 generator ...')
@@ -107,7 +107,7 @@ def test(text_path, model_version, model_path, w2v_path, network_pkl, truncation
         # perform sentence embedding
         embed = torch.from_numpy(embed).float().to(device)
         seq_len = torch.from_numpy(np.array([embed.shape[0]])).long().to(device)
-        out_embed = infersent_model((embed, seq_len))
+        out_embed = sent_embed_model((embed, seq_len))
         # generate face
         generated_face = stylegan_gen.generate_images(out_embed.cpu().detach().numpy())
         # save face image
