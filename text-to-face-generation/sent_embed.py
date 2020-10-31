@@ -1,112 +1,54 @@
-from __future__ import print_function
 import torch
+import torch.nn.functional as F
 from torch.autograd import Variable
-import torch.nn as nn
-import os
 
-"""
-configuration parameters:
-ntoken
-ninp
-nlayers
-enc_lstm_dim
-dictionary
-word_vector
-dpout_model
-pool_type
-nfc
-attention_hops
-attention_unit
-class_number
-"""
-
-class BiLSTM(nn.Module):
-
+import numpy as np
+ 
+class SentEmbedEncoder(torch.nn.Module):
+    """
+    The class is an implementation of the paper `A Structured Self-Attentive Sentence Embedding` including regularization
+    and without pruning. Slight modifications have been done for speedup
+    """
     def __init__(self, config):
-        super(BiLSTM, self).__init__()
-        self.drop = nn.Dropout(config['dpout_model'])
-        self.encoder = nn.Embedding(config['ntoken'], config['ninp'])
-        self.bilstm = nn.LSTM(config['ninp'], config['enc_lstm_dim'], config['nlayers'], dropout=config['dpout_model'],
-                              bidirectional=True)
-        self.nlayers = config['nlayers']
-        self.nhid = config['enc_lstm_dim']
-        self.pooling = config['pool_type']
-        self.dictionary = config['dictionary']
-#        self.init_weights()
-        self.encoder.weight.data[self.dictionary.word2idx['<pad>']] = 0
-        if os.path.exists(config['word_vector']):
-            print('Loading word vectors from', config['word_vector'])
-            vectors = torch.load(config['word_vector'])
-            assert vectors[2] >= config['ninp']
-            vocab = vectors[0]
-            vectors = vectors[1]
-            loaded_cnt = 0
-            for word in self.dictionary.word2idx:
-                if word not in vocab:
-                    continue
-                real_id = self.dictionary.word2idx[word]
-                loaded_id = vocab[word]
-                self.encoder.weight.data[real_id] = vectors[loaded_id][:config['ninp']]
-                loaded_cnt += 1
-            print('%d words from external word vectors loaded.' % loaded_cnt)
-
-    # note: init_range constraints the value of initial weights
-    def init_weights(self, init_range=0.1):
-        self.encoder.weight.data.uniform_(-init_range, init_range)
-
-    def forward(self, inp, hidden):
-        emb = self.drop(self.encoder(inp))
-        outp = self.bilstm(emb, hidden)[0]
-        if self.pooling == 'mean':
-            outp = torch.mean(outp, 0).squeeze()
-        elif self.pooling == 'max':
-            outp = torch.max(outp, 0)[0].squeeze()
-        elif self.pooling == 'all' or self.pooling == 'all-word':
-            outp = torch.transpose(outp, 0, 1).contiguous()
-        return outp, emb
-
-    def init_hidden(self, bsz):
-        weight = next(self.parameters()).data
-        return (Variable(weight.new(self.nlayers * 2, bsz, self.nhid).zero_()),
-                Variable(weight.new(self.nlayers * 2, bsz, self.nhid).zero_()))
-
-
-class SentEmbedEncoder(nn.Module):
-
-    def __init__(self, config):
-        super(SentEmbedEncoder, self).__init__()
-        self.bilstm = BiLSTM(config)
-        self.drop = nn.Dropout(config['dpout_model'])
-        self.ws1 = nn.Linear(config['enc_lstm_dim'] * 2, config['attention_unit'], bias=False)
-        self.ws2 = nn.Linear(config['attention_unit'], config['attention_hops'], bias=False)
-        self.tanh = nn.Tanh()
-        self.softmax = nn.Softmax()
-        self.dictionary = config['dictionary']
-#        self.init_weights()
-        self.attention_hops = config['attention_hops']
-
-    def init_weights(self, init_range=0.1):
-        self.ws1.weight.data.uniform_(-init_range, init_range)
-        self.ws2.weight.data.uniform_(-init_range, init_range)
-
-    def forward(self, inp, hidden):
-        outp = self.bilstm.forward(inp, hidden)[0]
-        size = outp.size()  # [bsz, len, nhid]
-        compressed_embeddings = outp.view(-1, size[2])  # [bsz*len, nhid*2]
-        transformed_inp = torch.transpose(inp, 0, 1).contiguous()  # [bsz, len]
-        transformed_inp = transformed_inp.view(size[0], 1, size[1])  # [bsz, 1, len]
-        concatenated_inp = [transformed_inp for i in range(self.attention_hops)]
-        concatenated_inp = torch.cat(concatenated_inp, 1)  # [bsz, hop, len]
-
-        hbar = self.tanh(self.ws1(self.drop(compressed_embeddings)))  # [bsz*len, attention-unit]
-        alphas = self.ws2(hbar).view(size[0], size[1], -1)  # [bsz, len, hop]
-        alphas = torch.transpose(alphas, 1, 2).contiguous()  # [bsz, hop, len]
-        penalized_alphas = alphas + (
-            -10000 * (concatenated_inp == self.dictionary.word2idx['<pad>']).float())
-            # [bsz, hop, len] + [bsz, hop, len]
-        alphas = self.softmax(penalized_alphas.view(-1, size[1]))  # [bsz*hop, len]
-        alphas = alphas.view(size[0], self.attention_hops, size[1])  # [bsz, hop, len]
-        return torch.bmm(alphas, outp), alphas
-
-    def init_hidden(self, bsz):
-        return self.bilstm.init_hidden(bsz)
+        # initialize sentence embedding model
+        super(SentEmbedEncoder,self).__init__()
+        self.lstm = torch.nn.LSTM(config["emb_dim"], config["lstm_hid_dim"], 1, bidirectional=True, dropout=config["dpout_model"])
+        self.linear_first = torch.nn.Linear(config["lstm_hid_dim"], config["dense_hid_dim"])
+        self.linear_first.bias.data.fill_(0)
+        self.linear_second = torch.nn.Linear(config["dense_hid_dim"], config["att_hops"])
+        self.linear_second.bias.data.fill_(0)
+        self.linear_final = torch.nn.Linear(config["lstm_hid_dim"], config["out_dim"])
+        self.batch_size = config["batch_size"]       
+        self.max_len = config["max_len"]
+        self.lstm_hid_dim = config["lstm_hid_dim"]
+        self.hidden_state = self.init_hidden()
+        self.r = config["att_hops"]     
+        
+    def softmax(self,input, axis=1):
+        # softmax applied to axis=n
+        input_size = input.size()
+        trans_input = input.transpose(axis, len(input_size)-1)
+        trans_size = trans_input.size()
+        input_2d = trans_input.contiguous().view(-1, trans_size[-1])
+        soft_max_2d = F.softmax(input_2d)
+        soft_max_nd = soft_max_2d.view(*trans_size)
+        return soft_max_nd.transpose(axis, len(input_size)-1)
+        
+    def init_hidden(self):
+        # initialize LSTM hidden state with zeros
+        return (Variable(torch.zeros(1, self.batch_size, self.lstm_hid_dim)), Variable(torch.zeros(1, self.batch_size, self.lstm_hid_dim)))
+        
+    def forward(self,x):
+        # forward pass
+        outputs, self.hidden_state = self.lstm(x, self.hidden_state)       
+        x = F.tanh(self.linear_first(outputs))       
+        x = self.linear_second(x)       
+        x = self.softmax(x, 1)       
+        attention = x.transpose(1, 2)       
+        sentence_embeddings = attention@outputs       
+        avg_sentence_embeddings = torch.sum(sentence_embeddings, 1) / self.r
+        return self.linear_final(avg_sentence_embeddings), attention
+    
+    def l2_matrix_norm(self,m):
+        # Frobenius norm calculation
+        return torch.sum(torch.sum(torch.sum(m**2, 1), 1)**0.5).type(torch.DoubleTensor)
