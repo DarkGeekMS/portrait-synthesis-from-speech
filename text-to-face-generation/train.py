@@ -100,7 +100,7 @@ def train(network_config, train_config):
 
             # add a visualization sample to samples list
             rand_idx = np.random.randint(train_config['batch_size'])
-            if recons_imgs.shape[0] > rand_idx:
+            if recons_imgs.shape[0] > rand_idx and i%network_config['save_interval'] == 0:
                 viz_samples.append(recons_imgs[rand_idx].transpose(2, 1, 0))
             
             # back-propagation on all losses
