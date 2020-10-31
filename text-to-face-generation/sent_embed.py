@@ -47,7 +47,7 @@ class SentEmbedEncoder(torch.nn.Module):
         attention = x.transpose(1, 2)
         sentence_embeddings = attention@outputs
         avg_sentence_embeddings = torch.sum(sentence_embeddings, 1) / self.r
-        return self.linear_final(avg_sentence_embeddings), attention
+        return self.linear_final(avg_sentence_embeddings)
     
     def l2_matrix_norm(self,m):
         # Frobenius norm calculation
