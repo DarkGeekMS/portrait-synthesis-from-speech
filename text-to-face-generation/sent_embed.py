@@ -12,18 +12,18 @@ class SentEmbedEncoder(torch.nn.Module):
     def __init__(self, config):
         # initialize sentence embedding model
         super(SentEmbedEncoder,self).__init__()
-        self.lstm = torch.nn.LSTM(config["emb_dim"], config["lstm_hid_dim"], 1, bidirectional=True, dropout=config["dpout_model"])
+        self.lstm = torch.nn.LSTM(config["emb_dim"], config["lstm_hid_dim"], 1, batch_first=True, dropout=config["dpout_model"], bidirectional=True)
         self.linear_first = torch.nn.Linear(config["lstm_hid_dim"], config["dense_hid_dim"])
         self.linear_first.bias.data.fill_(0)
         self.linear_second = torch.nn.Linear(config["dense_hid_dim"], config["att_hops"])
         self.linear_second.bias.data.fill_(0)
         self.linear_final = torch.nn.Linear(config["lstm_hid_dim"], config["out_dim"])
-        self.batch_size = config["batch_size"]       
+        self.batch_size = config["batch_size"]
         self.max_len = config["max_len"]
         self.lstm_hid_dim = config["lstm_hid_dim"]
         self.hidden_state = self.init_hidden()
-        self.r = config["att_hops"]     
-        
+        self.r = config["att_hops"]
+    
     def softmax(self,input, axis=1):
         # softmax applied to axis=n
         input_size = input.size()
@@ -33,19 +33,19 @@ class SentEmbedEncoder(torch.nn.Module):
         soft_max_2d = F.softmax(input_2d)
         soft_max_nd = soft_max_2d.view(*trans_size)
         return soft_max_nd.transpose(axis, len(input_size)-1)
-        
+    
     def init_hidden(self):
         # initialize LSTM hidden state with zeros
         return (Variable(torch.zeros(1, self.batch_size, self.lstm_hid_dim)), Variable(torch.zeros(1, self.batch_size, self.lstm_hid_dim)))
-        
+    
     def forward(self,x):
         # forward pass
-        outputs, self.hidden_state = self.lstm(x, self.hidden_state)       
-        x = F.tanh(self.linear_first(outputs))       
-        x = self.linear_second(x)       
-        x = self.softmax(x, 1)       
-        attention = x.transpose(1, 2)       
-        sentence_embeddings = attention@outputs       
+        outputs, self.hidden_state = self.lstm(x, self.hidden_state)
+        x = F.tanh(self.linear_first(outputs))
+        x = self.linear_second(x)
+        x = self.softmax(x, 1)
+        attention = x.transpose(1, 2)
+        sentence_embeddings = attention@outputs
         avg_sentence_embeddings = torch.sum(sentence_embeddings, 1) / self.r
         return self.linear_final(avg_sentence_embeddings), attention
     

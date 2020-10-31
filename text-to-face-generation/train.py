@@ -74,7 +74,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
                                                batch_size=batch_size, num_workers=num_workers,
                                                shuffle=True, collate_fn=collate_fn)
-                                               
+    
     # define losses
     latent_loss = LatentLoss(losses_list=['kl'], reduction='mean')
     pixel_loss = PixelwiseDistanceLoss(reduction='mean')
@@ -89,16 +89,15 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
         epoch_p_loss = 0.0
         epoch_total_loss = 0.0
         viz_samples = []
-        for embeds, seq_len, l_vecs, images in tqdm(train_loader):
+        for embeds, l_vecs, images in tqdm(train_loader):
             i += 1
             # data to device
             embeds = embeds.to(device)
-            seq_len = seq_len.to(device)
             l_vecs = l_vecs.to(device)
             images = images.to(device)
 
             # forward pass
-            out_embed = sent_embed_model((embeds, seq_len))
+            out_embed = sent_embed_model(embeds)
 
             # latent loss
             l_loss = latent_loss(out_embed, l_vecs)

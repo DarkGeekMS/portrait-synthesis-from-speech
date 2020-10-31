@@ -22,6 +22,7 @@ class FaceDataset(torch.utils.data.Dataset):
         self.dataset_path = dataset_path
         self.w2v_path = w2v_path
         self.word_emb_dim = word_emb_dim
+        self.max_len = 1
         self.model_version = model_version
         self.img_path = os.path.join(self.dataset_path, "face-images")
         self.text_path = os.path.join(self.dataset_path, "text-desc")
@@ -50,6 +51,8 @@ class FaceDataset(torch.utils.data.Dataset):
         word_dict = {}
         sentences = [s.split() if not tokenize else self.tokenize(s) for s in sentences]
         for sent in sentences:
+            if len(sent) > self.max_len-2:
+                self.max_len = len(sent) + 2
             for word in sent:
                 if word not in word_dict:
                     word_dict[word] = ''
@@ -104,7 +107,7 @@ class FaceDataset(torch.utils.data.Dataset):
                             Replacing by "</s>"..' % (sentence, index))
             s_f = [self.eos]
         # extract embeddings from text description
-        embed = np.zeros((len(s_f), self.word_emb_dim))
+        embed = np.zeros((self.max_len, self.word_emb_dim))
         for i in range(len(s_f)):
             embed[i, :] = self.word_vec[s_f[i]]
         # return (
@@ -124,27 +127,12 @@ def collate_fn(batch):
     for _embed, _l_vec, _img in batch:
         embed_list.append(_embed)
         l_vec_list.append(_l_vec)
-        img_list.append(_img)
-    # sort batch by sentence length
-    len_list = [embed.shape[0] for embed in embed_list]
-    sorted_idx = sorted(range(len(len_list)), key=lambda k: len_list[k], reverse=True)
-    sorted_embed_list, sorted_len_list, sorted_l_vec_list, sorted_img_list = [], [], [], []
-    for idx in sorted_idx:
-        sorted_embed_list.append(embed_list[idx])
-        sorted_len_list.append(len_list[idx])
-        sorted_l_vec_list.append(l_vec_list[idx])
-        sorted_img_list.append(np.transpose(img_list[idx], (2, 1, 0)))
-    # handle padding of text embeddings to max length
-    embed_tensor = np.zeros((max(len_list), len(sorted_embed_list), len(sorted_embed_list[0][0])))
-    for i in range(len(sorted_embed_list)):
-        for j in range(len(sorted_embed_list[i])):
-            embed_tensor[j, i, :] = sorted_embed_list[i][j]
+        img_list.append(np.transpose(_img, (2, 1, 0)))
     # convert other batch components to tensors
-    len_tensor = np.array(sorted_len_list)
-    l_vec_tensor = np.stack(sorted_l_vec_list, axis=0)
-    img_tensor = np.stack(sorted_img_list, axis=0)
+    embed_tensor = np.stack(embed_list, axis=0)
+    l_vec_tensor = np.stack(l_vec_list, axis=0)
+    img_tensor = np.stack(img_list, axis=0)
     # return torch tensors of the processed numpy arrays
     return (torch.from_numpy(embed_tensor).float(),
-            torch.from_numpy(len_tensor).long(),
             torch.squeeze(torch.from_numpy(l_vec_tensor).float(), 1),
             torch.div(torch.from_numpy(img_tensor).float(), 255.0))
