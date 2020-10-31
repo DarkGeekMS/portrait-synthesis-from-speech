@@ -30,7 +30,7 @@ def train(network_config, train_config):
 
     # define dataset
     print('Building dataset ...')
-    train_dataset = FaceDataset(train_config['dataset_path'], train_config['w2v_path'], train_config['word_emb_dim'], network_config['model_version'])
+    train_dataset = FaceDataset(train_config['dataset_path'], train_config['w2v_path'], network_config['emb_dim'], network_config['model_version'])
     train_dataset.build_dataset()
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
                                                batch_size=train_config['batch_size'], num_workers=train_config['num_workers'],
@@ -40,6 +40,7 @@ def train(network_config, train_config):
     print('Loading sentence embedding model ...')
     network_config['batch_size'] = train_config['batch_size']
     network_config['max_len'] = train_dataset.max_len
+    network_config['device'] = device
     sent_embed_model = SentEmbedEncoder(network_config)
     if os.path.isfile(train_config['model_path']):
         sent_embed_model.load_state_dict(torch.load(train_config['model_path']))

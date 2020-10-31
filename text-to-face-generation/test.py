@@ -63,8 +63,9 @@ def test(network_config, test_config):
 
     # define sentence embedding model
     print('Loading sentence embedding model ...')
-    network_config['max_len'] = None
     network_config['batch_size'] = 1
+    network_config['max_len'] = None
+    network_config['device'] = device
     sent_embed_model = SentEmbedEncoder(network_config)
     sent_embed_model.load_state_dict(torch.load(test_config['model_path']))
     sent_embed_model.eval()
@@ -97,7 +98,7 @@ def test(network_config, test_config):
                             Replacing by "</s>"..' % (sentence, idx))
             s_f = [eos]
         # extract embeddings from text description
-        embed = np.zeros((len(s_f), 1, network_config['word_emb_dim']))
+        embed = np.zeros((len(s_f), 1, network_config['emb_dim']))
         for i in range(len(s_f)):
             embed[i, 0, :] = word_vec[s_f[i]]
         # perform sentence embedding

@@ -21,6 +21,7 @@ class SentEmbedEncoder(torch.nn.Module):
         self.batch_size = config["batch_size"]
         self.max_len = config["max_len"]
         self.lstm_hid_dim = config["lstm_hid_dim"]
+        self.device = config["device"]
         self.hidden_state = self.init_hidden()
         self.r = config["att_hops"]
     
@@ -36,7 +37,7 @@ class SentEmbedEncoder(torch.nn.Module):
     
     def init_hidden(self):
         # initialize LSTM hidden state with zeros
-        return (Variable(torch.zeros(1, self.batch_size, self.lstm_hid_dim)), Variable(torch.zeros(1, self.batch_size, self.lstm_hid_dim)))
+        return (Variable(torch.zeros(2, self.batch_size, self.lstm_hid_dim)).to(self.device), Variable(torch.zeros(2, self.batch_size, self.lstm_hid_dim)).to(self.device))
     
     def forward(self,x):
         # forward pass
