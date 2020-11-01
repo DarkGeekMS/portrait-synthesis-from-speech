@@ -38,9 +38,6 @@ def train(network_config, train_config):
 
     # define sentence embedding model
     print('Loading sentence embedding model ...')
-    network_config['batch_size'] = train_config['batch_size']
-    network_config['max_len'] = train_dataset.max_len
-    network_config['device'] = device
     sent_embed_model = SentEmbedEncoder(network_config)
     if os.path.isfile(train_config['model_path']):
         sent_embed_model.load_state_dict(torch.load(train_config['model_path']))
@@ -101,7 +98,7 @@ def train(network_config, train_config):
 
             # add a visualization sample to samples list
             rand_idx = np.random.randint(train_config['batch_size'])
-            if recons_imgs.shape[0] > rand_idx and i%network_config['save_interval'] == 0:
+            if recons_imgs.shape[0] > rand_idx and i%train_config['save_interval'] == 0:
                 viz_samples.append(recons_imgs[rand_idx].transpose(2, 1, 0))
             
             # back-propagation on all losses

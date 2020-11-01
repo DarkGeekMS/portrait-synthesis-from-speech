@@ -18,11 +18,7 @@ class SentEmbedEncoder(torch.nn.Module):
         self.linear_second = torch.nn.Linear(config["dense_hid_dim"], config["att_hops"])
         self.linear_second.bias.data.fill_(0)
         self.linear_final = torch.nn.Linear(config["lstm_hid_dim"]*2, config["out_dim"])
-        self.batch_size = config["batch_size"]
-        self.max_len = config["max_len"]
         self.lstm_hid_dim = config["lstm_hid_dim"]
-        self.device = config["device"]
-        self.hidden_state = self.init_hidden()
         self.r = config["att_hops"]
     
     def softmax(self,input, axis=1):
@@ -31,25 +27,17 @@ class SentEmbedEncoder(torch.nn.Module):
         trans_input = input.transpose(axis, len(input_size)-1)
         trans_size = trans_input.size()
         input_2d = trans_input.contiguous().view(-1, trans_size[-1])
-        soft_max_2d = F.softmax(input_2d)
+        soft_max_2d = F.softmax(input_2d, dim=axis)
         soft_max_nd = soft_max_2d.view(*trans_size)
         return soft_max_nd.transpose(axis, len(input_size)-1)
     
-    def init_hidden(self):
-        # initialize LSTM hidden state with zeros
-        return (Variable(torch.zeros(2, self.batch_size, self.lstm_hid_dim)).to(self.device), Variable(torch.zeros(2, self.batch_size, self.lstm_hid_dim)).to(self.device))
-    
     def forward(self,x):
         # forward pass
-        outputs, self.hidden_state = self.lstm(x, self.hidden_state)
-        x = F.tanh(self.linear_first(outputs))
+        outputs, _ = self.lstm(x)
+        x = torch.tanh(self.linear_first(outputs))
         x = self.linear_second(x)
         x = self.softmax(x, 1)
         attention = x.transpose(1, 2)
         sentence_embeddings = attention@outputs
         avg_sentence_embeddings = torch.sum(sentence_embeddings, 1) / self.r
         return self.linear_final(avg_sentence_embeddings)
-    
-    def l2_matrix_norm(self,m):
-        # Frobenius norm calculation
-        return torch.sum(torch.sum(torch.sum(m**2, 1), 1)**0.5).type(torch.DoubleTensor)

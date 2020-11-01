@@ -63,9 +63,6 @@ def test(network_config, test_config):
 
     # define sentence embedding model
     print('Loading sentence embedding model ...')
-    network_config['batch_size'] = 1
-    network_config['max_len'] = None
-    network_config['device'] = device
     sent_embed_model = SentEmbedEncoder(network_config)
     sent_embed_model.load_state_dict(torch.load(test_config['model_path']))
     sent_embed_model.eval()
