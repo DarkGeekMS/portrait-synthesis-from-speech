@@ -1,6 +1,6 @@
-# Face Generation From Text
+# Face Generation From Text (end-to-end)
 
-This folder contains the main code and experiments for `face generation from text`.
+This folder contains the main code for `end-to-end` experiments of `face generation from text`.
 
 ## Installation
 
