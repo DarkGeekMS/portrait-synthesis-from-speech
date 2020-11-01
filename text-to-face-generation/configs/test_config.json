@@ -1,0 +1,9 @@
+{
+    "truncation_psi": 0.5,
+    
+    "text_path": "dataset/test-text/test1.txt",
+    "model_path": "results/exp-0/models/model_final.pt",
+    "w2v_path": "w2v-models/glove.840B.300d.txt",
+    "stylegan2_pkl": "networks/stylegan2-ffhq-config-f.pkl",
+    "result_dir": "results/" 
+}

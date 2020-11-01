@@ -10,71 +10,53 @@ from tensorboardX import SummaryWriter
 import argparse
 from tqdm import tqdm
 import numpy as np
+import json
 import cv2
 import os
 
 from dataset import FaceDataset, collate_fn
-from infersent import InferSent
+from sent_embed import SentEmbedEncoder
 from stylegan2_generator import StyleGAN2Generator
 from vgg import Vgg16
 from loss import PixelwiseDistanceLoss, KLDLoss, LatentLoss
 
-## GLOBAL VARIABLES
-
-# network parameters
-word_emb_dim = 300
-enc_lstm_dim = 256
-pool_type = 'max'
-dpout_model = 0.0
-
-# training hyperparameters
-initial_lr = 1e-3
-momentum = 0.9
-weight_decay = 5e-4
-num_epoch = 100
-batch_size = 8
-num_workers = 0
-
-def train(dataset_path, model_version, model_path, w2v_path, network_pkl, truncation_psi, result_dir):
+def train(network_config, train_config):
     # perform networks initialization and training
     # device selection
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # define infersent model
-    print('Loading infersent model ...')
-    max_pad = True if model_version == 1 else False
-    infersent_params = {'word_emb_dim': word_emb_dim, 'enc_lstm_dim': enc_lstm_dim,
-                    'pool_type': pool_type, 'dpout_model': dpout_model, 'max_pad': max_pad}
-    infersent_model = InferSent(infersent_params)
-    if model_path:
-        infersent_model.load_state_dict(torch.load(model_path))
-    infersent_model.train()
-    infersent_model.to(device)
+    # define log writer
+    writer = SummaryWriter(logdir=os.path.join(train_config['result_dir'], 'log'), comment='training log')
+
+    # define dataset
+    print('Building dataset ...')
+    train_dataset = FaceDataset(train_config['dataset_path'], train_config['w2v_path'], network_config['emb_dim'], network_config['model_version'])
+    train_dataset.build_dataset()
+    train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
+                                               batch_size=train_config['batch_size'], num_workers=train_config['num_workers'],
+                                               shuffle=True, collate_fn=collate_fn)
+
+    # define sentence embedding model
+    print('Loading sentence embedding model ...')
+    sent_embed_model = SentEmbedEncoder(network_config)
+    if os.path.isfile(train_config['model_path']):
+        sent_embed_model.load_state_dict(torch.load(train_config['model_path']))
+    sent_embed_model.train()
+    sent_embed_model.to(device)
 
     # define stylegan2 generator
     print('Loading stylegan2 generator ...')
-    stylegan_gen = StyleGAN2Generator(network_pkl, truncation_psi, result_dir)
+    stylegan_gen = StyleGAN2Generator(train_config['stylegan2_pkl'], train_config['truncation_psi'], train_config['result_dir'])
 
     # define VGG-16 model
     print('Loading VGG-16 pretrained model ...')
     vgg_model = Vgg16(requires_grad=False)
     vgg_model.to(device)
 
-    # define log writer
-    writer = SummaryWriter(logdir=os.path.join(result_dir, 'log'), comment='training log')
-
     # define optimizer
-    optimizer = torch.optim.Adam(infersent_model.parameters(), lr=initial_lr, weight_decay=weight_decay)
+    optimizer = torch.optim.Adam(sent_embed_model.parameters(), lr=train_config['initial_lr'], weight_decay=train_config['weight_decay'])
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
-
-    # define dataset
-    print('Building dataset ...')
-    train_dataset = FaceDataset(dataset_path, w2v_path, word_emb_dim, model_version)
-    train_dataset.build_dataset()
-    train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
-                                               batch_size=batch_size, num_workers=num_workers,
-                                               shuffle=True, collate_fn=collate_fn)
-                                               
+    
     # define losses
     latent_loss = LatentLoss(losses_list=['kl'], reduction='mean')
     pixel_loss = PixelwiseDistanceLoss(reduction='mean')
@@ -82,23 +64,22 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
     # training loop
     print(f'Training on {len(train_dataset)} samples')
     total_step = len(train_loader)
-    for epoch in range(num_epoch):
+    for epoch in range(train_config['num_epoch']):
         i = 0
         epoch_l_loss = 0.0
         epoch_r_loss = 0.0
         epoch_p_loss = 0.0
         epoch_total_loss = 0.0
         viz_samples = []
-        for embeds, seq_len, l_vecs, images in tqdm(train_loader):
+        for embeds, l_vecs, images in tqdm(train_loader):
             i += 1
             # data to device
             embeds = embeds.to(device)
-            seq_len = seq_len.to(device)
             l_vecs = l_vecs.to(device)
             images = images.to(device)
 
             # forward pass
-            out_embed = infersent_model((embeds, seq_len))
+            out_embed = sent_embed_model(embeds)
 
             # latent loss
             l_loss = latent_loss(out_embed, l_vecs)
@@ -116,8 +97,8 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
                     pixel_loss(recons_features.relu4_3, target_features.relu4_3)
 
             # add a visualization sample to samples list
-            rand_idx = np.random.randint(batch_size)
-            if recons_imgs.shape[0] > rand_idx:
+            rand_idx = np.random.randint(train_config['batch_size'])
+            if recons_imgs.shape[0] > rand_idx and i%train_config['save_interval'] == 0:
                 viz_samples.append(recons_imgs[rand_idx].transpose(2, 1, 0))
             
             # back-propagation on all losses
@@ -140,7 +121,7 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
 
         # print logs of total epoch losses
         print('Epoch [{}/{}], Total Epoch Loss: \n latent loss: {:.4f}, reconstruction loss: {:.4f}, perceptual loss: {:.4f}, total loss: {:.4f}'
-                .format(epoch + 1, num_epoch, epoch_l_loss, epoch_r_loss, epoch_p_loss, epoch_total_loss))
+                .format(epoch + 1, train_config['num_epoch'], epoch_l_loss, epoch_r_loss, epoch_p_loss, epoch_total_loss))
 
         # write visualization samples to tensorboard writer
         viz_data = np.stack(viz_samples, axis=0)
@@ -149,36 +130,41 @@ def train(dataset_path, model_version, model_path, w2v_path, network_pkl, trunca
         # LR scheduler step
         scheduler.step()
         # save model checkpoint per epoch
-        torch.save(infersent_model.state_dict(), os.path.join(os.path.join(result_dir, 'models'), f'model_{epoch}.pt'))
+        torch.save(sent_embed_model.state_dict(), os.path.join(os.path.join(train_config['result_dir'], 'models'), f'model_{epoch}.pt'))
     
     # save final model checkpoint
     print('Finalizing training process ...')
-    torch.save(infersent_model.state_dict(), os.path.join(os.path.join(result_dir, 'models'), 'model_final.pt'))
+    torch.save(sent_embed_model.state_dict(), os.path.join(os.path.join(train_config['result_dir'], 'models'), 'model_final.pt'))
     writer.close()
 
 if __name__ == '__main__':
     # arguments parsing
     argparser = argparse.ArgumentParser(description=__doc__)
-    argparser.add_argument('-dsp', '--dataset_path', type=str, help='root directory of chosen dataset', required=True)
-    argparser.add_argument('-mv', '--model_version', type=int, help='model version : (1) GloVe (2) FastText', default=1)
-    argparser.add_argument('-mp', '--model_path', type=str, help='path to initial weights of sentence embedding model')
-    argparser.add_argument('-w2v', '--w2v_path', type=str, help='path to word2vec file', required=True)
-    argparser.add_argument('-pkl', '--network_pkl', type=str, help='path to stylegan2 model pickle file', required=True)
-    argparser.add_argument('-psi', '--truncation_psi', type=float, help='stylegan2 generator truncation psi', default=1.0)
-    argparser.add_argument('-rd', '--result_dir', type=str, help='directory to save logs and stylegan2 generated images', default='results/')
+    argparser.add_argument('-ncfg', '--network_config', type=str, help='path to config file of network parameters', default='configs/network_params.json')
+    argparser.add_argument('-tcfg', '--train_config', type=str, help='path to config file of training parameters', default='configs/train_config.json')
 
     args = argparser.parse_args()
+    
+    # load config JSONs
+    with open(args.network_config) as network_file:
+        network_config = json.load(network_file)
+    with open(args.train_config) as train_file:
+        train_config = json.load(train_file)
 
     # create results directory
-    if not os.path.isdir(args.result_dir):
-        os.mkdir(args.result_dir)
+    results_dir = train_config['result_dir']
+    if not os.path.isdir(results_dir):
+        os.mkdir(results_dir)
     
     # create experiment folder
-    exp_name = f'exp-{len(os.listdir(args.result_dir))}'
-    exp_dir = os.path.join(args.result_dir, exp_name)
+    exp_name = f'exp-{len(os.listdir(results_dir))}'
+    exp_dir = os.path.join(results_dir, exp_name)
     os.mkdir(exp_dir)
     os.mkdir(os.path.join(exp_dir, 'log'))
     os.mkdir(os.path.join(exp_dir, 'models'))
 
+    # set new results directory
+    train_config['result_dir'] = exp_dir
+
     # call main training driver
-    train(args.dataset_path, args.model_version, args.model_path, args.w2v_path, args.network_pkl, args.truncation_psi, exp_dir)
+    train(network_config, train_config)

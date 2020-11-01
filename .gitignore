@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 
 # data folders
+.vscode
 dataset/
 datasets/
 results/

@@ -18,12 +18,14 @@ This folder contains the main code and experiments for `face generation from tex
 
 -   Create a new folder in current directory and place your dataset in three sub-folders : `face-images`, `text-desc` and `latent-vectors`.
 
+-   Edit network, train and test configuration in `configs/`.
+
 -   For network training :
     ```bash
-    python train.py -dsp /path/to/dataset/root/dir -w2v /path/to/word2vec/file -mv model_version(1|2) -mp /path/to/initial/model/weights -pkl /path/to/stylegan2/model/file -psi truncation_psi -rd /path/to/results/dir
+    python train.py -ncfg /path/to/network/config/json -tcfg /path/to/train/config/json
     ```
 
 -   For network inference :
     ```bash
-    python test.py -tp /path/to/sentences/text -w2v /path/to/word2vec/file -mv model_version(1|2) -mp /path/to/model/weights -pkl /path/to/stylegan2/model/file -psi truncation_psi -rd /path/to/results/dir
+    python test.py -ncfg /path/to/network/config/json -tcfg /path/to/test/config/json
     ```
