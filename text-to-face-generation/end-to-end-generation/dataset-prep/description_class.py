@@ -1,6 +1,10 @@
+"""Textual descriptions from attributes Class"""
+
 import random
 from copy import deepcopy
-class textual_description:
+
+class TextualDescription:
+
     def __init__(self, attributes, languages, translator, paraphrase = False):
         self.attributes = attributes
         self.with_statements = []
@@ -15,8 +19,6 @@ class textual_description:
             self.translator = translator
             self.languages = languages
             self.description = self.get_paraphrase(self.description)
-
-        
 
     def age_gender(self):
         # age
