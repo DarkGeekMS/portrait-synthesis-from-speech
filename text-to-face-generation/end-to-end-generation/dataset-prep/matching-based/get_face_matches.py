@@ -140,7 +140,7 @@ def main(text_json, target_faces_dir, faces_db_dir, sim_num):
     # main driver
     get_annotated_samples(text_json, target_faces_dir)
     embed_data = extract_database_embeds(faces_db_dir)
-    get_all_dataset_sim_imgs(sim_num, target_faces_dir, embed_data)
+    get_all_dataset_sim_imgs(sim_num, os.path.join(os.getcwd(), 'sub-faces'), embed_data)
 
 if __name__ == '__main__':
     # arguments parsing
