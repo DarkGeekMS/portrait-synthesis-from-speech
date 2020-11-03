@@ -1,3 +1,5 @@
+"""Generate CelebA textual descriptions from attributes"""
+
 import pandas as pd
 import numpy as np
 from description_class import *
@@ -24,7 +26,7 @@ def main(celeb_a_csv_path, paraphrase = False):
     for i in range(rows_count):
         attr_record = np.array(table.iloc[i])
         attributes = attr_keys[attr_record == 1]
-        description = textual_description(attributes, languages, translator, paraphrase).description
+        description = TextualDescription(attributes, languages, translator, paraphrase).description
         descriptions.append(description)
         bar.update(i + 1)
     bar.finish()

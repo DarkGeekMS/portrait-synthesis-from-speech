@@ -1,4 +1,4 @@
-# Face Generation From Text (end-to-end)
+# Face Generation From Text (End-to-End)
 
 This folder contains the main code for `end-to-end` experiments of `face generation from text`.
 
