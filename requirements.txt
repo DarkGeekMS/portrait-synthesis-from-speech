@@ -10,3 +10,4 @@ progressbar
 mtcnn
 facenet-pytorch
 nltk
+pickle-mixin

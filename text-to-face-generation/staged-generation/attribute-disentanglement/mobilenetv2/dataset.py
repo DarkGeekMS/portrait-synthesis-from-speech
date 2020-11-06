@@ -8,8 +8,6 @@ import numpy as np
 import pickle
 from PIL import Image
 
-import time
-
 class FaceDataset(data.Dataset):
     """
     Faces dataset class.
