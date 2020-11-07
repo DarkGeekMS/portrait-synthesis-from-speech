@@ -1,6 +1,6 @@
 # Dataset Preparation Utilities
 
-This folder contains some utilities for dataset preparation using __face matching__ and ___pseudo-text__.
+This folder contains some utilities for dataset preparation using __face matching__ and __pseudo-text__.
 
 ## Datasets
 
