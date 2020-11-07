@@ -1,5 +1,3 @@
-"""Generate CelebA textual descriptions from attributes"""
-
 import pandas as pd
 import numpy as np
 from description_class import *
@@ -7,10 +5,11 @@ import googletrans
 from googletrans import Translator
 import argparse
 import sys
-import progressbar
+from tqdm import tqdm
 
 def main(celeb_a_csv_path, paraphrase = False):
     table = pd.read_csv(celeb_a_csv_path)
+    table = table.replace(-1, 0)
     attr_keys = table.keys()
     rows_count = len(table.index)
 
@@ -20,16 +19,14 @@ def main(celeb_a_csv_path, paraphrase = False):
 
     descriptions = []
 
-    bar = progressbar.ProgressBar(maxval=rows_count, \
-                widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-    bar.start()
+    pbar = tqdm(total=rows_count)
     for i in range(rows_count):
         attr_record = np.array(table.iloc[i])
         attributes = attr_keys[attr_record == 1]
-        description = TextualDescription(attributes, languages, translator, paraphrase).description
+        description = textual_description(attributes, languages, translator, paraphrase).description
         descriptions.append(description)
-        bar.update(i + 1)
-    bar.finish()
+        pbar.update(1)
+    pbar.close()
 
     table['Description'] = descriptions
     table.to_csv('CelebA_with_textual_descriptions.csv',index=False)
@@ -49,8 +46,8 @@ if __name__ == '__main__':
 ''' pronoun+has, with
 Arched_Eyebrows
 Bangs
-Big_Lips
-Big_Nose
+Big_Lips //
+Big_Nose //
 Black_Hair
 Blond_Hair
 Brown_Hair
@@ -59,9 +56,9 @@ Double_Chin
 Goatee
 Gray_Hair
 High_Cheekbones
-Mustache
-Narrow_Eyes
-No_Beard
+Mustache //
+Narrow_Eyes //
+No_Beard // 
 Oval_Face
 Pale_Skin
 Rosy_Cheeks
@@ -73,7 +70,7 @@ Wavy_Hair
 ''' pronoun+is,adj
 Attractive
 Bald
-Chubby
+Chubby //
 Smiling
 '''
 
@@ -93,4 +90,12 @@ Male
 
 '''adj, pronoun+is
 Young
+'''
+
+''' extra added
+Bags_Under_Eyes
+Heavy_Makeup
+Pointy_Nose
+Receding_Hairline
+Wearing_Lipstick
 '''

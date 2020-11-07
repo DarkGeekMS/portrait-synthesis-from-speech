@@ -1,10 +1,6 @@
-"""Textual descriptions from attributes Class"""
-
 import random
 from copy import deepcopy
-
-class TextualDescription:
-
+class textual_description:
     def __init__(self, attributes, languages, translator, paraphrase = False):
         self.attributes = attributes
         self.with_statements = []
@@ -12,6 +8,7 @@ class TextualDescription:
         self.adjectives = []
         self.has_full_attributes = []
         self.is_full_attributes = []
+        self.putting_full_attributes = []
 
         self.construct_description()
         # for paraphrasing
@@ -19,6 +16,8 @@ class TextualDescription:
             self.translator = translator
             self.languages = languages
             self.description = self.get_paraphrase(self.description)
+
+        
 
     def age_gender(self):
         # age
@@ -59,6 +58,12 @@ class TextualDescription:
         ]
 
         adj_attributes_filtered = list(set(self.attributes) & set(adj_attributes))
+        # antonyms
+        if 'Chubby' not in adj_attributes_filtered:
+            opposites = ['Thin', 'Skinny', 'Slim']
+            choice = random.choice(opposites)
+            adj_attributes_filtered.append(choice)
+
         separator = ' '
         for attribute in adj_attributes_filtered:
             attribute = separator.join(attribute.split('_')).lower()
@@ -66,6 +71,8 @@ class TextualDescription:
                 self.adjectives.append(attribute)
             else:
                 self.is_full_attributes.append(attribute.lower())
+        
+        
 
     def has_with_attributes(self):
         '''
@@ -105,6 +112,7 @@ class TextualDescription:
         three_way_attributes = [
             'Big_Lips',
             'Big_Nose',
+            'Pointy_Nose',
             'Narrow_Eyes',
             'Oval_Face',
             'Pale_Skin',
@@ -118,7 +126,8 @@ class TextualDescription:
             'Blond_Hair',
             'Brown_Hair',
             'Straight_Hair',
-            'Wavy_Hair'
+            'Wavy_Hair',
+            'Receding_Hairline'
         ]
         three_way_attributes_filtered = list(set(self.attributes) & set(three_way_attributes))
         attribute_dict = dict()
@@ -126,7 +135,7 @@ class TextualDescription:
         # hair
         hair_attributes = [attribute.split('_')[0] 
                             for attribute in three_way_attributes_filtered 
-                            if attribute.endswith('Hair')]
+                            if attribute.endswith('Hair') or attribute.endswith('Hairline')]
         attribute_dict['hair'] = hair_attributes
         v_tobe_dict['hair'] = 'is'
 
@@ -141,18 +150,29 @@ class TextualDescription:
         attribute_dict['lips'] = []
         if 'Big_Lips' in three_way_attributes_filtered:
             attribute_dict['lips'].append('big')
+        else:
+            if random.random() > 0.3:
+                attribute_dict['lips'].append('small')
         v_tobe_dict['lips'] = 'are'
 
         # nose
         attribute_dict['nose'] = []
         if 'Big_Nose' in three_way_attributes_filtered:
             attribute_dict['nose'].append('big')
+        else:
+            if random.random() > 0.3:
+                attribute_dict['nose'].append('small')
+        if 'Pointy_Nose' in three_way_attributes_filtered:
+            attribute_dict['nose'].append('pointy')
         v_tobe_dict['nose'] = 'is'
 
         # eyes
         attribute_dict['eyes'] = []
         if 'Narrow_Eyes' in three_way_attributes_filtered:
             attribute_dict['eyes'].append('narrow')
+        else:
+            if random.random() > 0.3:
+                attribute_dict['eyes'].append('wide')
         v_tobe_dict['eyes'] = 'are'
 
         # face
@@ -197,10 +217,18 @@ class TextualDescription:
         if 'Male' in self.attributes:
             if 'Mustache' in self.attributes:
                 local_attributes.append('a mustache')
+            else:
+                if random.random() > 0.3:
+                    local_attributes.append('no mustache')
+
             if 'Sideburns' in self.attributes:
                 local_attributes.append('sideburns')
+
             if not 'No_Beard' in self.attributes:
                 local_attributes.append('a beard')
+            else:
+                if random.random() > 0.3:
+                    local_attributes.append('no beard')
             
             description = self.and_combine(local_attributes)
             if description is None:
@@ -215,7 +243,8 @@ class TextualDescription:
             'Bangs',
             'Double_Chin',
             'Goatee',
-            'High_Cheekbones'
+            'High_Cheekbones',
+            'Bags_Under_Eyes'
         ]
     
         remaining_attributes_filtered = list(set(self.attributes) & set(remaining_attributes))
@@ -226,6 +255,25 @@ class TextualDescription:
                 self.with_statements.append(attribute)
             else:
                 self.has_full_attributes.append(attribute)
+    
+    def makeup_attributes_processing(self):
+        makeup_attributes = [
+            'Heavy_Makeup',
+            'Wearing_Lipstick'
+        ]
+    
+        makeup_attributes_filtered = list(set(self.attributes) & set(makeup_attributes))
+        separator = ' '
+        for attribute in makeup_attributes_filtered:
+            if attribute.endswith('Lipstick'):
+                attribute = 'lipstick'
+            else:
+                attribute = separator.join(attribute.split('_')).lower()
+
+            if random.random() > 0.5:
+                self.with_statements.append(attribute)
+            else:
+                self.putting_full_attributes.append(attribute)
     
     def and_combine(self, words):
         if len(words) == 1:
@@ -266,6 +314,7 @@ class TextualDescription:
         self.age_gender()
         self.adjectives_processing()
         self.has_with_attributes()
+        self.makeup_attributes_processing()
 
         # first statement
         self.construct_first_sentence()
@@ -286,14 +335,24 @@ class TextualDescription:
         else:
             is_statement = ''
 
+        if len(self.putting_full_attributes) > 0:
+            random.shuffle(self.putting_full_attributes)
+            putting_attribute = self.and_combine(self.putting_full_attributes)
+            putting_statement = self.pronoun + ' is putting ' + putting_attribute.lower() + '.'
+            puts_statement = self.pronoun + ' puts ' + putting_attribute.lower() + '.'
+        else:
+            putting_statement = ''
+            puts_statement = ''
+
+        put_statement = random.choice([puts_statement,putting_statement])
+
+        statements = [put_statement, has_statement, is_statement]
+        random.shuffle(statements)
         # full description
         separator = ' '
-        if random.random() > 0.5:
-            self.description = separator.join([self.first_statement, is_statement, has_statement])
-        else:
-            self.description = separator.join([self.first_statement, has_statement, is_statement])
+        self.description = separator.join([self.first_statement, statements[0], statements[1], statements[2]])
 
-    def get_paraphrase(self, text):
+    def get_cycle_paraphrase(self, text):
     
         num_languages_per_cycle = random.randint(1,3)
         selected_cycle_languages = random.sample(self.languages, num_languages_per_cycle)
@@ -317,3 +376,16 @@ class TextualDescription:
             return result
         except:
             return text
+
+    
+    def get_paraphrase(self, text):
+    
+        num_languages_per_cycle = random.randint(1,3)
+        selected_cycle_languages = random.sample(self.languages, num_languages_per_cycle)
+        language = random.choice(self.languages)
+        try:
+            result = self.translator.translate(text, dest=language).text
+            result = self.translator.translate(result, dest='en').text
+        except:
+            return text
+        return result
