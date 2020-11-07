@@ -29,6 +29,16 @@ def main(celeb_a_csv_path, paraphrase = False):
     pbar.close()
 
     table['Description'] = descriptions
+    # drop unneeded attributes
+    table.drop('5_o_Clock_Shadow', axis='columns', inplace=True)
+    table.drop('Blurry', axis='columns', inplace=True)
+    table.drop('Eyeglasses', axis='columns', inplace=True)
+    table.drop('Mouth_Slightly_Open', axis='columns', inplace=True)
+    table.drop('Wearing_Earrings', axis='columns', inplace=True)
+    table.drop('Wearing_Hat', axis='columns', inplace=True)
+    table.drop('Wearing_Necklace', axis='columns', inplace=True)
+    table.drop('Wearing_Necktie', axis='columns', inplace=True)
+    
     table.to_csv('CelebA_with_textual_descriptions.csv',index=False)
 
 
@@ -74,15 +84,6 @@ Chubby //
 Smiling
 '''
 
-''' wearing/pronoun+wears
-Eyeglasses
-Wearing_Hat
-'''
-
-'''puts on
-Heavy_Makeup
-
-'''
 
 '''gender
 Male
