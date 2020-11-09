@@ -130,7 +130,6 @@ dmypy.json
 
 # data folders
 .vscode
-dataset/
 datasets/
 results/
 w2v-models/
