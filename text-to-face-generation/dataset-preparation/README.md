@@ -8,7 +8,7 @@ This folder contains some utilities for dataset preparation using __face matchin
 -   [Face2Text Dataset](https://drive.google.com/file/d/1cwcYbl0dhXEzmdbee_K_H6jcndbsxT2o/view).
 -   [Face2Text with paraphrases Dataset](https://drive.google.com/file/d/12p8HR4HKyH16s0CR6-pC3_RrWxtlWeru/view?usp=sharing).
 -   [Latent2Embedding Mapping Dataset](https://drive.google.com/file/d/1dQgFsYw3Faj6C3tsH8AnSrKhf9lLpSpN/view?usp=sharing).
--   [CelebA Dataset attributes csv with textual descriptions](https://drive.google.com/file/d/1tJHFDdvmugWAAcVR_84QZ61tXBB8QBPs/view?usp=sharing).
+-   [CelebA Dataset attributes csv with textual descriptions](https://drive.google.com/file/d/1f4ELDBTbu9IvQ_dRMzPv0kk-17LsUde6/view?usp=sharing).
 
 ## Usage
 
