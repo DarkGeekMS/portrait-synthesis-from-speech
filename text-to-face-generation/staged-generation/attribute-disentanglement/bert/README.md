@@ -44,4 +44,4 @@
 
 2. Unzip it and place its contents into `/pybert/output/checkpoints/bert` directory.
 
-3. Import `inference.py` file and use `bertMultiLabelClassifier` function to predict labels.
+3. Import `inference.py` file and use `bertMultiLabelClassifier`'s predict function to predict labels.
