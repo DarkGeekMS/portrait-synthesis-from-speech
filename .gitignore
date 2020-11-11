@@ -136,3 +136,7 @@ results/
 w2v-models/
 networks/
 .stylegan2-cache/
+
+# output files
+Pipfile
+out

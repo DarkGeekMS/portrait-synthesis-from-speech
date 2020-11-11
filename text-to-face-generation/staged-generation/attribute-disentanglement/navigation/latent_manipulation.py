@@ -51,10 +51,14 @@ def perform_nonlinear_reweight(l_diff):
     l_diff_rescaled = np.divide(l_diff, 3.0/math.pi)
     return np.tan(l_diff_rescaled)
 
-def get_feature_axes(random_noise, image_labels):
+def get_feature_axes(random_noise, image_logits, threshold=0.5, strategy='ovr', max_iter=10000):
     # get orthonormal feature axes matrix
+    # threshold image logits to get predicted labels
+    image_labels = copy.deepcopy(image_logits)
+    image_labels[image_labels >= threshold] = 1
+    image_labels[image_labels < threshold] = 0
     # solve multi-label logistic regression to get the relationship
-    ml_classifier = MultiLabelLogisticRegression(strategy='ovr', max_iter=10000)
+    ml_classifier = MultiLabelLogisticRegression(strategy=strategy, max_iter=max_iter)
     ml_classifier.fit(random_noise, image_labels)
     # get coefficients of logistic regressor
     classifier_coefficients = ml_classifier.get_coefficients()
@@ -97,12 +101,8 @@ def get_target_latent_vector(random_noise, image_logits, text_logits):
     text_logits : ndarray (num_features)
         Logits vector of text description
     """
-    # threshold image logits to get predicted labels
-    image_labels = copy.deepcopy(image_logits)
-    image_labels[image_labels >= 0.5] = 1
-    image_labels[image_labels < 0.5] = 0
     # get feature axes matrix
-    feature_axes_matrix = get_feature_axes(random_noise, image_labels)
+    feature_axes_matrix = get_feature_axes(random_noise, image_logits)
     # pick a random element from random noise and image logits to manipulate using text logits
     rand_index = np.random.randint(0, random_noise.shape[0]-1)
     # perform latent manipulation
