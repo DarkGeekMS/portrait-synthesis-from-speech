@@ -13,14 +13,11 @@ import pretrained_networks
 
 class StyleGAN2Generator(object):
     """StyleGAN2 generator class, used for face generation"""
-    def __init__(self, network_pkl, truncation_psi=1.0, result_dir='results'):
+    def __init__(self, network_pkl, truncation_psi=0.5):
         # initialize network and other class attributes
         print('Loading networks from "%s"...' % network_pkl)
         _G, _D, self.Gs = pretrained_networks.load_networks(network_pkl)
         self.truncation_psi = truncation_psi
-        self.result_dir = result_dir
-        if not os.path.isdir(self.result_dir):
-            os.mkdir(self.result_dir)
 
     def generate_images(self, latent_vector):
         # generate face image from given latent vector
