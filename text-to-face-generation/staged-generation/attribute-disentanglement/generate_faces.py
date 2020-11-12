@@ -10,6 +10,7 @@ import skimage.io as io
 import skimage.transform as transform
 import argparse
 import pickle
+import json
 import os
 
 def generate_single_pair(num_samples, mobilenet_weights, stylegan_pkl, n_classes=32, truncation_psi=0.5, initial_seed=10000):
@@ -103,7 +104,10 @@ if __name__ == "__main__":
     argparser.add_argument('-cfg', '--config', type=str, help='path to config file of pipeline parameters', default='configs/config.json')
 
     args = argparser.parse_args()
-    config = args.config
+
+    # read JSON config
+    with open(args.config) as f:
+        config = json.load(f)
 
     # folders creation
     if not os.path.isdir('results'):

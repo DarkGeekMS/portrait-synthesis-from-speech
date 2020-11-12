@@ -1,6 +1,6 @@
 {
     "operation" : "complete",
-    "num_samples" : 128,
+    "num_samples" : 32,
     "n_classes" : 32,
     "truncation_psi" : 0.5,
     "seed" : 10000,

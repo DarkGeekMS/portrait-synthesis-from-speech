@@ -1,4 +1,4 @@
-from multilabel_lr import MultiLabelLogisticRegression
+from .multilabel_lr import MultiLabelLogisticRegression
 import numpy as np
 import random
 import math

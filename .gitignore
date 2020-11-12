@@ -141,3 +141,4 @@ text-to-face-generation/staged-generation/attribute-disentanglement/bert/pybert/
 # output files
 Pipfile
 out
+*.csv
