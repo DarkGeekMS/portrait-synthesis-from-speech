@@ -42,7 +42,7 @@ def generate_single_pair(num_samples, mobilenet_weights, stylegan_pkl, n_classes
     # get logits of faces images
     print('- Running MobileNet model on generated faces ...')
     image_logits = mobilenet_model(torch.div(torch.from_numpy(random_face_resized).float().cuda().permute(0, 3, 1, 2), 255.0))
-    image_logits = image_logits.cpu()
+    image_logits = image_logits.cpu().detach()
     # deallocate MobileNetv2 model
     print('- Deallocating MobileNet model ...')
     del mobilenet_model
