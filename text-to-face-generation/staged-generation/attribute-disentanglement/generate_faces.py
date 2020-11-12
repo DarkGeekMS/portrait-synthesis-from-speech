@@ -1,13 +1,15 @@
 from stylegan2_generator import StyleGAN2Generator
 from mobilenetv2.model import MobileNet
-from bert.inference import bertMultiLabelClassifier
+from bert.inference import BERTMultiLabelClassifier
 from navigation.latent_manipulation import get_feature_axes, manipulate_latent, get_target_latent_vector
 
 import torch
 import torch.nn as nn
 import numpy as np
+import skimage.io as io
 import skimage.transform as transform
 import argparse
+import os
 
 def extract_feature_axes(num_samples, mobilenet_weights, stylegan_pkl, n_classes=32, truncation_psi=0.5, seed=10000):
     # generate random face samples and get the feature axes matrix (512 X n_classes)
@@ -40,11 +42,33 @@ def extract_feature_axes(num_samples, mobilenet_weights, stylegan_pkl, n_classes
     image_logits = image_logits.cpu()
     # fit feature axes matrix using multilabel logistic regression
     feature_axes_matrix = get_feature_axes(random_latent, image_logits)
+    # deallocate MobileNetv2 model
+    del mobilenet_model
     # return random latent vectors and corresponding logits, along with feature axes matrix
     return random_latent, image_logits, feature_axes_matrix
 
-def generate_faces_from_text(text_desc, random_latent, image_logits, stylegan_pkl, truncation_psi=0.5):
-    pass
+def generate_faces_from_text(text_desc, random_latent, image_logits, feature_axes_matrix, stylegan_pkl, truncation_psi=0.5):
+    # generate face images from given text descriptions, random logits and feature axes matrix
+    # define BERT model
+    bert_model = BERTMultiLabelClassifier()
+    # process text descriptions using BERT
+    text_output = []
+    for sent in text_desc:
+        text_output.append(bert_model.predict(sent))
+    # deallocate BERT model
+    del bert_model
+    # define StyleGAN2 generator
+    stylegan2_generator = StyleGAN2Generator(stylegan_pkl, truncation_psi=truncation_psi)
+    # loop over each text description
+    for idx, text_logits in enumerate(text_output):
+        # manipulate random latent vector to get target latent vector
+        target_latent = manipulate_latent(random_latent, image_logits, text_logits, feature_axes_matrix)
+        target_latent = np.expand_dims(target_latent, axis=0)
+        # generate and save final face image
+        face_image = stylegan2_generator.generate_images(target_latent)
+        io.imsave(f'results/{idx}.png', face_image[0])
+    # deallocate StyleGAN2 generator
+    del stylegan2_generator
 
 if __name__ == "__main__":
     pass

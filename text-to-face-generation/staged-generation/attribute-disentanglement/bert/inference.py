@@ -13,7 +13,7 @@ from pybert.model.bert_for_multi_label import BertForMultiLable
 from pybert.io.task_data import TaskData
 from pybert.test.predictor import Predictor
 
-class bertMultiLabelClassifier():
+class BERTMultiLabelClassifier():
     def __init__(self):
         self.checkpoint_dir = config['checkpoint_dir'] / 'bert'
         self.processor = BertProcessor(vocab_path=config['bert_vocab_path'], do_lower_case=True)
@@ -24,15 +24,9 @@ class bertMultiLabelClassifier():
                             n_gpu='0')
         self.target = [0]*len(self.label_list)
 
-
-
-
     def predict(self, description):
-
         lines = list(zip([description], [self.target]))
-        
         id2label = {i: label for i, label in enumerate(self.label_list)}
-
         test_data = self.processor.get_test(lines=lines)
         test_examples = self.processor.create_examples(lines=test_data,
                                                 example_type='test',
@@ -44,15 +38,12 @@ class bertMultiLabelClassifier():
         test_sampler = SequentialSampler(test_dataset)
         test_dataloader = DataLoader(test_dataset, sampler=test_sampler, batch_size=1,
                                     collate_fn=collate_fn)
-
-        
         results = self.predictor.predict(data=test_dataloader)
-        out = [int(i > 0.5) for i in results[0]]
-        df = pd.DataFrame(list(zip(self.label_list, out)), 
-                        columns =['attibutes', 'value'])
-        return df
-
+        # out = [int(i > 0.5) for i in results[0]]
+        # df = pd.DataFrame(list(zip(self.label_list, out)), 
+        #                 columns =['attibutes', 'value'])
+        return results[0]
 
 # description = "a man with light beard and long and smooth hair. He is fat. His eyes is narrow. His nose is tiny. he has mustache."
-# bert = bertMultiLabelClassifier()
+# bert = BERTMultiLabelClassifier()
 # print(bert.predict(description))
