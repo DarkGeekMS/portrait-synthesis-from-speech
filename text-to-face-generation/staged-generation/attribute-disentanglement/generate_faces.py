@@ -5,6 +5,7 @@ from navigation.latent_manipulation import get_feature_axes, manipulate_latent, 
 
 import torch
 import torch.nn as nn
+from numba import cuda
 import numpy as np
 import skimage.io as io
 import skimage.transform as transform
@@ -29,6 +30,9 @@ def generate_single_pair(num_samples, mobilenet_weights, stylegan_pkl, n_classes
     # deallocate StyleGAN2 generator
     print('- Deallocating StyleGAN2 generator ...')
     del stylegan2_generator
+    # free CUDA GPU memory
+    device = cuda.get_current_device()
+    device.reset()
     # initialize MobileNetv2 model
     print('- Initializing MobileNet model ...')
     mobilenet_model = MobileNet(n_classes, pretrained=False)
@@ -37,11 +41,14 @@ def generate_single_pair(num_samples, mobilenet_weights, stylegan_pkl, n_classes
     mobilenet_model.cuda()
     # get logits of faces images
     print('- Running MobileNet model on generated faces ...')
-    image_logits = mobilenet_model(torch.div(torch.from_numpy(random_face_resized).cuda().permute(0, 3, 1, 2), 255.0))
+    image_logits = mobilenet_model(torch.div(torch.from_numpy(random_face_resized).float().cuda().permute(0, 3, 1, 2), 255.0))
     image_logits = image_logits.cpu()
     # deallocate MobileNetv2 model
     print('- Deallocating MobileNet model ...')
     del mobilenet_model
+    # free CUDA GPU memory
+    device = cuda.get_current_device()
+    device.reset()
     # return random latent vector - image logits pair
     return z[0], image_logits[0]
 
@@ -69,6 +76,9 @@ def extract_feature_axes(num_samples, mobilenet_weights, stylegan_pkl, n_classes
     # deallocate StyleGAN2 generator
     print('- Deallocating StyleGAN2 generator ...')
     del stylegan2_generator
+    # free CUDA GPU memory
+    device = cuda.get_current_device()
+    device.reset()
     # initialize MobileNetv2 model
     print('- Initializing MobileNet model ...')
     mobilenet_model = MobileNet(n_classes, pretrained=False)
@@ -77,14 +87,17 @@ def extract_feature_axes(num_samples, mobilenet_weights, stylegan_pkl, n_classes
     mobilenet_model.cuda()
     # get logits of faces images
     print('- Running MobileNet model on generated faces ...')
-    image_logits = mobilenet_model(torch.div(torch.from_numpy(random_faces_resized).cuda().permute(0, 3, 1, 2), 255.0))
-    image_logits = image_logits.cpu()
+    image_logits = mobilenet_model(torch.div(torch.from_numpy(random_faces_resized).float().cuda().permute(0, 3, 1, 2), 255.0))
+    image_logits = image_logits.cpu().detach()
     # fit feature axes matrix using multilabel logistic regression
     print('- Fitting feature axes matrix ...')
     feature_axes_matrix = get_feature_axes(random_latent, image_logits)
     # deallocate MobileNetv2 model
     print('- Deallocating MobileNet model ...')
     del mobilenet_model
+    # free CUDA GPU memory
+    device = cuda.get_current_device()
+    device.reset()
     # return random latent vectors and corresponding logits, along with feature axes matrix
     return random_latent, image_logits, feature_axes_matrix
 
@@ -101,6 +114,9 @@ def generate_faces_from_text(text_desc, random_latent, image_logits, feature_axe
     # deallocate BERT model
     print('- Deallocating BERT model ...')
     del bert_model
+    # free CUDA GPU memory
+    device = cuda.get_current_device()
+    device.reset()
     # define StyleGAN2 generator
     print('- Initializing StyleGAN2 generator ...')
     stylegan2_generator = StyleGAN2Generator(stylegan_pkl, truncation_psi=truncation_psi)
@@ -118,6 +134,9 @@ def generate_faces_from_text(text_desc, random_latent, image_logits, feature_axe
     # deallocate StyleGAN2 generator
     print('- Deallocating StyleGAN2 generator ...')
     del stylegan2_generator
+    # free CUDA GPU memory
+    device = cuda.get_current_device()
+    device.reset()
 
 if __name__ == "__main__":
     # arguments parsing

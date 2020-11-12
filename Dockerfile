@@ -11,6 +11,7 @@ RUN pip install scikit-learn
 RUN pip install scikit-image
 RUN pip install matplotlib
 RUN pip install numpy
+RUN pip install numba
 RUN pip install pandas
 RUN pip install tqdm
 RUN pip install progressbar
