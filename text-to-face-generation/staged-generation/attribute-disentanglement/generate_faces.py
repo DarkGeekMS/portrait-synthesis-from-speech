@@ -66,7 +66,10 @@ def extract_feature_axes(num_samples, mobilenet_weights, stylegan_pkl, n_classes
     stylegan2_generator = StyleGAN2Generator(stylegan_pkl, truncation_psi=truncation_psi)
     # generate random faces
     print('- Generating face images ...')
-    random_faces = stylegan2_generator.generate_images(random_latent)
+    random_faces = []
+    for idx in range(0, num_samples, 4):
+        random_faces.append(stylegan2_generator.generate_images(random_latent[idx:idx+4]))
+    random_faces = np.concatenate(random_faces, axis=0)
     # resize all output face images
     random_faces_resized = []
     for face in random_faces:
@@ -87,8 +90,11 @@ def extract_feature_axes(num_samples, mobilenet_weights, stylegan_pkl, n_classes
     mobilenet_model.cuda()
     # get logits of faces images
     print('- Running MobileNet model on generated faces ...')
-    image_logits = mobilenet_model(torch.div(torch.from_numpy(random_faces_resized).float().cuda().permute(0, 3, 1, 2), 255.0))
-    image_logits = image_logits.cpu().detach()
+    image_logits = []
+    for idx in range(0, num_samples, 4):
+        image_logits.append(mobilenet_model(torch.div(torch.from_numpy(random_faces_resized[idx:idx+4]).float().cuda() \
+                                            .permute(0, 3, 1, 2), 255.0)).cpu().detach())
+    image_logits = np.concatenate(image_logits, axis=0)
     # fit feature axes matrix using multilabel logistic regression
     print('- Fitting feature axes matrix ...')
     feature_axes_matrix = get_feature_axes(random_latent, image_logits)
