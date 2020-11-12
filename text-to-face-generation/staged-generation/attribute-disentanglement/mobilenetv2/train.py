@@ -16,11 +16,10 @@ from model import MobileNet
 
 # train parameters
 n_classes = 32
-img_size = 768
+img_size = 256
 num_epoch = 200
-batch_size = 32
+batch_size = 64
 initial_lr = 1e-3
-save_interval = 10
 num_workers = 4
 
 def train(faces_root, pickle_file):
@@ -40,18 +39,13 @@ def train(faces_root, pickle_file):
     # define image transforms
     preprocess = transforms.Compose([
         transforms.Resize(img_size),
-        transforms.RandomHorizontalFlip(p=0.5),
-        transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0),
-        transforms.RandomAffine(degrees=20, translate=(0.1, 0.1), scale=(0.8, 1.2),
-                                shear=None, resample=False, fillcolor=(255, 255, 255)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.ToTensor()
     ])
 
     # define faces dataset and dataloader
     print('Building dataset ...')
     train_dataset = FaceDataset(faces_root, pickle_file, preprocess)
-    train_db, val_db = torch.utils.data.random_split(train_dataset, [len(train_dataset)-2000, 2000])
+    train_db, val_db = torch.utils.data.random_split(train_dataset, [len(train_dataset)-10000, 10000])
     train_loader = torch.utils.data.DataLoader(dataset=train_db,
                                                batch_size=batch_size, num_workers=num_workers,
                                                shuffle=True)
@@ -64,11 +58,7 @@ def train(faces_root, pickle_file):
 
     # define ADAM optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=initial_lr)
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [int(0.75*num_epoch), int(0.9*num_epoch)], gamma=0.1)
-
-    # freeze MobileNet feature extractor (for first half of epochs)
-    for param in model.feature_extractor.parameters():
-        param.requires_grad = False
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10, min_lr=0)
 
     # define number of training and validation steps
     train_steps = len(train_loader)
@@ -76,11 +66,8 @@ def train(faces_root, pickle_file):
 
     # main training loop
     print(f'Training on {len(train_db)} samples / Validation on {len(val_db)} samples')
+    min_val_loss = float('inf')
     for epoch in range(num_epoch):
-        # unfreeze MobileNet feature extractor after first half of epochs
-        if epoch == 0.5*num_epoch:
-            for param in model.feature_extractor.parameters():
-                param.requires_grad = True
         i = 0
         train_losses = []
         for images, labels in tqdm(train_loader):
@@ -101,7 +88,7 @@ def train(faces_root, pickle_file):
             writer.add_scalar('train_loss', loss.item(), epoch*train_steps+i)
         # calculate average training loss
         total_train_loss = np.mean(np.array(train_losses))
-        print("epoch:{:2d} training loss:{:.3f}".format(epoch, total_train_loss))
+        print("epoch:{:2d} training loss:{:.3f}".format(epoch+1, total_train_loss))
         # model validation
         model.eval()
         with torch.no_grad():
@@ -121,14 +108,16 @@ def train(faces_root, pickle_file):
                 writer.add_scalar('val_loss', loss.item(), epoch*val_steps+j)
         # calculate average validation loss
         total_val_loss = np.mean(np.array(val_losses))
-        print("epoch:{:2d} validation loss:{:.3f}".format(epoch, total_val_loss))
+        print("epoch:{:2d} validation loss:{:.3f}".format(epoch+1, total_val_loss))
         # model back to train mode
         model.train()
         # LR scheduler step
-        scheduler.step()
+        scheduler.step(total_val_loss)
         # save model state dictionary every epoch interval
-        if (epoch + 1) % save_interval == 0:
-            torch.save(model.state_dict(), f'results/models/epoch_{epoch}_ckpt.pth')
+        if total_val_loss <= min_val_loss:
+            print("Saving checkpoint at epoch {:2d}".format(epoch+1))
+            torch.save(model.state_dict(), f'results/models/ckpt_best_epoch_{epoch+1}.pth')
+            min_val_loss = total_val_loss
     # save final model state dictionary
     print('Finalizing training process ...')
     torch.save(model.state_dict(), 'results/models/final_ckpt.pth')
