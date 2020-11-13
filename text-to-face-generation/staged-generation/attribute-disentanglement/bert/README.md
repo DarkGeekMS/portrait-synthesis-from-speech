@@ -12,7 +12,7 @@ This folder contains the code for `BERT` network loading and fine-tuning on face
 
 2. Rename it from `bert-base-uncased-pytorch_model.bin` to `pytorch_model.bin` and place it into `/pybert/pretrain/bert/base-uncased` directory.
 
-3. Download Pseudo-text dataset generated from CelebA attributes from [CelebA-Pseudo-Descriptions](https://drive.google.com/file/d/1tJHFDdvmugWAAcVR_84QZ61tXBB8QBPs/view)
+3. Download Pseudo-text dataset generated from CelebA attributes from [CelebA-Pseudo-Descriptions](https://drive.google.com/file/d/1Pw7myk-tj5CDEakHeRqvrL3Pj6Ap335Z/view?usp=sharing)
 
 4. Place it into `/pybert/dataset` directory.
 
