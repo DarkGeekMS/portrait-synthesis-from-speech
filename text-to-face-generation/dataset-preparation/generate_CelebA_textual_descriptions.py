@@ -6,6 +6,7 @@ from googletrans import Translator
 import argparse
 import sys
 from tqdm import tqdm
+from langdetect import detect
 
 def main(celeb_a_csv_path, paraphrase = False):
     table = pd.read_csv(celeb_a_csv_path)
@@ -39,6 +40,17 @@ def main(celeb_a_csv_path, paraphrase = False):
     table.drop('Wearing_Necklace', axis='columns', inplace=True)
     table.drop('Wearing_Necktie', axis='columns', inplace=True)
     
+    # filtering non-english descriptions
+    if paraphrase:
+        print('filtering non-english')
+        pbar = tqdm(total=len(table))
+        for i in range(len(table)):
+            if detect(table.loc[i, "Description"]) != 'en':
+                table = table.drop([i])
+                i -= 1
+            pbar.update(1)
+        pbar.close()
+
     table.to_csv('CelebA_with_textual_descriptions.csv',index=False)
 
 
