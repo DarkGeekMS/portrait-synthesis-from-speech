@@ -31,7 +31,7 @@ This folder contains the code for `BERT` network loading and fine-tuning on face
     python run_bert.py --do_train --save_best --do_lower_case
 ```
 
-PS. To continue training after from last training trial
+PS. To continue training from last training trial
 ```bash
     python run_bert.py --do_train --save_best --do_lower_case --resume_from_last_trial
 ```
