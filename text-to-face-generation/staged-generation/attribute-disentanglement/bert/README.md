@@ -31,13 +31,18 @@ This folder contains the code for `BERT` network loading and fine-tuning on face
     python run_bert.py --do_train --save_best --do_lower_case
 ```
 
+PS. To continue training after from last training trial
+```bash
+    python run_bert.py --do_train --save_best --do_lower_case --resume_from_last_trial
+```
+
 ## To Test
 
 1. Place a csv file named as `test.csv` with the last column containing descriptions you want to test into `/pybert/dataset` directory.
 
 2. Run
 ```bash
-    run_bert.py --do_test --do_lower_case
+    python run_bert.py --do_test --do_lower_case
 ```
 
 3. Check `test_results.csv` file to see the test_results

@@ -68,33 +68,48 @@ def run_train(args):
 
     # ------- model
     logger.info("initializing model")
-    if args.resume_path:
-        args.resume_path = Path(args.resume_path)
-        model = BertForMultiLable.from_pretrained(args.resume_path, num_labels=len(label_list))
-    else:
-        model = BertForMultiLable.from_pretrained(config['bert_model_dir'], num_labels=len(label_list))
     t_total = int(len(train_dataloader) / args.gradient_accumulation_steps * args.epochs)
-
-    param_optimizer = list(model.named_parameters())
-    no_decay = ['bias', 'LayerNorm.weight']
-    for name, param in model.named_parameters():
-        if any(nd in name for nd in no_decay):
-            print(name)
-
-    optimizer_grouped_parameters = [
-        {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],'weight_decay': args.weight_decay},
-        {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
-    ]
     warmup_steps = int(t_total * args.warmup_proportion)
-    optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
-    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps,
-                                                num_training_steps=t_total)
-    if args.fp16:
-        try:
-            from apex import amp
-        except ImportError:
-            raise ImportError("Please install apex from https://www.github.com/nvidia/apex to use fp16 training.")
-        model, optimizer = amp.initialize(model, optimizer, opt_level=args.fp16_opt_level)
+
+    if args.resume_from_last_trial:
+        path = config['checkpoint_dir'] / 'train_checkpoint.pth'
+        checkpoint = torch.load(path)
+        epoch = checkpoint['epoch'] + 1
+        model = checkpoint['model']
+        optimizer = checkpoint['optimizer']
+        scheduler_state_dict = checkpoint['scheduler']
+        scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps,
+                                                    num_training_steps=t_total)
+        scheduler.load_state_dict(scheduler_state_dict)
+    
+    else:
+        epoch = 1
+        if args.resume_path:
+            args.resume_path = Path(args.resume_path)
+            model = BertForMultiLable.from_pretrained(args.resume_path, num_labels=len(label_list))
+        else:
+            model = BertForMultiLable.from_pretrained(config['bert_model_dir'], num_labels=len(label_list))
+
+
+        param_optimizer = list(model.named_parameters())
+        no_decay = ['bias', 'LayerNorm.weight']
+        # for name, param in model.named_parameters():
+        #     if any(nd in name for nd in no_decay):
+        #         print(name)
+
+        optimizer_grouped_parameters = [
+            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],'weight_decay': args.weight_decay},
+            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+        ]
+        optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
+        scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps,
+                                                    num_training_steps=t_total)
+        if args.fp16:
+            try:
+                from apex import amp
+            except ImportError:
+                raise ImportError("Please install apex from https://www.github.com/nvidia/apex to use fp16 training.")
+            model, optimizer = amp.initialize(model, optimizer, opt_level=args.fp16_opt_level)
     # ---- callbacks
     logger.info("initializing callbacks")
     train_monitor = TrainingMonitor(file_dir=config['figure_dir'], arch=args.arch)
@@ -118,6 +133,7 @@ def run_train(args):
                       batch_metrics=[AccuracyThresh(thresh=0.5)],
                       epoch_metrics=[AUC(average='micro', task_type='binary'),
                                      MultiLabelReport(id2label=id2label)])
+    trainer.start_epoch = epoch
     trainer.train(train_data=train_dataloader, valid_data=valid_dataloader)
 
 def run_test(args):
@@ -183,8 +199,9 @@ def main():
     parser.add_argument("--mode", default='min', type=str)
     parser.add_argument("--monitor", default='valid_loss', type=str)
 
-    parser.add_argument("--epochs", default=6, type=int)
+    parser.add_argument("--epochs", default=3, type=int)
     parser.add_argument("--resume_path", default='', type=str)
+    parser.add_argument("--resume_from_last_trial", action='store_true')
     parser.add_argument("--predict_checkpoints", type=int, default=0)
     parser.add_argument("--valid_size", default=0.2, type=float)
     parser.add_argument("--local_rank", type=int, default=-1)

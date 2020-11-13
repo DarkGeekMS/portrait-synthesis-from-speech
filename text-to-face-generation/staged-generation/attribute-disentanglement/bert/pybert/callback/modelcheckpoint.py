@@ -1,6 +1,7 @@
 from pathlib import Path
 import numpy as np
 import torch
+import os
 from ..common.tools import logger
 
 class ModelCheckpoint(object):
@@ -102,3 +103,14 @@ class ModelCheckpoint(object):
                     f.write(model_to_save.config.to_json_string())
                 state.pop("model")
                 torch.save(state, save_path / 'checkpoint_info.bin')
+    
+    def save_checkpoint(self, model, epoch, optimizer, scheduler):
+        checkpoint = { 
+            'epoch': epoch,
+            'model': model,
+            'optimizer': optimizer,
+            'scheduler': scheduler.state_dict()}
+        torch.save(checkpoint, self.base_path / 'train_checkpoint.pth')
+
+
+
