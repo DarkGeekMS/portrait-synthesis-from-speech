@@ -199,7 +199,7 @@ def main():
     parser.add_argument("--mode", default='min', type=str)
     parser.add_argument("--monitor", default='valid_loss', type=str)
 
-    parser.add_argument("--epochs", default=3, type=int)
+    parser.add_argument("--epochs", default=60, type=int)
     parser.add_argument("--resume_path", default='', type=str)
     parser.add_argument("--resume_from_last_trial", action='store_true')
     parser.add_argument("--predict_checkpoints", type=int, default=0)
