@@ -18,8 +18,8 @@ from model import FaceClassifier
 n_classes = 32
 img_size = 224
 num_epoch = 100
-batch_size = 64
-num_valid = 10000
+batch_size = 48
+num_valid = 20000
 initial_lr = 1e-3
 num_workers = 4
 
@@ -32,15 +32,16 @@ def train(faces_root, pickle_file):
     writer = SummaryWriter(logdir='results/logs', comment='training log')
 
     # define multi-label face classifier model
-    print('Loading Face Classifier pretrained model ...')
-    model = FaceClassifier(n_classes, pretrained=True)
+    print('Loading Face Classifier model ...')
+    model = FaceClassifier(n_classes, pretrained=False)
     model.train()
     model.to(device)
 
     # define image transforms
     preprocess = transforms.Compose([
         transforms.Resize(img_size),
-        transforms.ToTensor()
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
 
     # define faces dataset and dataloader
@@ -67,7 +68,7 @@ def train(faces_root, pickle_file):
 
     # main training loop
     print(f'Training on {len(train_db)} samples / Validation on {len(val_db)} samples')
-    min_val_loss = float('inf')
+    max_val_acc = float('-inf')
     for epoch in range(num_epoch):
         i = 0
         correct = 0
@@ -94,7 +95,7 @@ def train(faces_root, pickle_file):
         # calculate average training loss
         total_train_loss = np.mean(np.array(train_losses))
         total_train_acc = correct / ((len(train_dataset)-num_valid) * 32)
-        print("epoch:{:2d} training loss:{:.3f} training accuracy:{:.3f}".format(epoch+1, total_train_loss, total_train_acc))
+        print("epoch:{:2d} training loss:{:.3f} training accuracy:{:.3f}%".format(epoch+1, total_train_loss, total_train_acc * 100.0))
         # model validation
         model.eval()
         with torch.no_grad():
@@ -119,16 +120,16 @@ def train(faces_root, pickle_file):
         # calculate average validation loss
         total_val_loss = np.mean(np.array(val_losses))
         total_val_acc = correct / (num_valid * 32)
-        print("epoch:{:2d} validation loss:{:.3f} validation accuracy:{:.3f}".format(epoch+1, total_val_loss, total_val_acc))
+        print("epoch:{:2d} validation loss:{:.3f} validation accuracy:{:.3f}%".format(epoch+1, total_val_loss, total_val_acc * 100.0))
         # model back to train mode
         model.train()
         # LR scheduler step
         scheduler.step(total_val_loss)
         # save model state dictionary every epoch interval
-        if total_val_loss <= min_val_loss:
+        if total_val_acc > max_val_acc:
             print("Saving checkpoint at epoch {:2d}".format(epoch+1))
             torch.save(model.state_dict(), f'results/models/ckpt_best_epoch_{epoch+1}.pth')
-            min_val_loss = total_val_loss
+            max_val_acc = total_val_acc
     # save final model state dictionary
     print('Finalizing training process ...')
     torch.save(model.state_dict(), 'results/models/final_ckpt.pth')

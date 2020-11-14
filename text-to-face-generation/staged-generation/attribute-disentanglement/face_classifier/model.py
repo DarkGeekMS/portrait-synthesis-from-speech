@@ -1,6 +1,32 @@
 import torch
 from torch import nn
-from torchvision.models import mobilenet_v2
+import torch.nn.functional as F
+
+class mish(nn.Module):
+    """
+    Mish Activation Function
+    """
+    def __init__(self):
+        super().__init__()
+    def forward(self, x):
+        return x * (torch.tanh(F.softplus(x)))
+
+def conv_bn(inp, oup, stride):
+    return nn.Sequential(
+        nn.Conv2d(inp, oup, 3, stride, 1, bias=False),
+        nn.BatchNorm2d(oup),
+        mish()
+    )
+
+def conv_dw(inp, oup, stride):
+    return nn.Sequential(
+        nn.Conv2d(inp, inp, 3, stride, 1, groups=inp, bias=False),
+        nn.BatchNorm2d(inp),
+        mish(),
+        nn.Conv2d(inp, oup, 1, 1, 0, bias=False),
+        nn.BatchNorm2d(oup),
+        mish()
+    )
 
 class FaceClassifier(nn.Module):
     """
@@ -9,36 +35,33 @@ class FaceClassifier(nn.Module):
     ----------
     n_classes : int (default=32)
         Number of classes
-    pretrained : bool (default=True)
+    pretrained : bool (default=False)
         Whether to use ImageNet pretrained weights or not
     """
-    def __init__(self, n_classes=32, pretrained=True):
+    def __init__(self, n_classes=32, pretrained=False):
         super(FaceClassifier, self).__init__()
-        model = mobilenet_v2(pretrained=pretrained)
-        self.feature_extractor = model.features
-        self.pool = nn.AdaptiveAvgPool2d((1,1))
-        # add custom classifier
-        self.classifier = nn.Sequential(
-            nn.Dropout(p=0.2),
-            nn.Linear(in_features=model.last_channel, out_features=n_classes)
+        self.features = nn.Sequential(
+            conv_bn(  3,  32, 2), 
+            conv_dw( 32,  64, 1),
+            conv_dw( 64, 128, 2),
+            conv_dw(128, 128, 1),
+            conv_dw(128, 256, 2),
+            conv_dw(256, 256, 1),
+            conv_dw(256, 512, 2),
+            conv_dw(512, 512, 1),
+            conv_dw(512, 512, 1),
+            conv_dw(512, 512, 1),
+            conv_dw(512, 512, 1),
+            conv_dw(512, 512, 1),
+            conv_dw(512, 1024, 2),
+            conv_dw(1024, 1024, 1),
+            nn.AvgPool2d(7)
         )
-        self.sigmoid = nn.Sigmoid()
+        self.fc = nn.Linear(1024, n_classes)
 
     def forward(self, x):
-        x = self.feature_extractor(x)
-        x = self.pool(x)
-        x = torch.flatten(x, start_dim=1)
-        x = self.classifier(x)
-        out = self.sigmoid(x)
-        return out
-
-    def train(self):
-        self.feature_extractor.train()
-        self.pool.train()
-        self.classifier.train()
-
-    def eval(self):
-        self.feature_extractor.eval()
-        self.pool.eval()
-        self.classifier.eval()
-        self.sigmoid.eval()
+        x = self.features(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc(x)
+        x = torch.sigmoid(x)
+        return x
