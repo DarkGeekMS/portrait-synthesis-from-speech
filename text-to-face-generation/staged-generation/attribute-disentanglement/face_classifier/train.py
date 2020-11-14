@@ -33,7 +33,7 @@ def train(faces_root, pickle_file):
 
     # define multi-label face classifier model
     print('Loading Face Classifier model ...')
-    model = FaceClassifier(n_classes, pretrained=False)
+    model = FaceClassifier(n_classes, pretrained=True)
     model.train()
     model.to(device)
 
@@ -41,7 +41,7 @@ def train(faces_root, pickle_file):
     preprocess = transforms.Compose([
         transforms.Resize(img_size),
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
 
     # define faces dataset and dataloader
