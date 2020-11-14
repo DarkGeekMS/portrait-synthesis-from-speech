@@ -148,8 +148,9 @@ class Trainer(object):
         # ***************************************************************
         self.model.zero_grad()
         seed_everything(self.args.seed)  # Added here for reproductibility (even between python 2 a
-        for epoch in range(self.start_epoch,self.start_epoch+self.args.epochs):
+        for epoch in range(self.start_epoch, 1+self.args.epochs):
             self.logger.info(f"Epoch {epoch}/{self.args.epochs}")
+            
             train_log = self.train_epoch(train_data)
             valid_log = self.valid_epoch(valid_data)
 
@@ -165,6 +166,7 @@ class Trainer(object):
             if self.model_checkpoint:
                 state = self.save_info(epoch,best=logs[self.model_checkpoint.monitor])
                 self.model_checkpoint.bert_epoch_step(current=logs[self.model_checkpoint.monitor],state = state)
+                self.model_checkpoint.save_checkpoint(self.model, epoch, self.optimizer, self.scheduler)
 
             # early_stopping
             if self.early_stopping:

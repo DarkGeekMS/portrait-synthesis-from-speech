@@ -12,7 +12,7 @@ This folder contains the code for `BERT` network loading and fine-tuning on face
 
 2. Rename it from `bert-base-uncased-pytorch_model.bin` to `pytorch_model.bin` and place it into `/pybert/pretrain/bert/base-uncased` directory.
 
-3. Download Pseudo-text dataset generated from CelebA attributes from [CelebA-Pseudo-Descriptions](https://drive.google.com/file/d/1tJHFDdvmugWAAcVR_84QZ61tXBB8QBPs/view)
+3. Download Pseudo-text dataset generated from CelebA attributes from [CelebA-Pseudo-Descriptions](https://drive.google.com/file/d/1Pw7myk-tj5CDEakHeRqvrL3Pj6Ap335Z/view?usp=sharing)
 
 4. Place it into `/pybert/dataset` directory.
 
@@ -31,13 +31,18 @@ This folder contains the code for `BERT` network loading and fine-tuning on face
     python run_bert.py --do_train --save_best --do_lower_case
 ```
 
+PS. To continue training from last training trial
+```bash
+    python run_bert.py --do_train --save_best --do_lower_case --resume_from_last_trial
+```
+
 ## To Test
 
 1. Place a csv file named as `test.csv` with the last column containing descriptions you want to test into `/pybert/dataset` directory.
 
 2. Run
 ```bash
-    run_bert.py --do_test --do_lower_case
+    python run_bert.py --do_test --do_lower_case
 ```
 
 3. Check `test_results.csv` file to see the test_results
