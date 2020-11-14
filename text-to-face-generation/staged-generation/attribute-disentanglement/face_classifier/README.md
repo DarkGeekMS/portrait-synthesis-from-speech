@@ -6,6 +6,10 @@ This folder contains the code for `Multi-label Face Classifier` network loading 
 
 -   Install requirements in main `README.md`.
 
+## Network Weights
+
+-   [Custom MobileNetv2](https://github.com/suikei-wong/Facial-Attributes-Classification) : [GDrive](https://drive.google.com/file/d/1yuBfD-tidXt-pIXPY6co0OGcsc1h92Cv/view?usp=sharing).
+
 ## Usage
 
 -   For network fine-tuning :
