@@ -18,10 +18,30 @@ from model import FaceClassifier
 n_classes = 32
 img_size = 224
 num_epoch = 100
-batch_size = 48
-num_valid = 20000
-initial_lr = 1e-3
+batch_size = 64
+num_valid = 39829
+initial_lr = 1e-3 # 1e-2 for SGD
 num_workers = 4
+
+# focal loss
+class FocalLoss(nn.Module):
+    """
+    Binary focal loss implementation
+    """
+    def __init__(self, alpha=1, gamma=2, reduce=True):
+        super(FocalLoss, self).__init__()
+        self.criterion = nn.BCELoss(reduce=False)
+        self.alpha = alpha
+        self.gamma = gamma
+        self.reduce = reduce
+    def forward(self, inputs, targets):
+        bce_loss = self.criterion(inputs, targets)
+        pt = torch.exp(-1 * bce_loss)
+        f_loss = self.alpha * (1 - pt)**self.gamma * bce_loss
+        if self.reduce:
+            return torch.mean(f_loss)
+        else:
+            return f_loss
 
 def train(faces_root, pickle_file):
     # perform networks initialization and training
@@ -33,12 +53,14 @@ def train(faces_root, pickle_file):
 
     # define multi-label face classifier model
     print('Loading Face Classifier model ...')
-    model = FaceClassifier(n_classes, pretrained=True)
+    model = FaceClassifier(n_classes, backbone='mobilenetv2', pretrained=True)
     model.train()
     model.to(device)
 
     # define image transforms
     preprocess = transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomRotation(degrees=30),
         transforms.Resize(img_size),
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
@@ -60,6 +82,7 @@ def train(faces_root, pickle_file):
 
     # define ADAM optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=initial_lr)
+    # optimizer = torch.optim.SGD(model.parameters(), lr=initial_lr, momentum=0.9)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10, min_lr=0)
 
     # define number of training and validation steps
