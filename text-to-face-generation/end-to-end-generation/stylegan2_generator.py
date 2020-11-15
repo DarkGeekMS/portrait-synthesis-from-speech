@@ -13,7 +13,7 @@ import pretrained_networks
 
 class StyleGAN2Generator(object):
     """StyleGAN2 generator class, used for NLP module training"""
-    def __init__(self, network_pkl, truncation_psi=1.0, result_dir='results/nlp-training'):
+    def __init__(self, network_pkl, truncation_psi=1.0, result_dir='results/nlp-training', feed_extended=False):
         # initialize network and other class attributes
         print('Loading networks from "%s"...' % network_pkl)
         _G, _D, self.Gs = pretrained_networks.load_networks(network_pkl)
@@ -21,6 +21,8 @@ class StyleGAN2Generator(object):
         self.result_dir = result_dir
         if not os.path.isdir(self.result_dir):
             os.mkdir(self.result_dir)
+
+        self.feed_extended = feed_extended
 
     def generate_images(self, latent_vector):
         # generate face image from given latent vector
@@ -34,8 +36,14 @@ class StyleGAN2Generator(object):
             Gs_kwargs.truncation_psi = self.truncation_psi
 
         rnd = np.random.RandomState(noise_seed)
-        z = latent_vector # [minibatch, component]
         tflib.set_vars({var: rnd.randn(*var.shape.as_list()) for var in noise_vars}) # [height, width]
-        images = self.Gs.run(z, None, **Gs_kwargs) # [minibatch, height, width, channel]
+
+        if(not self.feed_extended):
+            z = latent_vector # [minibatch, component]
+            images = self.Gs.run(z, None, **Gs_kwargs) # [minibatch, height, width, channel]
+
+        else:
+            w = latent_vector # [minibatch, n_vectors, component]
+            images = self.Gs.components.synthesis.run(w, **Gs_kwargs) # [minibatch, height, width, channel]
         
         return images

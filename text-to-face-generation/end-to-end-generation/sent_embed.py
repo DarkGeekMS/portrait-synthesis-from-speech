@@ -20,6 +20,16 @@ class SentEmbedEncoder(torch.nn.Module):
         self.linear_final = torch.nn.Linear(config["lstm_hid_dim"]*2, config["out_dim"])
         self.lstm_hid_dim = config["lstm_hid_dim"]
         self.r = config["att_hops"]
+        self.extended_out = config["extended_out"]
+        self.config = config
+        if(self.extended_out):
+            self.expantion_block = torch.nn.Sequential(
+                torch.nn.Conv1d(18,18,kernel_size=3, padding=1),
+                torch.nn.ReLU(inplace=True),
+                torch.nn.Conv1d(18,18,kernel_size=3, padding=1),
+                torch.nn.ReLU(inplace=True)
+            )
+
     
     def softmax(self,input, axis=1):
         # softmax applied to axis=n
@@ -40,4 +50,12 @@ class SentEmbedEncoder(torch.nn.Module):
         attention = x.transpose(1, 2)
         sentence_embeddings = attention@outputs
         avg_sentence_embeddings = torch.sum(sentence_embeddings, 1) / self.r
-        return self.linear_final(avg_sentence_embeddings)
+
+        if self.extended_out:
+            repeated = avg_sentence_embeddings.repeat(1, 18).reshape(-1, self.config["out_dim"], 18)
+            extended_vec = repeated.transpose(0,2,1)
+            extended_vec = self.expantion_block(extended_vec)
+            return extended_vec
+
+        else:
+            return self.linear_final(avg_sentence_embeddings)
