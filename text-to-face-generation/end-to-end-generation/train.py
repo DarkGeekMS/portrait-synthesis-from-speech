@@ -46,7 +46,7 @@ def train(network_config, train_config):
 
     # define stylegan2 generator
     print('Loading stylegan2 generator ...')
-    stylegan_gen = StyleGAN2Generator(train_config['stylegan2_pkl'], train_config['truncation_psi'], train_config['result_dir'])
+    stylegan_gen = StyleGAN2Generator(train_config['stylegan2_pkl'], train_config['truncation_psi'], train_config['result_dir'], network_config["extended_out"])
 
     # define VGG-16 model
     print('Loading VGG-16 pretrained model ...')
