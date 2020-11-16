@@ -13,8 +13,10 @@ import argparse
 
 from dataset import FaceDataset
 from model import FaceClassifier
+from utils import FocalLoss
 
 # train parameters
+backbone = 'mobilenetv2'
 n_classes = 32
 img_size = 224
 num_epoch = 100
@@ -22,26 +24,6 @@ batch_size = 64
 num_valid = 39829
 initial_lr = 1e-3 # 1e-2 for SGD
 num_workers = 4
-
-# focal loss
-class FocalLoss(nn.Module):
-    """
-    Binary focal loss implementation
-    """
-    def __init__(self, alpha=1, gamma=2, reduce=True):
-        super(FocalLoss, self).__init__()
-        self.criterion = nn.BCELoss(reduce=False)
-        self.alpha = alpha
-        self.gamma = gamma
-        self.reduce = reduce
-    def forward(self, inputs, targets):
-        bce_loss = self.criterion(inputs, targets)
-        pt = torch.exp(-1 * bce_loss)
-        f_loss = self.alpha * (1 - pt)**self.gamma * bce_loss
-        if self.reduce:
-            return torch.mean(f_loss)
-        else:
-            return f_loss
 
 def train(faces_root, pickle_file):
     # perform networks initialization and training
@@ -53,7 +35,7 @@ def train(faces_root, pickle_file):
 
     # define multi-label face classifier model
     print('Loading Face Classifier model ...')
-    model = FaceClassifier(n_classes, backbone='mobilenetv2', pretrained=True)
+    model = FaceClassifier(n_classes, backbone=backbone, pretrained=True)
     model.train()
     model.to(device)
 
@@ -117,7 +99,7 @@ def train(faces_root, pickle_file):
             writer.add_scalar('train_loss', loss.item(), epoch*train_steps+i)
         # calculate average training loss
         total_train_loss = np.mean(np.array(train_losses))
-        total_train_acc = correct / ((len(train_dataset)-num_valid) * 32)
+        total_train_acc = correct / ((len(train_dataset)-num_valid) * n_classes)
         print("epoch:{:2d} training loss:{:.3f} training accuracy:{:.3f}%".format(epoch+1, total_train_loss, total_train_acc * 100.0))
         # model validation
         model.eval()
@@ -142,7 +124,7 @@ def train(faces_root, pickle_file):
                 writer.add_scalar('val_loss', loss.item(), epoch*val_steps+j)
         # calculate average validation loss
         total_val_loss = np.mean(np.array(val_losses))
-        total_val_acc = correct / (num_valid * 32)
+        total_val_acc = correct / (num_valid * n_classes)
         print("epoch:{:2d} validation loss:{:.3f} validation accuracy:{:.3f}%".format(epoch+1, total_val_loss, total_val_acc * 100.0))
         # model back to train mode
         model.train()
