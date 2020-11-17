@@ -18,7 +18,9 @@ class Predictor(object):
             batch = tuple(t.to(self.device) for t in batch)
             with torch.no_grad():
                 input_ids, input_mask, segment_ids, label_ids = batch
-                logits = self.model(input_ids, segment_ids, input_mask)
+                logits_existence, logits_pos_neg = self.model(input_ids, segment_ids, input_mask)
+    
+                logits = torch.cat((logits_existence, logits_pos_neg), 1)
                 logits = logits.sigmoid()
             if all_logits is None:
                 all_logits = logits.detach().cpu().numpy()

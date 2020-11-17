@@ -5,6 +5,7 @@ from ..common.tools import summary
 from ..common.tools import seed_everything
 from ..common.tools import AverageMeter
 from torch.nn.utils import clip_grad_norm_
+import copy
 
 class Trainer(object):
     def __init__(self,args,model,logger,criterion,optimizer,scheduler,early_stopping,epoch_metrics,
@@ -66,7 +67,18 @@ class Trainer(object):
             batch = tuple(t.to(self.device) for t in batch)
             with torch.no_grad():
                 input_ids, input_mask, segment_ids, label_ids = batch
-                logits = self.model(input_ids, segment_ids,input_mask)
+                logits_existence, logits_pos_neg = self.model(input_ids, segment_ids,input_mask)
+
+                # 0 -> negative or not found & 1 -> positive
+                label_ids_pos_neg = copy.deepcopy(label_ids)
+                label_ids_pos_neg[label_ids_pos_neg==2] = 0
+                # 0 -> not existed & 1 -> existed
+                label_ids_existence = copy.deepcopy(label_ids)
+                label_ids_existence[label_ids_existence==2] = 1
+
+                label_ids = torch.cat((label_ids_existence, label_ids_pos_neg), 1)
+                logits = torch.cat((logits_existence, logits_pos_neg), 1)
+
             self.outputs.append(logits.cpu().detach())
             self.targets.append(label_ids.cpu().detach())
             pbar(step=step)
@@ -94,8 +106,19 @@ class Trainer(object):
             self.model.train()
             batch = tuple(t.to(self.device) for t in batch)
             input_ids, input_mask, segment_ids, label_ids = batch
-            logits = self.model(input_ids, segment_ids,input_mask)
+            logits_existence, logits_pos_neg = self.model(input_ids, segment_ids,input_mask)
+            # 0 -> negative or not found & 1 -> positive
+            label_ids_pos_neg = copy.deepcopy(label_ids)
+            label_ids_pos_neg[label_ids_pos_neg==2] = 0
+            # 0 -> not existed & 1 -> existed
+            label_ids_existence = copy.deepcopy(label_ids)
+            label_ids_existence[label_ids_existence==2] = 1
+
+            label_ids = torch.cat((label_ids_existence, label_ids_pos_neg), 1)
+            logits = torch.cat((logits_existence, logits_pos_neg), 1)
+
             loss = self.criterion(output=logits,target=label_ids)
+
             if len(self.args.n_gpu) >= 2:
                 loss = loss.mean()
             if self.args.gradient_accumulation_steps > 1:
@@ -128,6 +151,7 @@ class Trainer(object):
         self.targets = torch.cat(self.targets, dim =0).cpu().detach()
         self.result['loss'] = tr_loss.avg
         if self.epoch_metrics:
+            print(self.epoch_metrics)
             for metric in self.epoch_metrics:
                 metric(logits=self.outputs, target=self.targets)
                 value = metric.value()

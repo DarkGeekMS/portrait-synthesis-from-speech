@@ -3,7 +3,7 @@ import time
 import warnings
 from pathlib import Path
 from argparse import ArgumentParser
-from pybert.train.losses import BCEWithLogLoss
+from pybert.train.losses import BCEWithLogLoss, CrossEntropyWithLogLoss
 from pybert.train.trainer import Trainer
 from torch.utils.data import DataLoader
 from pybert.io.utils import collate_fn
@@ -27,8 +27,12 @@ def run_train(args):
     # --------- data
     processor = BertProcessor(vocab_path=config['bert_vocab_path'], do_lower_case=args.do_lower_case)
     label_list = processor.get_labels()
-    label2id = {label: i for i, label in enumerate(label_list)}
-    id2label = {i: label for i, label in enumerate(label_list)}
+
+    label_list_existence = [i+'_existence' for i in label_list]
+    label_list_pos_neg = [i+'_pos_neg' for i in label_list]
+
+    label2id = {label: i for i, label in enumerate(label_list_existence + label_list_pos_neg)}
+    id2label = {i: label for i, label in enumerate(label_list_existence + label_list_pos_neg)}
 
     train_data = processor.get_train(config['data_dir'] / f"{args.data_name}.train.pkl")
     train_examples = processor.create_examples(lines=train_data,
@@ -93,9 +97,6 @@ def run_train(args):
 
         param_optimizer = list(model.named_parameters())
         no_decay = ['bias', 'LayerNorm.weight']
-        # for name, param in model.named_parameters():
-        #     if any(nd in name for nd in no_decay):
-        #         print(name)
 
         optimizer_grouped_parameters = [
             {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],'weight_decay': args.weight_decay},
@@ -164,7 +165,6 @@ def run_test(args):
     test_sampler = SequentialSampler(test_dataset)
     test_dataloader = DataLoader(test_dataset, sampler=test_sampler, batch_size=args.train_batch_size,
                                  collate_fn=collate_fn)
-    print(config['checkpoint_dir'])
 
     model = BertForMultiLable.from_pretrained(config['checkpoint_dir'], num_labels=len(label_list))
 
@@ -174,17 +174,30 @@ def run_test(args):
                           logger=logger,
                           n_gpu=args.n_gpu)
     results = predictor.predict(data=test_dataloader)
-    print('')
-    total_result_attributes = []
+    total_pos_attributes = []
+    total_neg_attributes = []
     for j in range(len(results)):
-        attributes = []
-        for i in range(len(results[j])):
+        pos_attributes = []
+        neg_attributes = []
+        half_length = len(results[j])//2
+        for i in range(half_length):
+            # check if exists
             if results[j][i] > 0.5:
-                attributes.append(id2label[i])
-        total_result_attributes.append(attributes)
+                # check if positive
+                if results[j][i+half_length] > 0.5:
+                    # positive
+                    pos_attributes.append(id2label[i])
+                else:
+                    # negative
+                    neg_attributes.append(id2label[i])
+                           
+
+        total_pos_attributes.append(pos_attributes)
+        total_neg_attributes.append(neg_attributes)
+        break
     
     path_to_save = config['data_dir'] / "test_results.csv"
-    data.save_test_results(sentences, total_result_attributes, path_to_save)
+    data.save_test_results(sentences, total_pos_attributes, total_neg_attributes, path_to_save)
 
 
 def main():
@@ -199,7 +212,7 @@ def main():
     parser.add_argument("--mode", default='min', type=str)
     parser.add_argument("--monitor", default='valid_loss', type=str)
 
-    parser.add_argument("--epochs", default=60, type=int)
+    parser.add_argument("--epochs", default=6, type=int)
     parser.add_argument("--resume_path", default='', type=str)
     parser.add_argument("--resume_from_last_trial", action='store_true')
     parser.add_argument("--predict_checkpoints", type=int, default=0)

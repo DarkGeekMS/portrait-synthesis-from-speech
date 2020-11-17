@@ -94,10 +94,11 @@ class TaskData(object):
                 sentences.append(sentence)
         return sentences, data
 
-    def save_test_results(self, descriptions, attributes_list, path_to_save):
+    def save_test_results(self, descriptions, pos_attributes_list, neg_attributes_list, path_to_save):
         separator = ', '
-        attributes_cat_list = [separator.join(attributes) for attributes in attributes_list]  
+        pos_attributes_cat_list = [separator.join(attributes) for attributes in pos_attributes_list]  
+        neg_attributes_cat_list = [separator.join(attributes) for attributes in neg_attributes_list]  
 
-        df = pd.DataFrame(list(zip(descriptions, attributes_cat_list)), 
-                    columns =['decription', 'attributes']) 
+        df = pd.DataFrame(list(zip(descriptions, pos_attributes_cat_list, neg_attributes_cat_list)), 
+                    columns =['decription', 'pos_attributes', 'neg_attributes']) 
         df.to_csv(path_to_save, index = False)

@@ -6,15 +6,17 @@ class BertForMultiLable(BertPreTrainedModel):
         super(BertForMultiLable, self).__init__(config)
         self.bert = BertModel(config)
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.classifier = nn.Linear(config.hidden_size, config.num_labels)
+        self.classifier_pos_neg = nn.Linear(config.hidden_size, config.num_labels)
+        self.classifier_extistence = nn.Linear(config.hidden_size, config.num_labels)
         self.init_weights()
 
     def forward(self, input_ids, token_type_ids=None, attention_mask=None,head_mask=None):
         outputs = self.bert(input_ids, token_type_ids=token_type_ids,attention_mask=attention_mask, head_mask=head_mask)
         pooled_output = outputs[1]
         pooled_output = self.dropout(pooled_output)
-        logits = self.classifier(pooled_output)
-        return logits
+        logits_pos_neg = self.classifier_pos_neg(pooled_output)
+        logits_existence = self.classifier_extistence(pooled_output)
+        return logits_existence, logits_pos_neg
 
     def unfreeze(self,start_layer,end_layer):
         def children(m):
