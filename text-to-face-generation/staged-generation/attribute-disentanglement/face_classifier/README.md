@@ -14,6 +14,10 @@ This folder contains the code for `Multi-label Face Classifier` network loading 
 | MobileNetv2 | Focal Loss | ADAM | [GDrive](https://drive.google.com/file/d/1qRQLhzHC8iGgjh9N7UOGyARW_VA6ggMU/view?usp=sharing) | 91.314% |
 | MobileNetv2 | BCE | SGD | [GDrive](https://drive.google.com/file/d/12GDKmiu2IhMW7X4LTjAPkwNp36cq_1Zn/view?usp=sharing) | 91.438% |
 | MobileNetv2 | Focal Loss | SGD | [GDrive](https://drive.google.com/file/d/1FsOBt6kOzmvqyQSqPDHrLAKHDWM8oA4r/view?usp=sharing) | 91.248% |
+| ResNet50 | BCE | ADAM | [GDrive](https://drive.google.com/file/d/12URJwBonjn3zdtzL156rEmUflwJ3rL0u/view?usp=sharing) | 91.210% |
+| ResNet50 | Focal Loss  | ADAM | [GDrive](https://drive.google.com/file/d/17CgttA2tZ3BXWBYl0ds6pSgWtOcKQILm/view?usp=sharing) | 91.227% |
+| ResNet50 | BCE | SGD | [GDrive](https://drive.google.com/file/d/1f-gKbjTcFSUo4-lwW6dPOSfQSRVDvWIi/view?usp=sharing) | 91.438% |
+| ResNet50 | Focal Loss  | SGD | [GDrive](https://drive.google.com/file/d/1VqXr6qMk_MhRpn2Io2zQLGiMgerBeEKK/view?usp=sharing) | 91.285% |
 
 ## Usage
 
