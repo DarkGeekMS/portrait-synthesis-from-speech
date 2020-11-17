@@ -1,5 +1,5 @@
 from stylegan2_generator import StyleGAN2Generator
-from mobilenetv2.model import MobileNet
+from face_classifier.model import FaceClassifier
 from bert.inference import BERTMultiLabelClassifier
 from navigation.latent_manipulation import get_feature_axes, manipulate_latent, get_target_latent_vector
 
@@ -14,7 +14,7 @@ import pickle
 import json
 import os
 
-def generate_single_pair(num_samples, mobilenet_weights, stylegan_pkl, n_classes=32, truncation_psi=0.5, initial_seed=10000):
+def generate_single_pair(num_samples, classifier_weights, stylegan_pkl, n_classes=32, truncation_psi=0.5, initial_seed=10000):
     # generate a single random latent vector - image logits pair
     # generate a random latent vector
     z = np.random.RandomState(initial_seed).randn(1, 512)
@@ -33,26 +33,26 @@ def generate_single_pair(num_samples, mobilenet_weights, stylegan_pkl, n_classes
     # free CUDA GPU memory
     device = cuda.get_current_device()
     device.reset()
-    # initialize MobileNetv2 model
-    print('- Initializing MobileNet model ...')
-    mobilenet_model = MobileNet(n_classes, pretrained=False)
-    mobilenet_model.load_state_dict(torch.load(mobilenet_weights))
-    mobilenet_model.eval()
-    mobilenet_model.cuda()
+    # initialize multi-label face classifier model
+    print('- Initializing Face Classifier model ...')
+    classifier_model = FaceClassifier(n_classes, pretrained=False)
+    classifier_model.load_state_dict(torch.load(classifier_weights))
+    classifier_model.eval()
+    classifier_model.cuda()
     # get logits of faces images
-    print('- Running MobileNet model on generated faces ...')
-    image_logits = mobilenet_model(torch.div(torch.from_numpy(random_face_resized).float().cuda().permute(0, 3, 1, 2), 255.0))
+    print('- Running Face Classifier model on generated faces ...')
+    image_logits = classifier_model(torch.div(torch.from_numpy(random_face_resized).float().cuda().permute(0, 3, 1, 2), 255.0))
     image_logits = image_logits.cpu().detach()
-    # deallocate MobileNetv2 model
-    print('- Deallocating MobileNet model ...')
-    del mobilenet_model
+    # deallocate multi-label face classifier model
+    print('- Deallocating Face Classifier model ...')
+    del classifier_model
     # free CUDA GPU memory
     device = cuda.get_current_device()
     device.reset()
     # return random latent vector - image logits pair
     return z[0], image_logits[0]
 
-def extract_feature_axes(num_samples, mobilenet_weights, stylegan_pkl, n_classes=32, truncation_psi=0.5, initial_seed=10000):
+def extract_feature_axes(num_samples, classifier_weights, stylegan_pkl, n_classes=32, truncation_psi=0.5, initial_seed=10000):
     # generate random face samples and get the feature axes matrix (512 X n_classes)
     # generate random latent vectors (num_samples X 512)
     random_latent = []
@@ -82,25 +82,25 @@ def extract_feature_axes(num_samples, mobilenet_weights, stylegan_pkl, n_classes
     # free CUDA GPU memory
     device = cuda.get_current_device()
     device.reset()
-    # initialize MobileNetv2 model
-    print('- Initializing MobileNet model ...')
-    mobilenet_model = MobileNet(n_classes, pretrained=False)
-    mobilenet_model.load_state_dict(torch.load(mobilenet_weights))
-    mobilenet_model.eval()
-    mobilenet_model.cuda()
+    # initialize multi-label face classifier model
+    print('- Initializing Face Classifier model ...')
+    classifier_model = FaceClassifier(n_classes, pretrained=False)
+    classifier_model.load_state_dict(torch.load(classifier_weights))
+    classifier_model.eval()
+    classifier_model.cuda()
     # get logits of faces images
-    print('- Running MobileNet model on generated faces ...')
+    print('- Running Face Classifier model on generated faces ...')
     image_logits = []
     for idx in range(0, num_samples, 4):
-        image_logits.append(mobilenet_model(torch.div(torch.from_numpy(random_faces_resized[idx:idx+4]).float().cuda() \
+        image_logits.append(classifier_model(torch.div(torch.from_numpy(random_faces_resized[idx:idx+4]).float().cuda() \
                                             .permute(0, 3, 1, 2), 255.0)).cpu().detach())
     image_logits = np.concatenate(image_logits, axis=0)
     # fit feature axes matrix using multilabel logistic regression
     print('- Fitting feature axes matrix ...')
     feature_axes_matrix = get_feature_axes(random_latent, image_logits)
-    # deallocate MobileNetv2 model
-    print('- Deallocating MobileNet model ...')
-    del mobilenet_model
+    # deallocate multi-label face classifier model
+    print('- Deallocating Face Classifier model ...')
+    del classifier_model
     # free CUDA GPU memory
     device = cuda.get_current_device()
     device.reset()
@@ -165,7 +165,7 @@ if __name__ == "__main__":
         print('Running complete text-to-face pipeline ...')
         # get feature axes matrix
         print('Obtaining feature axes matrix ...')
-        random_latent, image_logits, feature_axes_matrix = extract_feature_axes(config['num_samples'], config['mobilenet_weights'],
+        random_latent, image_logits, feature_axes_matrix = extract_feature_axes(config['num_samples'], config['classifier_weights'],
                                                                                 config['stylegan_pkl'], config['n_classes'],
                                                                                 config['truncation_psi'], config['seed'])
         # read text descriptions
@@ -186,7 +186,7 @@ if __name__ == "__main__":
         print('Running feature axes matrix fitting ...')
         # get feature axes matrix
         print('Obtaining feature axes matrix ...')
-        random_latent, image_logits, feature_axes_matrix = extract_feature_axes(config['num_samples'], config['mobilenet_weights'],
+        random_latent, image_logits, feature_axes_matrix = extract_feature_axes(config['num_samples'], config['classifier_weights'],
                                                                                 config['stylegan_pkl'], config['n_classes'],
                                                                                 config['truncation_psi'], config['seed'])
         # save features axes matrix as pickle
@@ -210,7 +210,7 @@ if __name__ == "__main__":
                 sent_list.append(line)
         # generate a single random latent vector - image logits pair
         print('Generating a single random latent vector - image logits pair ...')
-        random_latent, image_logits = generate_single_pair(config['num_samples'], config['mobilenet_weights'],
+        random_latent, image_logits = generate_single_pair(config['num_samples'], config['classifier_weights'],
                                                         config['stylegan_pkl'], config['n_classes'],
                                                         config['truncation_psi'], config['seed'])        
         # perform text-to-face generation
