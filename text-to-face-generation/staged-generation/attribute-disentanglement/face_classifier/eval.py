@@ -18,7 +18,7 @@ from model import FaceClassifier
 backbone = 'mobilenetv2'
 n_classes = 32
 img_size = 224
-batch_size = 64
+batch_size = 128
 num_workers = 4
 
 def evaluate(faces_root, pickle_file, weights_file):
@@ -51,14 +51,16 @@ def evaluate(faces_root, pickle_file, weights_file):
     print(f'Evaluating on {len(eval_dataset)} samples')
     correct = 0 # correct labels count
     for images, labels in tqdm(data_loader):
-        # data to device
-        images = images.to(device)
-        labels = labels.to(device)
-        # forward pass
-        output = model(images)
-        # correct labels calculation
-        result = output > 0.5
-        correct += (result == labels).sum().item()
+        # disable torch autograd
+        with torch.no_grad():
+            # data to device
+            images = images.to(device)
+            labels = labels.to(device)
+            # forward pass
+            output = model(images)
+            # correct labels calculation
+            result = output > 0.5
+            correct += (result == labels).sum().item()
     # calculate total accuracy
     total_acc = correct / (len(eval_dataset) * n_classes)
     print('Average accuracy: {:.3f}%'.format(total_acc * 100))
