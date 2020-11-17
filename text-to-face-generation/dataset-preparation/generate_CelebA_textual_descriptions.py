@@ -11,6 +11,21 @@ from langdetect import detect
 def main(celeb_a_csv_path, paraphrase = False):
     table = pd.read_csv(celeb_a_csv_path)
     table = table.replace(-1, 0)
+
+    # drop unneeded attributes
+    unneeded_columns = ['5_o_Clock_Shadow',
+                        'Blurry',
+                        'Eyeglasses',
+                        'Mouth_Slightly_Open',
+                        'Wearing_Earrings',
+                        'Wearing_Hat',
+                        'Wearing_Necklace',
+                        'Wearing_Necktie'
+    ]
+    for col in unneeded_columns:
+        table.drop(col, axis='columns', inplace=True, errors='ignore')
+
+
     attr_keys = table.keys()
     rows_count = len(table.index)
 
@@ -23,23 +38,21 @@ def main(celeb_a_csv_path, paraphrase = False):
     pbar = tqdm(total=rows_count)
     for i in range(rows_count):
         attr_record = np.array(table.iloc[i])
-        attributes = attr_keys[attr_record == 1]
-        description = textual_description(attributes, languages, translator, paraphrase).description
+        positive_attributes = np.array(attr_keys[attr_record == 1])
+        textual_description_object = textual_description(positive_attributes, languages, translator, paraphrase)
+        description = textual_description_object.description
+        negative_attributes = np.array(textual_description_object.added_antonyms_attributes)
+        unspecified_attributes = list(set(attr_keys[1:]) - set( np.union1d(positive_attributes, negative_attributes)))
+
+        for neg_attr in negative_attributes:
+            table.at[i, neg_attr] = -1
+
         descriptions.append(description)
         pbar.update(1)
     pbar.close()
 
     table['Description'] = descriptions
-    # drop unneeded attributes
-    table.drop('5_o_Clock_Shadow', axis='columns', inplace=True)
-    table.drop('Blurry', axis='columns', inplace=True)
-    table.drop('Eyeglasses', axis='columns', inplace=True)
-    table.drop('Mouth_Slightly_Open', axis='columns', inplace=True)
-    table.drop('Wearing_Earrings', axis='columns', inplace=True)
-    table.drop('Wearing_Hat', axis='columns', inplace=True)
-    table.drop('Wearing_Necklace', axis='columns', inplace=True)
-    table.drop('Wearing_Necktie', axis='columns', inplace=True)
-    
+
     # filtering non-english descriptions
     if paraphrase:
         print('filtering non-english')
