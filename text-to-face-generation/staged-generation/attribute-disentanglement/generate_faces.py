@@ -35,7 +35,7 @@ def generate_single_pair(num_samples, classifier_weights, stylegan_pkl, n_classe
     device.reset()
     # initialize multi-label face classifier model
     print('- Initializing Face Classifier model ...')
-    classifier_model = FaceClassifier(n_classes, pretrained=False)
+    classifier_model = FaceClassifier(n_classes, backbone='mobilenetv2', pretrained=False)
     classifier_model.load_state_dict(torch.load(classifier_weights))
     classifier_model.eval()
     classifier_model.cuda()
@@ -73,7 +73,7 @@ def extract_feature_axes(num_samples, classifier_weights, stylegan_pkl, n_classe
     # resize all output face images
     random_faces_resized = []
     for face in random_faces:
-        face_resized = transform.resize(face, (768, 768))
+        face_resized = transform.resize(face, (244, 244))
         random_faces_resized.append(face_resized)
     random_faces_resized = np.stack(random_faces_resized, axis=0)
     # deallocate StyleGAN2 generator
@@ -84,7 +84,7 @@ def extract_feature_axes(num_samples, classifier_weights, stylegan_pkl, n_classe
     device.reset()
     # initialize multi-label face classifier model
     print('- Initializing Face Classifier model ...')
-    classifier_model = FaceClassifier(n_classes, pretrained=False)
+    classifier_model = FaceClassifier(n_classes, backbone='mobilenetv2', pretrained=False)
     classifier_model.load_state_dict(torch.load(classifier_weights))
     classifier_model.eval()
     classifier_model.cuda()
@@ -95,15 +95,15 @@ def extract_feature_axes(num_samples, classifier_weights, stylegan_pkl, n_classe
         image_logits.append(classifier_model(torch.div(torch.from_numpy(random_faces_resized[idx:idx+4]).float().cuda() \
                                             .permute(0, 3, 1, 2), 255.0)).cpu().detach())
     image_logits = np.concatenate(image_logits, axis=0)
-    # fit feature axes matrix using multilabel logistic regression
-    print('- Fitting feature axes matrix ...')
-    feature_axes_matrix = get_feature_axes(random_latent, image_logits)
     # deallocate multi-label face classifier model
     print('- Deallocating Face Classifier model ...')
     del classifier_model
     # free CUDA GPU memory
     device = cuda.get_current_device()
     device.reset()
+    # fit feature axes matrix using multilabel logistic regression
+    print('- Fitting feature axes matrix ...')
+    feature_axes_matrix = get_feature_axes(random_latent, image_logits)
     # return random latent vectors and corresponding logits, along with feature axes matrix
     return random_latent, image_logits, feature_axes_matrix
 

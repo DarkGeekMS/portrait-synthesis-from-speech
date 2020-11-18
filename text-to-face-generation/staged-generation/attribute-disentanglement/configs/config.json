@@ -4,7 +4,7 @@
     "n_classes" : 32,
     "truncation_psi" : 0.5,
     "seed" : 10000,
-    "classifier_weights" : "face_classifier/results/models/final_ckpt.pth",
+    "classifier_weights" : "face_classifier/networks/mobilenet_sgd_bce.pth",
     "stylegan_pkl" : "networks/stylegan2-ffhq-config-f.pkl",
     "text_desc" : "dataset/test_desc.txt",
     "axes_matrix_dir" : "dataset/"

@@ -5,15 +5,15 @@ import pandas as pd
 from importlib import import_module
 import os
 
-from pybert.io.utils import collate_fn
-from pybert.io.bert_processor import BertProcessor
-from pybert.common.tools import logger
-from pybert.configs.basic_config import config
-from pybert.model.bert_for_multi_label import BertForMultiLable
-from pybert.io.task_data import TaskData
-from pybert.test.predictor import Predictor
+from .pybert.io.utils import collate_fn
+from .pybert.io.bert_processor import BertProcessor
+from .pybert.common.tools import logger
+from .pybert.configs.basic_config import config
+from .pybert.model.bert_for_multi_label import BertForMultiLable
+from .pybert.io.task_data import TaskData
+from .pybert.test.predictor import Predictor
 
-class bertMultiLabelClassifier():
+class BERTMultiLabelClassifier():
     def __init__(self):
         self.checkpoint_dir = config['checkpoint_dir'] / 'bert'
         self.processor = BertProcessor(vocab_path=config['bert_vocab_path'], do_lower_case=True)
@@ -23,9 +23,6 @@ class bertMultiLabelClassifier():
                             logger=logger,
                             n_gpu='0')
         self.target = [0]*len(self.label_list)
-
-
-
 
     def predict(self, description):
         lines = list(zip([description], [self.target]))
