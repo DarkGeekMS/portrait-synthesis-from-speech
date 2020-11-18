@@ -1,6 +1,6 @@
-# Face Generation From Text (Attribute Disentanglement)
+# Face Generation From Text (Axes Matrix-based Latent Manipulation)
 
-This folder contains the main code for `staged` experiments of `face generation from text` using [attribute disentanglement](https://arxiv.org/abs/2006.07606).
+This folder contains the main code for `staged` experiments of `face generation from text` using [axes matrix-based latent manipulation](https://arxiv.org/abs/2006.07606).
 
 ## Installation
 
