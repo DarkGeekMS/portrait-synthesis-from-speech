@@ -25,6 +25,10 @@ def generate_seed(feature_directions, network_pkl, truncation_psi, seed):
     logits = []
     # loop over all feature directions
     for direction in feature_directions:
+        # check whether direction doesn't exist (all zeros)
+        if np.count_nonzero(direction) == 0:
+            logits.append(float('-inf'))
+            continue
         components = []
         # project each layer independently
         for idx in range(direction.shape[0]):
@@ -38,7 +42,7 @@ def generate_seed(feature_directions, network_pkl, truncation_psi, seed):
     # calculate sigmoid of all feature components to get logits
     logits = np.array(logits)
     logits =  1.0 / (1.0 + np.exp(-logits))
-    return w, logits
+    return w[0], logits
 
 if __name__ == "__main__":
     # arguments parsing
