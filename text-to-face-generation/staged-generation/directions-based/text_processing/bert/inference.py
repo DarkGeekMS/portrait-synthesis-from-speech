@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from torch.utils.data import SequentialSampler
 import pandas as pd
+import numpy as np
 from importlib import import_module
 import os
 
@@ -54,7 +55,7 @@ class BERTMultiLabelClassifier():
                 #doesn't exist
                 out.append(0)
 
-        return out
+        return np.array(out)
 
 
 # description = "a man with light beard and long and smooth hair. He is fat. His eyes is narrow. His nose is tiny. he doesn't have mustache."

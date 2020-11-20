@@ -6,21 +6,14 @@ from numba import cuda
 
 from stylegan2_generator import StyleGAN2Generator
 
-def generate_seed(feature_directions, network_pkl, truncation_psi, seed):
+def generate_seed(feature_directions, stylegan2_generator, seed):
     # generate a random seed of extended latent vector and corresponding logits
     # initialize random state
     rand_state = np.random.RandomState(seed)
     # generate random unextended latent vector
     z = rand_state.randn(1, 512)
-    # initialize StyleGAN2 generator
-    stylegan2_generator = StyleGAN2Generator(network_pkl, truncation_psi, use_projector=False)
     # map unextended to extended latent space
     w = stylegan2_generator.map_latent_vector(z)
-    # de-allocate StyleGAN2 generator
-    del stylegan2_generator
-    # free CUDA GPU memory
-    device = cuda.get_current_device()
-    device.reset()
     # project latent vector onto all feature directions
     logits = []
     # loop over all feature directions
@@ -58,8 +51,11 @@ if __name__ == "__main__":
     # read feature directions
     feature_directions = np.load(args.directions_npy)
 
+    # initialize StyleGAN2 generator
+    stylegan2_generator = StyleGAN2Generator(args.network_pkl, truncation_psi=args.truncation_psi, use_projector=False)
+
     # perform seed generation
-    w, logits = generate_seed(feature_directions, args.network_pkl, args.truncation_psi, args.initial_seed)
+    w, logits = generate_seed(feature_directions, stylegan2_generator, args.initial_seed)
 
     # save generated seed
     seed_dict = {'W': w, 'logits': logits}
