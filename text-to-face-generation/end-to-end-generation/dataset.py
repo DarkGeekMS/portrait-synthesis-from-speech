@@ -26,7 +26,7 @@ class FaceDataset(torch.utils.data.Dataset):
         self.model_version = model_version
         self.img_path = os.path.join(self.dataset_path, "face-images")
         self.text_path = os.path.join(self.dataset_path, "text-desc")
-        self.latent_path = os.path.join(self.dataset_path, "latent-vectors")
+        #self.latent_path = os.path.join(self.dataset_path, "latent-vectors")
         assert self.model_version in [1, 2]
         if self.model_version == 1:
             self.bos = '<s>'
@@ -75,7 +75,7 @@ class FaceDataset(torch.utils.data.Dataset):
         # build Text2Face dataset and its vocab
         # list dataset files
         self.text_list = [os.path.join(self.text_path, text_file) for text_file in os.listdir(self.text_path)]
-        self.latent_list = [os.path.join(self.latent_path, latent_file) for latent_file in os.listdir(self.latent_path)]
+        #self.latent_list = [os.path.join(self.latent_path, latent_file) for latent_file in os.listdir(self.latent_path)]
         self.img_list = [os.path.join(self.img_path, img_file) for img_file in os.listdir(self.img_path)]
         # read text descriptions
         sents = []
@@ -94,7 +94,7 @@ class FaceDataset(torch.utils.data.Dataset):
         # read face image
         img = cv2.imread(self.img_list[index])
         # read latent vector
-        l_vec = np.load(self.latent_list[index])
+        #l_vec = np.load(self.latent_list[index])
         # read text description (NOTE : only the first description is considered)
         with open(self.text_list[index]) as f:
             txt_desc = f.readline().strip()
@@ -114,7 +114,8 @@ class FaceDataset(torch.utils.data.Dataset):
         # text embeddings -> (sentence_length x self.word_emb_dim), 
         # latent vector -> (1 x 512), 
         # face image -> (1024 x 1024 x 3))
-        return (embed, l_vec, img)
+        #return (embed, l_vec, img)
+        return embed, img
 
     def __len__(self):
         # return dataset length
@@ -123,16 +124,16 @@ class FaceDataset(torch.utils.data.Dataset):
 def collate_fn(batch):
     # process batch and convert to tensors
     # list all batch samples
-    embed_list, l_vec_list, img_list = [], [], []
-    for _embed, _l_vec, _img in batch:
+    embed_list, img_list = [], []
+    for _embed, _img in batch:
         embed_list.append(_embed)
-        l_vec_list.append(_l_vec)
+        #l_vec_list.append(_l_vec)
         img_list.append(np.transpose(_img, (2, 1, 0)))
     # convert other batch components to tensors
     embed_tensor = np.stack(embed_list, axis=0)
-    l_vec_tensor = np.stack(l_vec_list, axis=0)
+    #l_vec_tensor = np.stack(l_vec_list, axis=0)
     img_tensor = np.stack(img_list, axis=0)
     # return torch tensors of the processed numpy arrays
     return (torch.from_numpy(embed_tensor).float(),
-            torch.squeeze(torch.from_numpy(l_vec_tensor).float(), 1),
+    #        torch.squeeze(torch.from_numpy(l_vec_tensor).float(), 1),
             torch.div(torch.from_numpy(img_tensor).float(), 255.0))

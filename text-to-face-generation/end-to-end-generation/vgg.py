@@ -1,6 +1,6 @@
 import torch
 from torchvision import models
-
+import torch.nn.functional as F
 from collections import namedtuple
 
 class Vgg16(torch.nn.Module):
@@ -30,6 +30,7 @@ class Vgg16(torch.nn.Module):
 
     def forward(self, X):
         # VGG-16 forward pass
+        X = F.interpolate(X, (512,512))
         h = self.slice1(X)
         h_relu1_2 = h
         h = self.slice2(h)
