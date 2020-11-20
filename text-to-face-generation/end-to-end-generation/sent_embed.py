@@ -53,7 +53,7 @@ class SentEmbedEncoder(torch.nn.Module):
 
         if self.extended_out:
             repeated = avg_sentence_embeddings.repeat(1, 18).reshape(-1, self.config["out_dim"], 18)
-            extended_vec = repeated.transpose(0,2,1)
+            extended_vec = repeated.permute(0,2,1)
             extended_vec = self.expantion_block(extended_vec)
             return extended_vec
 
