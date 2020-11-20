@@ -9,13 +9,14 @@ class textual_description:
         self.has_full_attributes = []
         self.is_full_attributes = []
         self.putting_full_attributes = []
+        self.added_antonyms_attributes = []
 
         self.construct_description()
         # for paraphrasing
         if paraphrase == True:
             self.translator = translator
             self.languages = languages
-            self.description = self.get_paraphrase(self.description)
+            self.description = self.get_cycle_paraphrase(self.description)
 
         
 
@@ -24,9 +25,15 @@ class textual_description:
         if 'Young' in self.attributes:
             age = 0
             self.age_adj = 'young'
-        else:
+        elif random.random() > 0.5:
             age = 1
             self.age_adj = random.choice(['old', 'adult', 'grown'])
+            # existed negatively
+            self.added_antonyms_attributes.append('Young')
+        else:
+            age = 1
+            self.age_adj = ''
+
 
         # gender
         if 'Male' in self.attributes:
@@ -41,13 +48,18 @@ class textual_description:
                 self.gender = random.choice(['female', 'lady', 'woman'])
             else:
                 self.gender = random.choice(['female', 'girl'])
+            
+            # existed negatively
+            self.added_antonyms_attributes.append('Male')
+
             self.pronoun = 'She'
             self.possessive_pronoun = 'her'
         
-        if random.random() > 0.5:
-            self.adjectives.append(self.age_adj)
-        else:
-            self.is_full_attributes.append(self.age_adj)
+        if self.age_adj != '':
+            if random.random() > 0.5:
+                self.adjectives.append(self.age_adj)
+            else:
+                self.is_full_attributes.append(self.age_adj)
 
     def adjectives_processing(self):
         adj_attributes = [
@@ -60,9 +72,13 @@ class textual_description:
         adj_attributes_filtered = list(set(self.attributes) & set(adj_attributes))
         # antonyms
         if 'Chubby' not in adj_attributes_filtered:
-            opposites = ['Thin', 'Skinny', 'Slim']
-            choice = random.choice(opposites)
-            adj_attributes_filtered.append(choice)
+            if random.random() > 0.5:
+                opposites = ['Thin', 'Skinny', 'Slim']
+                choice = random.choice(opposites)
+                adj_attributes_filtered.append(choice)
+
+                # existed negatively
+                self.added_antonyms_attributes.append('Chubby')
 
         separator = ' '
         for attribute in adj_attributes_filtered:
@@ -152,6 +168,9 @@ class textual_description:
             attribute_dict['lips'].append('big')
         else:
             if random.random() > 0.3:
+                # existed negatively
+                self.added_antonyms_attributes.append('Big_Lips')
+
                 attribute_dict['lips'].append('small')
         v_tobe_dict['lips'] = 'are'
 
@@ -161,6 +180,9 @@ class textual_description:
             attribute_dict['nose'].append('big')
         else:
             if random.random() > 0.3:
+                # existed negatively
+                self.added_antonyms_attributes.append('Big_Nose')
+
                 attribute_dict['nose'].append('small')
         if 'Pointy_Nose' in three_way_attributes_filtered:
             attribute_dict['nose'].append('pointy')
@@ -172,6 +194,9 @@ class textual_description:
             attribute_dict['eyes'].append('narrow')
         else:
             if random.random() > 0.3:
+                # existed negatively
+                self.added_antonyms_attributes.append('Narrow_Eyes')
+
                 attribute_dict['eyes'].append('wide')
         v_tobe_dict['eyes'] = 'are'
 
@@ -196,7 +221,6 @@ class textual_description:
         #########################################################################
         for attribute in attribute_dict.keys():
             attribute_dict[attribute] = self.and_combine(attribute_dict[attribute])
-
         attribute_dict_existed_keys = [attribute for attribute in attribute_dict.keys() if not attribute_dict[attribute] is None]
         if len(attribute_dict_existed_keys) == 0:
             return
@@ -219,12 +243,18 @@ class textual_description:
                 local_attributes.append('a mustache')
             else:
                 if random.random() > 0.3:
+                    # existed negatively
+                    self.added_antonyms_attributes.append('Mustache')
+
                     local_attributes.append('no mustache')
 
             if 'Sideburns' in self.attributes:
                 local_attributes.append('sideburns')
 
             if not 'No_Beard' in self.attributes:
+                # existed negatively
+                self.added_antonyms_attributes.append('No_Beard')
+
                 local_attributes.append('a beard')
             else:
                 if random.random() > 0.3:
@@ -236,7 +266,7 @@ class textual_description:
             if random.random() > 0.5:
                 self.with_statements += local_attributes
             else:
-                self.full_statements.append(self.pronoun + ' has ' + description + '.')
+                self.has_full_attributes.append(description)
             
     def remaining_has_attributes_processing(self):
         remaining_attributes = [
@@ -346,11 +376,13 @@ class textual_description:
 
         put_statement = random.choice([puts_statement,putting_statement])
 
-        statements = [put_statement, has_statement, is_statement]
+        statements = [put_statement, has_statement, is_statement] + self.full_statements
         random.shuffle(statements)
         # full description
         separator = ' '
-        self.description = separator.join([self.first_statement, statements[0], statements[1], statements[2]])
+        self.description = self.first_statement
+        for sentence in statements:
+            self.description = separator.join([self.description, sentence])
 
     def get_cycle_paraphrase(self, text):
     
@@ -359,10 +391,7 @@ class textual_description:
         try:
             result = self.translator.translate(text, dest=selected_cycle_languages[0])
         except:
-            try:
-                result = self.translator.translate(text, dest='en')
-            except:
-                return text
+            return text
         del selected_cycle_languages[0]
 
         for language in selected_cycle_languages:
