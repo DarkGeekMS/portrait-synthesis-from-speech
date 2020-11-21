@@ -52,7 +52,10 @@ class BERTMultiLabelClassifier():
         for i in range(half_length):
             if results[i] > 0.5:
                 # exists
-                out.append(results[i+half_length])
+                if i != 31:
+                    out.append(results[i+half_length])
+                else: # young attribute is flipped to match age direction
+                    out.append(1 - results[i+half_length])
             else:
                 #doesn't exist
                 out.append(0)
