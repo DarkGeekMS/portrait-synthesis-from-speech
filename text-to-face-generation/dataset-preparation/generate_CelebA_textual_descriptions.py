@@ -33,7 +33,7 @@ def main(celeb_a_csv_path, paraphrase = False):
     languages = ['it', 'ar', 'sv', 'pl', 'sq', 'de', 'zh-cn', 'es', 'ja', 'no', 'ro']
     translator = Translator()
 
-    descriptions = []
+    descriptions = [0] * len(table)
 
     pbar = tqdm(total=rows_count)
     for i in range(rows_count):
@@ -47,24 +47,35 @@ def main(celeb_a_csv_path, paraphrase = False):
         for neg_attr in negative_attributes:
             table.at[i, neg_attr] = -1
 
-        descriptions.append(description)
+        descriptions[i] = description
         pbar.update(1)
+        
+        if i % 10 == 0:
+            table['Description'] = descriptions
+            table.to_csv('CelebA_with_textual_descriptions.csv',index=False)
+
+
     pbar.close()
 
     table['Description'] = descriptions
+    table.to_csv('CelebA_with_textual_descriptions.csv',index=False)
 
     # filtering non-english descriptions
     if paraphrase:
         print('filtering non-english')
         pbar = tqdm(total=len(table))
         for i in range(len(table)):
-            if detect(table.loc[i, "Description"]) != 'en':
+            try:
+                if detect(table.loc[i, "Description"]) != 'en':
+                    table = table.drop([i])
+                    i -= 1
+            except:
                 table = table.drop([i])
                 i -= 1
             pbar.update(1)
         pbar.close()
 
-    table.to_csv('CelebA_with_textual_descriptions.csv',index=False)
+        table.to_csv('CelebA_with_textual_descriptions.csv',index=False)
 
 
 if __name__ == '__main__':

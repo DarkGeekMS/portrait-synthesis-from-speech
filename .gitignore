@@ -136,7 +136,7 @@ results/
 w2v-models/
 networks/
 .stylegan2-cache/
-text-to-face-generation/staged-generation/attribute-disentanglement/bert/pybert/output/checkpoints/bert
+text-to-face-generation/staged-generation/attribute-disentanglement/bert/pybert/output/checkpoints/bert/*
 
 # output files
 Pipfile

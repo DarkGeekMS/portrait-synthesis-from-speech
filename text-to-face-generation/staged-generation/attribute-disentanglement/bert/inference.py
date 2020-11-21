@@ -4,6 +4,7 @@ from torch.utils.data import SequentialSampler
 import pandas as pd
 from importlib import import_module
 import os
+import json
 
 from pybert.io.utils import collate_fn
 from pybert.io.bert_processor import BertProcessor
@@ -13,16 +14,22 @@ from pybert.model.bert_for_multi_label import BertForMultiLable
 from pybert.io.task_data import TaskData
 from pybert.test.predictor import Predictor
 
+
+
 class bertMultiLabelClassifier():
     def __init__(self):
         self.checkpoint_dir = config['checkpoint_dir'] / 'bert'
-        self.processor = BertProcessor(vocab_path=config['bert_vocab_path'], do_lower_case=True)
-        self.label_list = self.processor.get_labels()
-        self.model = BertForMultiLable.from_pretrained(self.checkpoint_dir, num_labels=len(self.label_list))
+        self.processor = BertProcessor(vocab_path=config['bert_vocab_path'], do_lower_case=True, num_labels = 32)
+
+        with open(self.checkpoint_dir / 'config.json') as config_file:
+            configs = json.load(config_file)
+            self.num_labels = len(configs['id2label'])
+
+        self.model = BertForMultiLable.from_pretrained(self.checkpoint_dir, num_labels=self.num_labels)
         self.predictor = Predictor(model=self.model,
                             logger=logger,
                             n_gpu='0')
-        self.target = [0]*len(self.label_list)
+        self.target = [0]*self.num_labels
 
 
 
@@ -30,8 +37,6 @@ class bertMultiLabelClassifier():
     def predict(self, description):
         lines = list(zip([description], [self.target]))
         
-        id2label = {i: label for i, label in enumerate(self.label_list)}
-
         test_data = self.processor.get_test(lines=lines)
         test_examples = self.processor.create_examples(lines=test_data,
                                                 example_type='test',
@@ -60,6 +65,6 @@ class bertMultiLabelClassifier():
         return out
 
 
-# description = "a man with light beard and long and smooth hair. He is fat. His eyes is narrow. His nose is tiny. he doesn't have mustache."
-# bert = bertMultiLabelClassifier()
-# print(bert.predict(description))
+description = "a man with light beard and long and smooth hair. He is fat. His eyes is narrow. His nose is tiny. he doesn't have mustache."
+bert = bertMultiLabelClassifier()
+print(bert.predict(description))
