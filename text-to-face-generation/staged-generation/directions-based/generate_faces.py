@@ -17,38 +17,49 @@ import os
 def generate_faces(config):
     # generate face images from text descriptions using directions-based latent navigation
     # read text descriptions
+    print('Reading required text descriptions ...')
     sent_list = []
     with open(config['text_desc']) as f:
         for line in f:
             line = line.strip()
             sent_list.append(line)
     # initialize BERT multi-label classifier model
+    print('Initializing BERT classifier ...')
     bert_model = BERTMultiLabelClassifier()
     # get text logits for each sentence
+    print('Performing BERT inference ...')
     text_output = []
     for sent in sent_list:
         text_output.append(bert_model.predict(sent))
     # de-allocate BERT model
+    print('Deallocating BERT classifier ...')
     del bert_model
     # free CUDA GPU memory
     device = cuda.get_current_device()
     device.reset()
     # initialize StyleGAN2 generator
+    print('Initializing StyleGAN2 generator ...')
     stylegan2_generator = StyleGAN2Generator(config['stylegan_pkl'], truncation_psi=config['truncation_psi'], use_projector=False)
     # read pre-defined feature directions
+    print('Reading feature directions ...')
     feature_directions = np.load(config['directions_npy'])
     # generate a random seed of extended latent vector and corresponding logits
+    print('Generating initial seed ...')
     latent_vector, image_logits = generate_seed(feature_directions, stylegan2_generator, config['seed'])
     # loop over each text description to generate the corresponding face image
+    print('Running face generation from final latent vector ...')
     for idx, text_logits in enumerate(text_output):
         # manipulate latent space to get the target latent vector
+        print(f'Face ID : {idx}')
         target_latent = manipulate_latent(latent_vector, image_logits, text_logits, feature_directions)
         target_latent = np.expand_dims(target_latent, axis=0)
         # generate the required face image
         face_image = stylegan2_generator.generate_images(target_latent)
         # save the generated face image
+        print('Saving output face image ...')
         io.imsave(f'results/{idx}.png', face_image[0])
     # de-allocate StyleGAN2 generator
+    print('Deallocating StyleGAN2 generator ...')
     del stylegan2_generator
     # free CUDA GPU memory
     device = cuda.get_current_device()
@@ -70,4 +81,5 @@ if __name__ == "__main__":
         os.mkdir('results')
     
     # run face generation function
+    print('###### Running face generation from text ######')
     generate_faces(config)
