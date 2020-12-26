@@ -38,10 +38,7 @@ def differentiate_logits(l_text, l_img, scale_factor):
 def manipulate_latent(seed_latent_vec, seed_logits, text_logits, feature_directions, scale_factor=5):
     # manipulate random latent vector based on predicted features
     # differentiate and scale predicted logits
-    print("text logits ", text_logits[20], " ", text_logits[31])
-    print("image logits ", seed_logits[20], " ", seed_logits[31])
     logits_diff = differentiate_logits(text_logits, seed_logits, scale_factor)
-    print("diff logits ", logits_diff[20], " ", logits_diff[31])
     # loop over each feature and navigate the latent space
     final_latent_vec = copy.deepcopy(seed_latent_vec)
     for axis_idx in range(len(logits_diff)):
