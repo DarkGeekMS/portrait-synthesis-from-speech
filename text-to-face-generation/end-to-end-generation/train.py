@@ -16,7 +16,7 @@ import os
 
 from dataset import FaceDataset, collate_fn
 from sent_embed import SentEmbedEncoder
-from stylegan2_generator import StyleGAN2Generator
+from stylegan2_generator import StyleGAN2GeneratorTF, StyleGAN2GeneratorPT
 from vgg import Vgg16
 from loss import PixelwiseDistanceLoss, KLDLoss, LatentLoss
 
@@ -46,7 +46,7 @@ def train(network_config, train_config):
 
     # define stylegan2 generator
     print('Loading stylegan2 generator ...')
-    stylegan_gen = StyleGAN2Generator(train_config['stylegan2_pkl'], train_config['truncation_psi'], train_config['result_dir'], network_config["extended_out"])
+    stylegan_gen = StyleGAN2GeneratorPT(train_config['stylegan2_checkpoint'], train_config['truncation_psi'], train_config['result_dir'])
 
     # define VGG-16 model
     print('Loading VGG-16 pretrained model ...')
@@ -84,11 +84,11 @@ def train(network_config, train_config):
             #l_loss = latent_loss(out_embed, l_vecs)
 
             # reconstruction loss
-            recons_imgs = stylegan_gen.generate_images(out_embed.cpu().detach().numpy())
-            r_loss = pixel_loss(torch.div(torch.from_numpy(recons_imgs).to(device), 255.0).permute(0, 3, 1, 2), images)
+            recons_imgs = stylegan_gen.generate(out_embed)
+            r_loss = pixel_loss(torch.div(recons_imgs, 255.0), images)
 
             # perceptual loss
-            recons_features = vgg_model(torch.div(torch.from_numpy(recons_imgs).to(device).permute(0, 3, 1, 2), 255.0))
+            recons_features = vgg_model(torch.div(recons_imgs, 255.0))
             target_features = vgg_model(images)
             p_loss = pixel_loss(recons_features.relu1_2, target_features.relu1_2) + \
                     pixel_loss(recons_features.relu2_2, target_features.relu2_2) + \
