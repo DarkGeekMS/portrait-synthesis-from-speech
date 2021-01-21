@@ -16,7 +16,7 @@ from skimage.io import imsave
 from nltk.tokenize import word_tokenize
 
 from sent_embed import SentEmbedEncoder
-from stylegan2_generator import StyleGAN2Generator
+from stylegan2_generator import StyleGAN2GeneratorTF, StyleGANGeneratorPT
 
 def tokenize(sent, model_version):
     # tokenize sentence

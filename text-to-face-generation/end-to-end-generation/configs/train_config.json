@@ -13,6 +13,6 @@
     "dataset_path": "dataset/",
     "model_path": "results/exp-0/models/model_final.pt",
     "w2v_path": "w2v-models/glove.840B.300d.txt",
-    "stylegan2_pkl": "networks/stylegan2-ffhq-config-f.pkl",
+    "stylegan2_checkpoint": "stylegan2-ffhq-config-f.pt",
     "result_dir": "results/"
 }
