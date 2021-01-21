@@ -143,3 +143,6 @@ text-to-face-generation/staged-generation/directions-based/text_processing/bert/
 Pipfile
 out
 *.csv
+
+# Bert model
+pytorch_model.bin
