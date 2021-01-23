@@ -136,7 +136,6 @@ results/
 w2v-models/
 networks/
 .stylegan2-cache/
-pybert/output/checkpoints/bert/
 
 
 # output files
@@ -146,3 +145,4 @@ out
 
 # Bert model
 pytorch_model.bin
+train_checkpoint.pth
