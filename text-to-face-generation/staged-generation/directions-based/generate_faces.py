@@ -1,5 +1,5 @@
 from stylegan2_generator import StyleGAN2Generator
-from text_processing.legacy_bert.inference import BERTMultiLabelClassifier
+from text_processing.scale_bert.inference import BERTMultiLabelClassifier
 from seed_generation import generate_seed
 from latent_manipulation import manipulate_latent
 
