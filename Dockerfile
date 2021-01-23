@@ -41,3 +41,5 @@ RUN pip install sentencepiece==0.1.83
 RUN pip install six==1.12.0
 RUN pip install urllib3==1.25.3
 RUN pip install langdetect
+RUN pip install googletrans
+RUN pip install pytorch-transformers

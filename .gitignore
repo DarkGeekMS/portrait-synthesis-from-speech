@@ -137,12 +137,11 @@ w2v-models/
 networks/
 .stylegan2-cache/
 
-
 # output files
 Pipfile
 out
 *.csv
 
-# Bert model
+# BERT models
 pytorch_model.bin
 train_checkpoint.pth
