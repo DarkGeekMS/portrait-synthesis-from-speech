@@ -17,6 +17,12 @@ __NOTE :__ Use `a` key to add image to class 1 and `d` key to add image to class
     -c2d /path/to/class2/output/dir -dn <output_file_name>
     ```
 
+-   Run axes disentanglement on 2 specific axes :
+    ```bash
+    python disentangle_axes.py -sa /path/to/source/axis/file \
+    -ta /path/to/target/axis/file
+    ```
+
 ## Generated Directions
 
 -   `Hair Color Direction` : separates between __dark hair__ _(+ve)_ and __blonde hair__ _(-ve)_. It can generate a whole spectrum of hair colors including brown and others.
