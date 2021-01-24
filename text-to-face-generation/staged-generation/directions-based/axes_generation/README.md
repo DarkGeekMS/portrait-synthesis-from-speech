@@ -50,3 +50,9 @@ __NOTE :__ Use `a` key to add image to class 1 and `d` key to add image to class
 -   `Hair Bangs Direction` : separates between faces __with__ _(+ve)_ and __without__ _(-ve)_ hair bangs. It does not completely preserve the identity.
 
 -   `Hair Length Direction` : separates between __long__ _(+ve)_ and __short__ _(-ve)_ hair. It does not completely preserve the identity.
+
+-   `Blue Eye Color Direction` : separates between __blue eyes__ _(+ve)_ and __black eyes__ _(-ve)_. It can introduce heavy entanglement with skin and hair color features.
+
+-   `Green Eye Color Direction` : separates between __green eyes__ _(+ve)_ and __black eyes__ _(-ve)_. It can introduce heavy entanglement with skin and hair color features.
+
+-   `Brown Eye Color Direction` : separates between __brown eyes__ _(+ve)_ and __black eyes__ _(-ve)_. It can introduce heavy entanglement with skin and hair color features.
