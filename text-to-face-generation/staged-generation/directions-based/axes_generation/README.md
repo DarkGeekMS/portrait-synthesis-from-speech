@@ -25,7 +25,11 @@ __NOTE :__ Use `a` key to add image to class 1 and `d` key to add image to class
 
 ## Generated Directions
 
--   `Hair Color Direction` : separates between __dark hair__ _(+ve)_ and __blonde hair__ _(-ve)_. It can generate a whole spectrum of hair colors including brown and others.
+-   `Blonde Hair Color Direction` : separates between __blonde hair__ _(+ve)_ and __dark hair__ _(-ve)_. It can generate a whole spectrum of hair colors. It can introduce some entanglement with skin color feature.
+
+-   `Brown Hair Color Direction` : separates between __brown hair__ _(+ve)_ and __dark hair__ _(-ve)_. It can generate a whole spectrum of hair colors. It can introduce some entanglement with skin color feature.
+
+-   `Gray Hair Color Direction` : separates between __white hair__ _(+ve)_ and __dark hair__ _(-ve)_. It can introduce heavy entanglement with age feature and some entanglement with skin color feature.
 
 -   `Skin Color Direction` : separates between __dark skin__ _(+ve)_ and __light skin__ _(-ve)_. It does not completely preserve the identity and can introduce some entanglement with other features especially hair.
 
@@ -36,3 +40,5 @@ __NOTE :__ Use `a` key to add image to class 1 and `d` key to add image to class
 -   `Sight Glasses Direction` : separates between face __with__ _(+ve)_ and __without__ _(-ve)_ sight glasses. It does not completely preserve the identity and can introduce some entanglement with gender feature.
 
 -   `Sun Glasses Direction` : separates between face __with__ _(+ve)_ and __without__ _(-ve)_ sun glasses. It does not completely preserve the identity.
+
+-   `Baldness Direction` : separates between __bald people__ _(+ve)_ and __people with hair__ _(-ve)_. It does not completely preserve the identity sometimes and can introduce some entanglement with age feature.
