@@ -37,8 +37,16 @@ __NOTE :__ Use `a` key to add image to class 1 and `d` key to add image to class
 
 -   `Asian Effect Direction` : separates between __asian eyes__ _(+ve)_ and __normal eyes__ _(-ve)_. It does not completely preserve the identity and can introduce some entanglement with other features especially hair.
 
--   `Sight Glasses Direction` : separates between face __with__ _(+ve)_ and __without__ _(-ve)_ sight glasses. It does not completely preserve the identity and can introduce some entanglement with gender feature.
+-   `Sight Glasses Direction` : separates between faces __with__ _(+ve)_ and __without__ _(-ve)_ sight glasses. It does not completely preserve the identity and can introduce some entanglement with gender feature.
 
--   `Sun Glasses Direction` : separates between face __with__ _(+ve)_ and __without__ _(-ve)_ sun glasses. It does not completely preserve the identity.
+-   `Sun Glasses Direction` : separates between faces __with__ _(+ve)_ and __without__ _(-ve)_ sun glasses. It does not completely preserve the identity.
 
--   `Baldness Direction` : separates between __bald people__ _(+ve)_ and __people with hair__ _(-ve)_. It does not completely preserve the identity sometimes and can introduce some entanglement with age feature.
+-   `Baldness Direction` : separates between __bald face__ _(+ve)_ and __face with hair__ _(-ve)_. It does not completely preserve the identity sometimes and can introduce some entanglement with age feature.
+
+-   `Receding Hairline Direction` : separates between faces with __receding__ _(+ve)_ and __normal__ _(-ve)_ hairline. It does not completely preserve the identity.
+
+-   `Curly Hair Direction` : separates between __curly__ _(+ve)_ and __straight__ _(-ve)_ hair. It does not completely preserve the identity.
+
+-   `Hair Bangs Direction` : separates between faces __with__ _(+ve)_ and __without__ _(-ve)_ hair bangs. It does not completely preserve the identity.
+
+-   `Hair Length Direction` : separates between __long__ _(+ve)_ and __short__ _(-ve)_ hair. It does not completely preserve the identity.
