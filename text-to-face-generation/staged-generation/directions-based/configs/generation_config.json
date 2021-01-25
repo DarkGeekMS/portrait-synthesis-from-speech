@@ -1,6 +1,8 @@
 {
-    "n_classes" : 32,
+    "n_classes" : 33,
     "truncation_psi" : 0.5,
+    "axes_range" : 4.0,
+    "seed_lower_bound" : 0,
     "seed_upper_bound" : 7000,
     "directions_npy" : "stylegan2_directions/grouped_directions.npy",
     "stylegan_pkl" : "networks/stylegan2-ffhq-config-f.pkl",

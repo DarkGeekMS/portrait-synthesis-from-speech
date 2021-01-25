@@ -30,7 +30,9 @@ def generate_faces(config):
     print('Performing BERT inference ...')
     text_output = []
     for sent in sent_list:
-        text_output.append(bert_model.predict(sent))
+        sent_pred = bert_model.predict(sent)
+        sent_pred_scaled = np.array([(logit*config['axes_range']*2.0)-config['axes_range'] if logit != -1 else -1 for logit in sent_pred])
+        text_output.append(sent_pred_scaled)
     # de-allocate BERT model
     print('Deallocating BERT classifier ...\n')
     del bert_model
@@ -50,7 +52,7 @@ def generate_faces(config):
         print(f'Face ID : {idx}')
         # generate a random seed of extended latent vector and corresponding logits
         print('Generating initial seed ...')
-        seed = np.random.randint(config['seed_upper_bound'])
+        seed = np.random.randint(config['seed_lower_bound'], config['seed_upper_bound'])
         latent_vector, image_logits = generate_seed(feature_directions, stylegan2_generator, seed)
         # manipulate latent space to get the target latent vector
         print('Performing latent manipulation ...')
