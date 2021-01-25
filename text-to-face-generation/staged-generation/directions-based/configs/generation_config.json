@@ -6,5 +6,7 @@
     "seed_upper_bound" : 7000,
     "directions_npy" : "stylegan2_directions/grouped_directions.npy",
     "stylegan_pkl" : "networks/stylegan2-ffhq-config-f.pkl",
-    "text_desc" : "dataset/test_desc.txt"
+    "text_desc" : "dataset/test_desc.txt",
+    "debug_mode" : true,
+    "debug_features" : [17, 20, 21]
 }
