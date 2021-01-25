@@ -1,6 +1,6 @@
 
 from pathlib import Path
-BASE_DIR = Path('text_processing/bert/pybert')
+BASE_DIR = Path('text_processing/legacy_bert/pybert')
 config = {
     'raw_data_path': BASE_DIR / 'dataset/CelebA_with_textual_descriptions.csv',
     'test_path': BASE_DIR / 'dataset/test.csv',
