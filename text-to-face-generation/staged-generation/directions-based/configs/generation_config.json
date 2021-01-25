@@ -1,7 +1,7 @@
 {
     "n_classes" : 32,
     "truncation_psi" : 0.5,
-    "seed_upper_bound" : 100,
+    "seed_upper_bound" : 7000,
     "directions_npy" : "stylegan2_directions/grouped_directions.npy",
     "stylegan_pkl" : "networks/stylegan2-ffhq-config-f.pkl",
     "text_desc" : "dataset/test_desc.txt"

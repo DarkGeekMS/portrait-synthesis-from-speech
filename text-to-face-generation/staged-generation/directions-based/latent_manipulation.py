@@ -35,7 +35,7 @@ def differentiate_logits(l_text, l_img, scale_factor):
     # return scaled differentiated logits
     return l_diff_scaled
 
-def manipulate_latent(seed_latent_vec, seed_logits, text_logits, feature_directions, scale_factor=5):
+def manipulate_latent(seed_latent_vec, seed_logits, text_logits, feature_directions, scale_factor=10):
     # manipulate random latent vector based on predicted features
     # differentiate and scale predicted logits
     logits_diff = differentiate_logits(text_logits, seed_logits, scale_factor)
