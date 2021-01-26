@@ -1,12 +1,11 @@
 import random
 from copy import deepcopy
 import numpy as np  
-from googletrans import Translator
-
+from deep_translator import GoogleTranslator
 import pandas as pd
 
 class textual_description:
-    def __init__(self, attributes, translator = None, paraphrase = False):
+    def __init__(self, attributes, paraphrase = False):
         self.attributes = attributes
         self.with_statements = []
         self.without_statements = []
@@ -30,9 +29,14 @@ class textual_description:
         self.construct_description()
         # for paraphrasing
         if paraphrase == True:
-            self.translator = translator
-            self.languages = ['it', 'ar', 'sv', 'pl', 'sq', 'de', 'zh-cn', 'es', 'ja', 'no', 'ro']
-            self.description = self.get_cycle_paraphrase(self.description)
+            self.languages = ['be', 'bg', 'fy', 'de', 'it', 'ja', 'la', 'lb', 'ru']
+            # 80% of time paraphrase
+            if random.random() < 0.8:
+                self.description = self.cycle_paraphrase(self.description)
+                self.fix_pronouns()
+            
+
+
 
     def add_has_with_attribute(self, attribute):
         if random.random() > 0.5:
@@ -107,10 +111,10 @@ class textual_description:
         # SMILING (Binary)
         smiling_attribute = self.attributes[18]
         # options for smiling_attribute = 1
-        not_smiling_adjectives = ['not smiling']
+        not_smiling_adjectives = ['non-smiling']
         # options for smiling_attribute = 2
         smiling_adjectives = ['smiling']
-        # process chubby
+        # process smiling
         self.binary_adjective_processing(smiling_attribute, not_smiling_adjectives, smiling_adjectives)
 
         ####################################################################################
@@ -120,7 +124,7 @@ class textual_description:
         not_attractive_adjectives = ['unattractive', 'ugly']
         # options for attractive_attribute = 2
         attractive_adjectives = ['attractive', 'beautiful', 'gorgeous', 'pretty']
-        # process chubby
+        # process attractive
         self.binary_adjective_processing(attractive_attribute, not_attractive_adjectives, attractive_adjectives)
 
         ####################################################################################
@@ -178,9 +182,9 @@ class textual_description:
         
         ############################################################################################
         # gender
-        gender_attribute = self.attributes[20]
+        self.gender_attribute = self.attributes[20]
         # male
-        if gender_attribute == 1:
+        if self.gender_attribute == 1:
             # middle-aged, old, very old
             if age_attribute > 2:
                 self.gender = random.choice(['male', 'guy', 'man'])
@@ -701,6 +705,16 @@ class textual_description:
             return words[0]
         if len(words) == 0:
             return None 
+
+        # fix neither nor issue (i.e. if there is neither nor make it the last attribute not to affect the translation)
+        normal_words = []
+        neither_words = []
+        for i in range(len(words)):
+            if 'neither ' in words[i]:
+                neither_words.append(words[i])
+            else:
+                normal_words.append(words[i])
+        words = normal_words + neither_words
         words_tmp = deepcopy(words)
         words_tmp[-2] = words[-2] + ' and ' + words[-1]
         words_tmp = words_tmp[:-1]
@@ -829,43 +843,39 @@ class textual_description:
         for sentence in statements:
             self.description = separator.join([self.description, sentence])
 
-
-
-    def get_cycle_paraphrase(self, text):
+    def cycle_paraphrase(self, text):
+        lang = random.choice(self.languages)
+        try:
+            translated = GoogleTranslator(target=lang).translate(text)
+            translated = GoogleTranslator(target='en').translate(translated)
+        except:
+            return text
+        return translated
     
-        num_languages_per_cycle = random.randint(1,3)
-        selected_cycle_languages = random.sample(self.languages, num_languages_per_cycle)
-        try:
-            result = self.translator.translate(text, dest=selected_cycle_languages[0]).text
-        except:
-            return text
-        del selected_cycle_languages[0]
+    def fix_pronouns(self):
+        # male
+        if self.gender_attribute == 1:
+            self.description = self.description.replace(' She ', ' He ')
+            self.description = self.description.replace(' she ', ' he ')
+            self.description = self.description.replace(' Her ', ' His ')
+            self.description = self.description.replace(' her ', ' his ')
+            self.description = self.description.replace(' You ', ' He ')
+            self.description = self.description.replace(' you ', ' he ')
+            self.description = self.description.replace(' Your ', ' His ')
+            self.description = self.description.replace(' your ', ' his ')
+        # female
+        else:
+            self.description = self.description.replace(' He ', ' She ')
+            self.description = self.description.replace(' he ', ' she ')
+            self.description = self.description.replace(' His ', ' Her ')
+            self.description = self.description.replace(' his ', ' her ')
+            self.description = self.description.replace(' You ', ' She ')
+            self.description = self.description.replace(' you ', ' she ')
+            self.description = self.description.replace(' Your ', ' Her ')
+            self.description = self.description.replace(' your ', ' her ')
 
-        for language in selected_cycle_languages:
-            try:
-                result = self.translator.translate(result, dest=language).text
-            except:
-                return text
+            
 
-        try:
-            result = self.translator.translate(result, dest='en').text
-            print('great')
-            return result
-        except:
-            return text
-  
-    def get_paraphrase(self, text):
-
-    
-        num_languages_per_cycle = random.randint(1,3)
-        selected_cycle_languages = random.sample(self.languages, num_languages_per_cycle)
-        language = random.choice(self.languages)
-        try:
-            result = self.translator.translate(text, dest=language).text
-            result = self.translator.translate(result, dest='en').text
-        except:
-            return text
-        return result
 
 
 
