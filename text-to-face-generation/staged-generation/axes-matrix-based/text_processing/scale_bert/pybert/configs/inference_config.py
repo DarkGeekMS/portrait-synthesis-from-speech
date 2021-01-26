@@ -1,6 +1,6 @@
 
 from pathlib import Path
-BASE_DIR = Path('scale_bert/pybert')
+BASE_DIR = Path('pybert')
 config = {
     'raw_data_path': BASE_DIR / 'dataset/attributes.csv',
     'test_path': BASE_DIR / 'dataset/test.csv',

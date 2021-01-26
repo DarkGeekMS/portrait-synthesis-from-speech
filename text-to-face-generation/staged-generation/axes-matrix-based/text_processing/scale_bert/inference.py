@@ -7,13 +7,13 @@ from importlib import import_module
 import os
 import json
 
-from .pybert.io.utils import collate_fn
-from .pybert.io.bert_processor import BertProcessor
-from .pybert.common.tools import logger
-from .pybert.configs.inference_config import config
-from .pybert.model.bert_for_multi_label import BertForMultiLable
-from .pybert.io.task_data import TaskData
-from .pybert.test.predictor import Predictor
+from pybert.io.utils import collate_fn
+from pybert.io.bert_processor import BertProcessor
+from pybert.common.tools import logger
+from pybert.configs.inference_config import config
+from pybert.model.bert_for_multi_label import BertForMultiLable
+from pybert.io.task_data import TaskData
+from pybert.test.predictor import Predictor
 
 class BERTMultiLabelClassifier():
     def __init__(self):
@@ -54,6 +54,6 @@ class BERTMultiLabelClassifier():
         return results
 
 
-# description = "a man with light beard and long and smooth hair. He is fat. His eyes is narrow. His nose is tiny. he doesn't have mustache."
-# bert = BERTMultiLabelClassifier()
-# print(bert.predict(description))
+description = "a young man with light beard and goatee. He is fat. His eyes is narrow. His nose is tiny. he doesn't have mustache."
+bert = BERTMultiLabelClassifier()
+print(bert.predict(description))

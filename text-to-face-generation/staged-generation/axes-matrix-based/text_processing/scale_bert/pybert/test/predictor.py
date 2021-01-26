@@ -10,7 +10,7 @@ class Predictor(object):
         self.model = model
         self.logger = logger
         self.model, self.device = model_device(n_gpu= n_gpu, model=self.model)
-        self.attributes_max_values = np.load('text_processing/scale_bert/attributes_max.npy')
+        self.attributes_max_values = np.load('attributes_max.npy')
 
     def predict(self,data):
         pbar = ProgressBar(n_total=len(data),desc='Testing')
