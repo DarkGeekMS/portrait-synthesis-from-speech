@@ -24,8 +24,12 @@ def fit_axis(class1_dir, class2_dir, direction_name):
     clf = LogisticRegression(class_weight='balanced').fit(xtrain, ytrain)
     # extract direction
     direction = clf.coef_.reshape((18, 512))
+    # convert into unit direction
+    new_direction = np.zeros(direction.shape)
+    for layer in range(direction.shape[0]):
+        new_direction[layer] = np.divide(direction[layer], np.sqrt(np.dot(direction[layer], direction[layer])))
     # save direction
-    np.save(f'{direction_name}.npy', direction)
+    np.save(f'{direction_name}.npy', new_direction)
 
 if __name__ == "__main__":
     # arguments parsing

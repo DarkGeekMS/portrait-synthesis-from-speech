@@ -23,6 +23,11 @@ __NOTE :__ Use `a` key to add image to class 1 and `d` key to add image to class
     -ta /path/to/target/axis/file
     ```
 
+-   Run manual data labelling on images with seed _[5700:6700]_ :
+    ```bash
+    python save_data.py
+    ```
+
 ## Generated Directions
 
 -   `Blonde Hair Color Direction` : separates between __blonde hair__ _(+ve)_ and __dark hair__ _(-ve)_. It can generate a whole spectrum of hair colors. It can introduce some entanglement with skin color feature.
