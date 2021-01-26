@@ -3,6 +3,8 @@ import random
 import pandas as pd
 from tqdm import tqdm 
 import argparse
+import pickle
+import numpy as np
 
 def main(number_of_records):
     attributes = {
@@ -68,6 +70,15 @@ def main(number_of_records):
         # textual description
         'Description': 'description'
     }
+
+    # save dict to use in normalization after NLP model
+    # with open('../../staged-generation/attributes_max.pkl', 'wb') as f:
+    #     pickle.dump(attributes[:-1], f, pickle.HIGHEST_PROTOCOL)
+
+    print(len(list(attributes.values())))
+    np.save('../../staged-generation/attributes_max.npy', list(attributes.values())[:-1])
+
+
 
     # create dataframe to generate records in
     df = pd.DataFrame(columns = attributes.keys())
@@ -137,7 +148,7 @@ def main(number_of_records):
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description=__doc__)
-    argparser.add_argument('-n_records', '--number_of_records', type=int, help='number of receords to generate', default = 10000)
+    argparser.add_argument('-nrecords', '--number_of_records', type=int, help='number of receords to generate', default = 10000)
     args = argparser.parse_args()
 
     main(args.number_of_records)

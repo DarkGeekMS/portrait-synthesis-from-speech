@@ -1,8 +1,12 @@
 {
-    "n_classes" : 32,
+    "n_classes" : 33,
     "truncation_psi" : 0.5,
-    "seed_upper_bound" : 100,
-    "directions_npy" : "stylegan2_directions/feature_directions.npy",
+    "axes_range" : 4.0,
+    "seed_lower_bound" : 0,
+    "seed_upper_bound" : 7000,
+    "directions_npy" : "stylegan2_directions/grouped_directions.npy",
     "stylegan_pkl" : "networks/stylegan2-ffhq-config-f.pkl",
-    "text_desc" : "dataset/test_desc.txt"
+    "text_desc" : "dataset/test_desc.txt",
+    "debug_mode" : true,
+    "debug_features" : [17, 20, 21]
 }
