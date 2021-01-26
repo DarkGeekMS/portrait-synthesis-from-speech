@@ -43,3 +43,5 @@ RUN pip install urllib3==1.25.3
 RUN pip install langdetect
 RUN pip install googletrans
 RUN pip install pytorch-transformers
+RUN pip install coloredlogs
+RUN pip install colorama

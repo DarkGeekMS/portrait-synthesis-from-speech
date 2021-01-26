@@ -20,7 +20,7 @@ def generate_seed(feature_directions, stylegan2_generator, seed):
     for direction in feature_directions:
         # check whether direction doesn't exist (all zeros)
         if np.count_nonzero(direction) == 0:
-            logits.append(float('-inf'))
+            logits.append(0)
             continue
         components = []
         # project each layer independently
@@ -32,10 +32,8 @@ def generate_seed(feature_directions, stylegan2_generator, seed):
         # average projected components of all layers
         avg_component = sum(components) / len(components)
         logits.append(avg_component)
-    # calculate sigmoid of all feature components to get logits
-    logits = np.array(logits)
-    logits =  1.0 / (1.0 + np.exp(-logits))
-    return w[0], logits
+    # return random latent vector and its logits
+    return w[0], np.array(logits)
 
 if __name__ == "__main__":
     # arguments parsing
