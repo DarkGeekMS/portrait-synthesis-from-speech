@@ -36,8 +36,14 @@ def disentangle_axes(source_axis, target_axis):
                     get_unit_vector(new_source_direction[layer]), get_unit_vector(target_direction[layer])
             ))))
     print(f'Angle before disentanglement = {sum(final_angles)/len(final_angles)}')
+    # convert into unit direction
+    final_source_direction = np.zeros(new_source_direction.shape)
+    for layer in range(new_source_direction.shape[0]):
+        final_source_direction[layer] = np.divide(
+            new_source_direction[layer], np.sqrt(np.dot(new_source_direction[layer], new_source_direction[layer]))
+        )
     # save new source direction
-    np.save(source_axis[:-4]+'_new.npy', new_source_direction)
+    np.save(source_axis[:-4]+'_new.npy', final_source_direction)
 
 if __name__ == "__main__":
     # arguments parsing
