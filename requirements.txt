@@ -38,9 +38,9 @@ s3transfer==0.2.1
 sacremoses==0.0.33
 sentencepiece==0.1.83
 six==1.12.0
-urllib3==1.25.3
+urllib3
 langdetect
-googletrans
 pytorch-transformers
 coloredlogs
 colorama
+deep-translator

@@ -39,9 +39,9 @@ RUN pip install s3transfer==0.2.1
 RUN pip install sacremoses==0.0.33
 RUN pip install sentencepiece==0.1.83
 RUN pip install six==1.12.0
-RUN pip install urllib3==1.25.3
+RUN pip install urllib3
 RUN pip install langdetect
-RUN pip install googletrans
 RUN pip install pytorch-transformers
 RUN pip install coloredlogs
 RUN pip install colorama
+RUN pip install deep-translator
