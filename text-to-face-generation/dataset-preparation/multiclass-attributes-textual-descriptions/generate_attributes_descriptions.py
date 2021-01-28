@@ -13,7 +13,7 @@ def main(attributes_csv_path, paraphrase = False):
     descriptions = [0] * len(table)
 
     for i in tqdm(range(rows_count)):
-        attr_record = np.array(table.iloc[i])
+        attr_record = table.iloc[i]
         textual_description_object = textual_description(attr_record, paraphrase)
         description = textual_description_object.description
 

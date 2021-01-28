@@ -96,40 +96,9 @@ class textual_description:
         '''
         process unary and binary adjectives that can be added to first statement or to is statement
         '''
-
-        ####################################################################################
-        # CHUBBY (Binary)
-        chubby_attribute = self.attributes[17]
-        # options for chubby_attribute = 1
-        thin_adjectives = ['thin', 'skinny', 'slim']
-        # options for chubby_attribute = 2
-        chubby_adjectives = ['chubby', 'fat']
-        # process chubby
-        self.binary_adjective_processing(chubby_attribute, thin_adjectives, chubby_adjectives)
-
-        ####################################################################################
-        # SMILING (Binary)
-        smiling_attribute = self.attributes[18]
-        # options for smiling_attribute = 1
-        not_smiling_adjectives = ['non-smiling']
-        # options for smiling_attribute = 2
-        smiling_adjectives = ['smiling']
-        # process smiling
-        self.binary_adjective_processing(smiling_attribute, not_smiling_adjectives, smiling_adjectives)
-
-        ####################################################################################
-        # ATTRACTIVE (Binary)
-        attractive_attribute = self.attributes[19]
-        # options for attractive_attribute = 1
-        not_attractive_adjectives = ['unattractive', 'ugly']
-        # options for attractive_attribute = 2
-        attractive_adjectives = ['attractive', 'beautiful', 'gorgeous', 'pretty']
-        # process attractive
-        self.binary_adjective_processing(attractive_attribute, not_attractive_adjectives, attractive_adjectives)
-
         ####################################################################################
         # BALD (Unary)
-        bald_attribute = self.attributes[8]
+        bald_attribute = self.attributes['Bald']
         bald_adjective = random.choice(['bald', 'hairless'])
         if bald_attribute == 1:
             # bald in first statement
@@ -138,6 +107,17 @@ class textual_description:
             # bald in is statement
             else:
                 self.is_full_attributes.append(bald_adjective)
+        
+        ####################################################################################
+        # ASIAN (Unary)
+        asian_attribute = self.attributes['Asian']
+        if asian_attribute == 1:
+            # asian in first statement
+            if random.random() > 0.5:
+                self.adjectives.append('asian')
+            # asian in is statement
+            else:
+                self.is_full_attributes.append('asian')
 
 
     def age_gender(self):
@@ -146,30 +126,34 @@ class textual_description:
         add correct pronoun and possessive pronoun
         '''
         # age
-        age_attribute = self.attributes[21]
+        age_attribute = self.attributes['Old']
 
         # not mentioned
         if   age_attribute == 0:
             self.age_adj = ''
+
+        # baby
+        elif age_attribute == 1:
+            self.age_adj = random.choice(['baby', 'toddler'])
         
         # kid
-        elif age_attribute == 1:
+        elif age_attribute == 2:
             self.age_adj = random.choice(['kid', 'child'])
 
         # teenager
-        elif age_attribute == 2:
-            self.age_adj = random.choice(['teenager', 'teen', 'young'])
+        elif age_attribute == 3:
+            self.age_adj = random.choice(['teenager', 'teen', 'young', 'very young'])
 
         # middle-aged
-        elif age_attribute == 3:
+        elif age_attribute == 4:
             self.age_adj = random.choice(['middle-aged', 'adult', 'grown'])
         
         # old
-        elif age_attribute == 4:
+        elif age_attribute == 5:
             self.age_adj = 'old'
         
         # very old
-        elif age_attribute == 5:
+        elif age_attribute == 6:
             self.age_adj = random.choice(['very old', 'elderly'])
 
 
@@ -182,7 +166,7 @@ class textual_description:
         
         ############################################################################################
         # gender
-        self.gender_attribute = self.attributes[20]
+        self.gender_attribute = self.attributes['Male']
         # male
         if self.gender_attribute == 1:
             # middle-aged, old, very old
@@ -210,31 +194,30 @@ class textual_description:
         add hair colors  (black, gray, blond, brown)
         '''
         # black hair
-        black_hair_attribute = self.attributes[2]
+        black_hair_attribute = self.attributes['Black_Hair']
         if black_hair_attribute == 1:
             self.hair_attributes.append('black')
-        elif black_hair_attribute == 2:
-            self.hair_attributes.append('dark black')
-
-
+        
         # brown hair
-        brown_hair_attribute = self.attributes[4]
-        if brown_hair_attribute == 1:
+        brown_hair_attribute = self.attributes['Brown_Hair']
+        if brown_hair_attribute == 2:
             self.hair_attributes.append('brown')
-        elif brown_hair_attribute == 2:
+        elif brown_hair_attribute == 1:
             self.hair_attributes.append('dark brown')
 
 
         # gray hair
-        gray_hair_attribute = self.attributes[5]
-        if gray_hair_attribute == 1:
-            self.hair_attributes.append(random.choice(['gray', 'grey']))
+        gray_hair_attribute = self.attributes['Gray_Hair']
+        if gray_hair_attribute == 3:
+            self.hair_attributes.append('white')
         elif gray_hair_attribute == 2:
+            self.hair_attributes.append(random.choice(['gray', 'grey']))
+        elif gray_hair_attribute == 1:
             self.hair_attributes.append(random.choice(['dark gray', 'dark grey']))
 
 
         # blond hair
-        blond_hair_attribute = self.attributes[3]
+        blond_hair_attribute = self.attributes['Blond_Hair']
         if blond_hair_attribute == 1:
             # 50% -> has blond hair - hair is blond - with blond hair (three-way)
             if random.random() > 0.5:
@@ -244,18 +227,18 @@ class textual_description:
                 self.add_adjective(random.choice(['blond', 'blonde']), 0)
 
     def straight_hair_attribute_processing(self):
-        straight_hair_attribute = self.attributes[6]
-        if straight_hair_attribute == 1:
-            self.hair_attributes.append('curly')
-        if straight_hair_attribute == 2:
-            self.hair_attributes.append('wavy')
-        if straight_hair_attribute == 3:
-            self.hair_attributes.append('slightly wavy')
+        straight_hair_attribute = self.attributes['Straight_Hair']
         if straight_hair_attribute == 4:
+            self.hair_attributes.append('curly')
+        if straight_hair_attribute == 3:
+            self.hair_attributes.append('wavy')
+        if straight_hair_attribute == 2:
+            self.hair_attributes.append('slightly wavy')
+        if straight_hair_attribute == 1:
             self.hair_attributes.append(random.choice(['straight', 'smooth']))
 
     def hair_length_attribute_processing(self):
-        hair_length_attribute = self.attributes[10]
+        hair_length_attribute = self.attributes['Hair_Length']
 
         # short hair
         if hair_length_attribute == 1:
@@ -270,12 +253,12 @@ class textual_description:
             self.hair_attributes.append('long')
 
     def bangs_attribute_processing(self):
-        bangs_attribute = self.attributes[9] 
+        bangs_attribute = self.attributes['Bangs'] 
         if bangs_attribute == 1:
             self.add_has_with_attribute('bangs')
 
     def receding_hairline_attribute_processing(self):
-        receding_hairline_attribute = self.attributes[7]
+        receding_hairline_attribute = self.attributes['Receding_Hairline']
         if receding_hairline_attribute == 1:
             self.add_has_with_attribute('receding hairline')
     
@@ -297,7 +280,7 @@ class textual_description:
         add arched and bushy eyebrows attributes
         '''
         # ARCHED EYEBROWS
-        arched_eyebrows_attribute = self.attributes[0]
+        arched_eyebrows_attribute = self.attributes['Arched_Eyebrows']
         if arched_eyebrows_attribute == 1:
             self.eyebrows_attributes.append(random.choice(['slightly arched', 'a little arched', 'a bit arched']))
         elif arched_eyebrows_attribute == 2:
@@ -305,9 +288,9 @@ class textual_description:
 
 
         # BUSHY EYEBROWS
-        bushy_eyebrows_attribute = self.attributes[1]
+        bushy_eyebrows_attribute = self.attributes['Bushy_Eyebrows']
         if bushy_eyebrows_attribute == 1:
-            self.eyebrows_attributes.append(random.choice(['slightly bushy', 'a little bushy', 'a bit bushy']))
+            self.eyebrows_attributes.append(random.choice(['thin', 'light']))
         elif bushy_eyebrows_attribute == 2:
             self.eyebrows_attributes.append('bushy')
 
@@ -319,7 +302,7 @@ class textual_description:
 
     def big_nose_attribute_processing(self):
         
-        big_nose_attribute = self.attributes[25]
+        big_nose_attribute = self.attributes['Big_Nose']
 
         # small nose
         if big_nose_attribute == 1:
@@ -330,14 +313,8 @@ class textual_description:
             else:
                 self.three_way_neg_attribute_dict['nose'].append(random.choice(['big', 'large']))
 
-        # medium-sized
-        elif big_nose_attribute == 2:
-            # 100% add it positively
-            self.three_way_pos_attribute_dict['nose'].append(random.choice(['medium-sized', 'neither small nor big']))
-        
-
         # big nose
-        elif big_nose_attribute == 3:
+        elif big_nose_attribute == 2:
             # 50% add it positively
             if random.random() > 0.5:
                 self.three_way_pos_attribute_dict['nose'].append(random.choice(['big', 'large']))
@@ -346,7 +323,7 @@ class textual_description:
                 self.three_way_neg_attribute_dict['nose'].append(random.choice(['small', 'tiny']))
 
     def pointy_nose_attribute_processing(self):
-        pointy_nose_attribute = self.attributes[29]
+        pointy_nose_attribute = self.attributes['Pointy_Nose']
         if pointy_nose_attribute == 1:
             self.three_way_pos_attribute_dict['nose'].append('pointy')
 
@@ -373,7 +350,7 @@ class textual_description:
         self.three_way_pos_attribute_dict['lips'] = []
         self.three_way_neg_attribute_dict['lips'] = []
 
-        big_lips_attribute = self.attributes[24]
+        big_lips_attribute = self.attributes['Big_Lips']
 
         # small lips
         if big_lips_attribute == 1:
@@ -384,14 +361,8 @@ class textual_description:
             else:
                 self.three_way_neg_attribute_dict['lips'].append(random.choice(['big', 'large']))
 
-        # medium-sized
-        elif big_lips_attribute == 2:
-            # 100% add it positively
-            self.three_way_pos_attribute_dict['lips'].append(random.choice(['medium-sized', 'neither small nor big']))
-        
-
         # big lips
-        elif big_lips_attribute == 3:
+        elif big_lips_attribute == 2:
             # 50% add it positively
             if random.random() > 0.5:
                 self.three_way_pos_attribute_dict['lips'].append(random.choice(['big', 'large']))
@@ -403,23 +374,70 @@ class textual_description:
         self.v_tobe_dict['lips'] = 'are'
 
 
-    def oval_face_attribute_processing(self):
-        # create empty array for face
-        self.three_way_pos_attribute_dict['face'] = []
+    def big_ears_attribute_processing(self):
+        # create empty array for ears
+        self.three_way_pos_attribute_dict['ears'] = []
+        self.three_way_neg_attribute_dict['ears'] = []
 
-        oval_face_attribute = self.attributes[28]
-        if oval_face_attribute == 1:
-            self.three_way_pos_attribute_dict['face'].append('oval')
-        
-        # v to-be of face "is"
-        self.v_tobe_dict['face'] = 'is'
+        big_ears_attribute = self.attributes['Big_Ears']
+
+        # small ears
+        if big_ears_attribute == 1:
+            # 50% add it positively
+            if random.random() > 0.5:
+                self.three_way_pos_attribute_dict['ears'].append(random.choice(['small', 'tiny']))
+            # 50% add it negatively
+            else:
+                self.three_way_neg_attribute_dict['ears'].append(random.choice(['big', 'large']))
+
+        # big ears
+        elif big_ears_attribute == 2:
+            # 50% add it positively
+            if random.random() > 0.5:
+                self.three_way_pos_attribute_dict['ears'].append(random.choice(['big', 'large']))
+            # 50% add it negatively
+            else:
+                self.three_way_neg_attribute_dict['ears'].append(random.choice(['small', 'tiny']))
+
+        # v to-be of ears "are"
+        self.v_tobe_dict['ears'] = 'are'
+
+
+    def chubby_attribute_processing(self):
+        chubby_attribute = self.attributes['Chubby']
+
+        # handle on face
+        if random.random() > 0.5:
+            # create empty array for face
+            self.three_way_pos_attribute_dict['face'] = []
+
+            thin_adjectives = ['thin', 'skinny', 'slim', 'oval']
+            chubby_adjectives = ['circular', 'round', 'fat', 'chubby']
+
+            if chubby_attribute == 1:
+                self.three_way_pos_attribute_dict['face'].append(random.choice(thin_adjectives))
+            elif chubby_attribute == 2:
+                self.three_way_pos_attribute_dict['face'].append(random.choice(chubby_adjectives))
+            
+            # v to-be of face "is"
+            self.v_tobe_dict['face'] = 'is'
+
+        # handle it as an adjective
+        else:
+            # options for chubby_attribute = 1
+            thin_adjectives = ['thin', 'skinny', 'slim']
+            # options for chubby_attribute = 2
+            chubby_adjectives = ['chubby', 'fat']
+            # process chubby
+            self.binary_adjective_processing(chubby_attribute, thin_adjectives, chubby_adjectives)
+
         
 
     def rosy_cheeks_attribute_processing(self):
         # create empty array for cheeks
         self.three_way_pos_attribute_dict['cheeks'] = []
 
-        rosy_cheeks_attribute = self.attributes[30]
+        rosy_cheeks_attribute = self.attributes['Rosy_Cheeks']
         if rosy_cheeks_attribute == 1:
             self.three_way_pos_attribute_dict['cheeks'].append(random.choice(['rosy', 'red']))
 
@@ -428,7 +446,7 @@ class textual_description:
 
 
     def pale_skin_attribute_processing(self):
-        pale_skin_attribute = self.attributes[16]
+        pale_skin_attribute = self.attributes['Pale_Skin']
 
         # not pale
         if pale_skin_attribute == 1:
@@ -439,28 +457,32 @@ class textual_description:
             self.three_way_pos_attribute_dict['skin'].append('pale')
         
     def skin_color_attribute_processing(self):
-        skin_color_attribute = self.attributes[15]
+        skin_color_attribute = self.attributes['Skin_Color']
 
         # black
         if skin_color_attribute == 1:
             # 50% -> adjective
             if random.random() > 0.5:
-                self.add_adjective(random.choice(['african', 'black']), 0)
+                if 'asian' in self.adjectives or 'asian' in self.is_full_attributes: 
+                    self.add_adjective('black', 0)
+                else:
+                    self.add_adjective(random.choice(['african', 'black']), 0)
             # 50% -> three-way (black skin)
             else:
                 self.three_way_pos_attribute_dict['skin'].append('black')
 
-
-         # tanned
+        # tanned
         if skin_color_attribute == 2:
             self.three_way_pos_attribute_dict['skin'].append(random.choice(['neither white nor black', 'tanned']))
-
 
         # white
         if skin_color_attribute == 3:
             # 50% -> adjective
             if random.random() > 0.5:
-                self.add_adjective(random.choice(['european', 'white']), 0)
+                if 'asian' in self.adjectives or 'asian' in self.is_full_attributes: 
+                    self.add_adjective('white', 0)
+                else:
+                    self.add_adjective(random.choice(['european', 'white']), 0)
             # 50% -> three-way (white skin)
             else:
                 self.three_way_pos_attribute_dict['skin'].append('white')
@@ -468,10 +490,10 @@ class textual_description:
     def skin_attributes_processing(self):
         # empty array for skin 
         self.three_way_pos_attribute_dict['skin'] = []
-        self.three_way_neg_attribute_dict['skin'] = []
+        # self.three_way_neg_attribute_dict['skin'] = []
 
-        # PALE SKIN
-        self.pale_skin_attribute_processing()
+        # # PALE SKIN
+        # self.pale_skin_attribute_processing()
 
         # SKIN COLOR
         self.skin_color_attribute_processing()
@@ -480,13 +502,46 @@ class textual_description:
         self.v_tobe_dict['skin'] = 'is'
 
 
-    def wide_eyes_attribute_processing(self):
+    def eye_attributes_processing(self):
         # empty array for eyes 
         self.three_way_pos_attribute_dict['eyes'] = []
         self.three_way_neg_attribute_dict['eyes'] = []
+        
+        # colors
+        self.eye_color_attributes_processing()
+        # size
+        self.wide_eyes_attribute_processing()
+         
+        # v to-be of eyes "are"
+        self.v_tobe_dict['eyes'] = 'are'
 
 
-        wide_eyes_attribute = self.attributes[23]
+    def eye_color_attributes_processing(self):
+
+        # Brown
+        brown_eye_attribute = self.attributes['Brown_Eyes']
+        if brown_eye_attribute == 1:
+            self.three_way_pos_attribute_dict['eyes'].append('brown')
+        
+        # Black
+        brown_eye_attribute = self.attributes['Black_Eyes']
+        if brown_eye_attribute == 1:
+            self.three_way_pos_attribute_dict['eyes'].append('black')
+
+        # Blue
+        brown_eye_attribute = self.attributes['Blue_Eyes']
+        if brown_eye_attribute == 1:
+            self.three_way_pos_attribute_dict['eyes'].append('blue')
+
+        # Green
+        brown_eye_attribute = self.attributes['Green_Eyes']
+        if brown_eye_attribute == 1:
+            self.three_way_pos_attribute_dict['eyes'].append('green')
+
+
+    def wide_eyes_attribute_processing(self):
+
+        wide_eyes_attribute = self.attributes['Wide_Eyes']
 
         # very narrow
         if wide_eyes_attribute == 1:
@@ -518,16 +573,12 @@ class textual_description:
         if wide_eyes_attribute == 5:
             self.three_way_pos_attribute_dict['eyes'].append(random.choice(['very wide', 'very big', 'very large']))
 
-        
-        # v to-be of eyes "are"
-        self.v_tobe_dict['eyes'] = 'are'
 
-        
     def bags_under_eyes_attribute_processing(self):
         '''
         bags under eyes is has/with attribute
         '''
-        bags_under_eyes_attribute = self.attributes[22]
+        bags_under_eyes_attribute = self.attributes['Bags_Under_Eyes']
         if bags_under_eyes_attribute == 1:
             self.add_has_with_attribute('bags under eyes')
 
@@ -536,7 +587,7 @@ class textual_description:
         '''
         double chin is has/with attribute
         '''
-        double_chin_attribute = self.attributes[26]
+        double_chin_attribute = self.attributes['Double_Chin']
         if double_chin_attribute == 1:
             self.add_has_with_attribute('double chin')
 
@@ -545,13 +596,13 @@ class textual_description:
         '''
         high cheekbones is has/with attribute
         '''
-        high_cheekbones_attribute = self.attributes[27]
+        high_cheekbones_attribute = self.attributes['High_Cheekbones']
         if high_cheekbones_attribute == 1:
             self.add_has_with_attribute('high cheekbones')
 
 
     def heavy_makeup_attribute_processing(self):
-        heavy_makeup_attribute = self.attributes[31]
+        heavy_makeup_attribute = self.attributes['Heavy_Makeup']
 
         # no makeup
         if heavy_makeup_attribute == 1:
@@ -582,7 +633,7 @@ class textual_description:
 
 
     def wearing_lipstick_attribute_processing(self):
-        wearing_lipstick_attribute = self.attributes[32]
+        wearing_lipstick_attribute = self.attributes['Wearing_Lipstick']
 
         # no lipstick
         if wearing_lipstick_attribute == 1:
@@ -604,13 +655,13 @@ class textual_description:
 
     
     def goatee_attribute_processing(self):
-        goatee_attribute = self.attributes[11]
+        goatee_attribute = self.attributes['Goatee']
         if goatee_attribute == 1:
             self.add_has_with_attribute('goatee')
 
 
     def mustache_attribute_processing(self):
-        mustache_attribute = self.attributes[12]
+        mustache_attribute = self.attributes['Mustache']
 
         # no mustache
         if mustache_attribute == 1:
@@ -630,7 +681,7 @@ class textual_description:
         
 
     def beard_attribute_processing(self):
-        beard_attribute = self.attributes[13]
+        beard_attribute = self.attributes['Beard']
 
         # no beard
         if beard_attribute == 1:
@@ -654,7 +705,7 @@ class textual_description:
         
 
     def sideburns_attribute_processing(self):
-        sideburns_attribute = self.attributes[14]
+        sideburns_attribute = self.attributes['Sideburns']
         if sideburns_attribute == 1:
             self.add_has_with_attribute('sideburns')
 
@@ -705,7 +756,7 @@ class textual_description:
             return words[0]
         if len(words) == 0:
             return None 
-
+        random.shuffle(words)
         # fix neither nor issue (i.e. if there is neither nor make it the last attribute not to affect the translation)
         normal_words = []
         neither_words = []
@@ -760,10 +811,11 @@ class textual_description:
         self.eyebrows_attributes_processing()
         self.nose_attributes_processing()
         self.big_lips_attribute_processing()
-        self.oval_face_attribute_processing()
+        self.big_ears_attribute_processing()
+        self.chubby_attribute_processing()
         self.rosy_cheeks_attribute_processing()
         self.skin_attributes_processing()
-        self.wide_eyes_attribute_processing()
+        self.eye_attributes_processing()
         self.bags_under_eyes_attribute_processing()
         self.double_chin_attribute_processing()
         self.high_cheekbones_attribute_processing()
