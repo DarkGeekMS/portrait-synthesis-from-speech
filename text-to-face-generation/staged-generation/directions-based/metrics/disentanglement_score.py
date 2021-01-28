@@ -4,8 +4,6 @@ Disentanglement score : angles between generated feature axes
 
 import numpy as np
 import math
-import argparse
-import os
 
 def get_unit_vector(vector):
     # get unit vector of a given vector
