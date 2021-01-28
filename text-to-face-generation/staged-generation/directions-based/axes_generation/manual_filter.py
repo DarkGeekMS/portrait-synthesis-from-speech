@@ -15,7 +15,7 @@ def manual_filter(img_dir, class1_dir, class2_dir):
         orig_img = cv2.resize(cv2.imread(img_file), (512,512))
         while(1):
             # display image
-            cv2.imshow(f"Current Sample ({count})", orig_img)
+            cv2.imshow(f"Current Sample", orig_img)
             # get selected class
             select_idx = cv2.waitKey(33)
             if select_idx == ord('a'):
