@@ -8,5 +8,5 @@
     "stylegan_pkl" : "networks/stylegan2-ffhq-config-f.pkl",
     "text_desc" : "dataset/test_desc.txt",
     "debug_mode" : true,
-    "debug_features" : [17, 20, 21]
+    "debug_features" : [13, 14, 15]
 }
