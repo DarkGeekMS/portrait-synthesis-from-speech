@@ -60,7 +60,3 @@ class BERTMultiLabelClassifier():
                 #doesn't exist
                 out.append(-1)
         return np.array(out)
-
-# description = "a man with light beard and long and smooth hair. He is fat. His eyes is narrow. His nose is tiny. he doesn't have mustache."
-# bert = BERTMultiLabelClassifier()
-# print(bert.predict(description))
