@@ -114,6 +114,12 @@ class MultiLabelAccuracy(Metric):
     def __call__(self, logits, target):
         pred = torch.round(logits)
         correct = pred.eq(target)
+        # print('BAD!')
+        # for j in range(correct.size(0)):
+        #     for i in range(correct.size(1)):
+        #         if not correct[j][i]:
+        #             print(i)
+        
         self.correct_k = correct.float().sum()
         self.total = target.size(0) * target.size(1)
 

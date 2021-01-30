@@ -7,13 +7,11 @@ from importlib import import_module
 import os
 import json
 
-from pybert.io.utils import collate_fn
-from pybert.io.bert_processor import BertProcessor
-from pybert.common.tools import logger
-from pybert.configs.inference_config import config
-from pybert.model.bert_for_multi_label import BertForMultiLable
-from pybert.io.task_data import TaskData
-from pybert.test.predictor import Predictor
+from .pybert.io.utils import collate_fn
+from .pybert.io.bert_processor import BertProcessor
+from .pybert.configs.inference_config import config
+from .pybert.model.bert_for_multi_label import BertForMultiLable
+from .pybert.test.predictor import Predictor
 
 class BERTMultiLabelClassifier():
     def __init__(self):
@@ -26,11 +24,9 @@ class BERTMultiLabelClassifier():
 
         self.processor = BertProcessor(vocab_path=config['bert_vocab_path'], do_lower_case=True, num_labels = self.num_labels)
 
-        
-
         self.model = BertForMultiLable.from_pretrained(self.checkpoint_dir, num_labels=self.num_labels)
         self.predictor = Predictor(model=self.model,
-                            logger=logger,
+                            path_to_max_attributes = 'scale_bert/attributes_max.pkl',
                             n_gpu='0')
         self.target = [0]*self.num_labels
 
@@ -48,12 +44,11 @@ class BERTMultiLabelClassifier():
         test_sampler = SequentialSampler(test_dataset)
         test_dataloader = DataLoader(test_dataset, sampler=test_sampler, batch_size=1,
                                     collate_fn=collate_fn)
-
         
         results = self.predictor.predict(data=test_dataloader)[0]
         return results
 
-
-description = "a young man with light beard and goatee. He is fat. His eyes is narrow. His nose is tiny. he doesn't have mustache."
+description = "an asian female with tanned skin and receding hairline without tiny lips.   her hair is medium-length, blond and wavy.  She has blue eyes, pointy nose, arched eyebrows and big ears. She has not large nose. She is putting makeup "
+# description = "a young man. He is fat. His eyes is narrow. His nose is tiny. He doesn't have mustache."
 bert = BERTMultiLabelClassifier()
-print(bert.predict(description))
+logits = bert.predict(description)

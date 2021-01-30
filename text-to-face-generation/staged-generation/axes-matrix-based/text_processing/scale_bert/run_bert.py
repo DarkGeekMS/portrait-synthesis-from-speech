@@ -169,7 +169,7 @@ def run_test(args):
     # ----------- predicting
     logger.info('model predicting....')
     predictor = Predictor(model=model,
-                          logger=logger,
+                          path_to_max_attributes = 'attributes_max.pkl',
                           n_gpu=args.n_gpu)
     results = predictor.predict(data=test_dataloader)
 

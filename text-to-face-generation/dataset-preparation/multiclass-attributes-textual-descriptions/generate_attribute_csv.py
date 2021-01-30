@@ -15,6 +15,7 @@ def main(number_of_records):
 
         # hair color
         'Black_Hair': 2,            # 0-> not mentioned, 1-> black hair
+        'Red_Hair': 2,              # 0-> not mentioned, 1-> red hair
         'Blond_Hair': 2,            # 0-> not mentioned, 1-> blond hair
         'Brown_Hair': 3,            # 0-> not mentioned, 1-> dark brown hair, 2-> brown hair
         'Gray_Hair': 4,             # 0-> not mentioned, 1-> dark gray hair, 2-> gray hair, 3-> white hair
@@ -23,7 +24,7 @@ def main(number_of_records):
         'Straight_Hair': 5,         # 0-> not mentioned, 1-> straight hair, 2-> slightly wavy hair, 3-> wavy hair, 4-> curly hair
         'Receding_Hairline': 2,     # 0-> not mentioned, 1-> with receding hairline
         'Bald': 2,                  # 0-> not mentioned, 1-> bald
-        'Bangs': 3,                 # 0-> not mentioned, 1-> with bangs
+        'Bangs': 2,                 # 0-> not mentioned, 1-> with bangs
 
         # hair length
         'Hair_Length': 4,           # 0-> not mentioned, 1-> short hair, 2-> hair of average-length, 3-> long hair
@@ -55,7 +56,7 @@ def main(number_of_records):
         'Black_Eyes': 2,            # 0-> not mentioned, 1-> black eyes
         'Green_Eyes': 2,            # 0-> not mentioned, 1-> green eyes
         'Blue_Eyes': 2,             # 0-> not mentioned, 1-> blue eyes
-        'Brown_Eyes': 3,            # 0-> not mentioned, 1-> brown eyes
+        'Brown_Eyes': 2,            # 0-> not mentioned, 1-> brown eyes
 
 
         # facial attributes
@@ -75,13 +76,11 @@ def main(number_of_records):
         'Description': 'description'
     }
 
-    # save dict to use in normalization after NLP model
-    # with open('../../staged-generation/attributes_max.pkl', 'wb') as f:
-    #     pickle.dump(attributes[:-1], f, pickle.HIGHEST_PROTOCOL)
-
-    np.save('../../staged-generation/attributes_max.npy', list(attributes.values())[:-1])
-
-
+    # save max values for normalization after bert
+    max_attributes = copy.deepcopy(attributes)
+    max_attributes.popitem()
+    with open('attributes_max.pkl', 'wb') as f:
+        pickle.dump(max_attributes, f, pickle.HIGHEST_PROTOCOL)
 
     # create dataframe to generate records in
     df = pd.DataFrame(columns = attributes.keys())
@@ -108,9 +107,10 @@ def main(number_of_records):
 
         # if bald is mentioned -> delete bald or hair
         if record['Bald'] == 1:
-            # 20% keep bald, make hair not mentioned
+            # 40% keep bald, make hair not mentioned
             if random.random() < 0.4:
                 record['Black_Hair'] = 0
+                record['Red_Hair'] = 0
                 record['Blond_Hair'] = 0
                 record['Brown_Hair'] = 0
                 record['Gray_Hair'] = 0
@@ -123,20 +123,23 @@ def main(number_of_records):
                 record['Bald'] = 0
 
         # one hair color no more
-        if record['Black_Hair'] or record['Blond_Hair'] or record['Brown_Hair'] or record['Gray_Hair']:
+        if record['Black_Hair'] or record['Red_Hair'] or record['Blond_Hair'] or record['Brown_Hair'] or record['Gray_Hair']:
             # set all zeros
             record['Black_Hair'] = 0
+            record['Red_Hair'] = 0
             record['Blond_Hair'] = 0
             record['Brown_Hair'] = 0
             record['Gray_Hair'] = 0
 
             prob = random.random()
             # set one of them
-            if prob < 0.25:
+            if prob < 0.2:
                 record['Black_Hair'] = random.randint(1, attributes['Black_Hair'] - 1)
-            elif prob < 0.5:
+            elif prob < 0.4:
+                record['Red_Hair'] = random.randint(1, attributes['Red_Hair'] - 1)
+            elif prob < 0.6:
                 record['Blond_Hair'] = random.randint(1, attributes['Blond_Hair'] - 1)
-            elif prob < 0.75:
+            elif prob < 0.8:
                 record['Brown_Hair'] = random.randint(1, attributes['Brown_Hair'] - 1)   
             else:
                 record['Gray_Hair'] = random.randint(1, attributes['Gray_Hair'] - 1)

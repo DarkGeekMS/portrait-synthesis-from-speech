@@ -170,9 +170,9 @@ class textual_description:
         # male
         if self.gender_attribute == 1:
             # middle-aged, old, very old
-            if age_attribute > 2:
+            if age_attribute > 3:
                 self.gender = random.choice(['male', 'guy', 'man'])
-            # kid, teen
+            # baby, kid, teen
             else:
                 self.gender = random.choice(['male', 'boy'])
             self.pronoun = 'He'
@@ -180,9 +180,9 @@ class textual_description:
         # female
         else:
             # middle-aged, old, very old
-            if age_attribute > 2:
+            if age_attribute > 3:
                 self.gender = random.choice(['female', 'lady', 'woman'])
-            # kid, teen
+            # baby, kid, teen
             else:
                 self.gender = random.choice(['female', 'girl'])
             self.pronoun = 'She'
@@ -197,6 +197,11 @@ class textual_description:
         black_hair_attribute = self.attributes['Black_Hair']
         if black_hair_attribute == 1:
             self.hair_attributes.append('black')
+
+        # red hair
+        red_hair_attribute = self.attributes['Red_Hair']
+        if red_hair_attribute == 1:
+            self.hair_attributes.append(random.choice(['red', 'ginger']))
         
         # brown hair
         brown_hair_attribute = self.attributes['Brown_Hair']
@@ -524,18 +529,18 @@ class textual_description:
             self.three_way_pos_attribute_dict['eyes'].append('brown')
         
         # Black
-        brown_eye_attribute = self.attributes['Black_Eyes']
-        if brown_eye_attribute == 1:
+        black_eye_attribute = self.attributes['Black_Eyes']
+        if black_eye_attribute == 1:
             self.three_way_pos_attribute_dict['eyes'].append('black')
 
         # Blue
-        brown_eye_attribute = self.attributes['Blue_Eyes']
-        if brown_eye_attribute == 1:
+        blue_eye_attribute = self.attributes['Blue_Eyes']
+        if blue_eye_attribute == 1:
             self.three_way_pos_attribute_dict['eyes'].append('blue')
 
         # Green
-        brown_eye_attribute = self.attributes['Green_Eyes']
-        if brown_eye_attribute == 1:
+        green_eye_attribute = self.attributes['Green_Eyes']
+        if green_eye_attribute == 1:
             self.three_way_pos_attribute_dict['eyes'].append('green')
 
 
