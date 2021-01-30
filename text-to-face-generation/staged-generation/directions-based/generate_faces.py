@@ -1,7 +1,8 @@
 from stylegan2_generator import StyleGAN2Generator
 from text_processing.scale_bert.inference import BERTMultiLabelClassifier
-from seed_generation import generate_seed
-from latent_manipulation import manipulate_latent
+from utils.seed_generation import generate_seed
+from utils.latent_manipulation import manipulate_latent
+from utils.text_postprocessing import postprocess_text_logits
 
 from numba import cuda
 import numpy as np
