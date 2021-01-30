@@ -43,7 +43,7 @@
 
 
 # To use it as a sub-module in your work
-1. Download weights and config file from [Trained-Bert](https://drive.google.com/drive/folders/1Y0ViCkgwaEbLHt_ESzKOjDiISNjXsy3r?usp=sharing) 
+1. Download weights and config file from [Trained-Bert](https://drive.google.com/drive/folders/1fCu8Lat0IN2FN8hF71ygUWTGEIqXJIR9?usp=sharing) 
 
 2. Unzip it and place its contents into `/pybert/output/checkpoints/bert` directory.
 
