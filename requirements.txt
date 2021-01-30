@@ -44,3 +44,4 @@ pytorch-transformers
 coloredlogs
 colorama
 deep-translator
+lpips

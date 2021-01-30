@@ -46,3 +46,4 @@ RUN pip install pytorch-transformers
 RUN pip install coloredlogs
 RUN pip install colorama
 RUN pip install deep-translator
+RUN pip install lpips
