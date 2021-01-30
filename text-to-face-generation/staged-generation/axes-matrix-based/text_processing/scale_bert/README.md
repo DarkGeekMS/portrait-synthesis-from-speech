@@ -47,6 +47,4 @@
 
 2. Unzip it and place its contents into `/pybert/output/checkpoints/bert` directory.
 
-4. Download `attributes_max.pkl` from [here](https://drive.google.com/file/d/1Z2luHlHkxww1mD4eDZTZ555xbcDYENOK/view?usp=sharing), and place it in `scale_bert` folder.
-
 3. Import `inference.py` file and use `bertMultiLabelClassifier` function to predict labels.
