@@ -26,7 +26,7 @@ def postprocess_text_logits(sent_pred, axes_range):
     proc_pred[7] = sent_pred[9]
     # [8] hair with bangs attribute
     proc_pred[8] = sent_pred[10]
-    # [9] hair color attribute
+    # [9] hair length attribute
     proc_pred[9] = sent_pred[11]
     # [10] beard attribute
     proc_pred[10] = sent_pred[14]
