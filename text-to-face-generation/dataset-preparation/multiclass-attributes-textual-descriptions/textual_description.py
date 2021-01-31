@@ -17,6 +17,7 @@ class textual_description:
         self.is_not_full_attributes = []
         self.putting_full_attributes = []
         self.not_putting_full_attributes = []
+        self.wearing_full_attributes = []
         self.added_antonyms_attributes = []
 
         self.hair_attributes = []
@@ -659,6 +660,29 @@ class textual_description:
                 self.putting_full_attributes.append('lipstick')
 
     
+
+    def wearing_glasses_attribute_processing(self):
+        wearing_sightglasses_attribute = self.attributes['Wearing_SightGlasses']
+        wearing_sunglasses_attribute = self.attributes['Wearing_SunGlasses']
+
+        # sunglasses
+        if wearing_sunglasses_attribute == 1:
+            # 50% -> with sunglasses
+            if random.random() > 0.5:
+                self.with_statements.append(random.choice(['sunglasses', 'sun glasses']))
+            # 50% -> wearing sunglasses
+            else:
+                self.wearing_full_attributes.append(random.choice(['sunglasses', 'sun glasses']))
+
+        # sightglasses
+        if wearing_sightglasses_attribute == 1:
+            # 50% -> with sightglasses
+            if random.random() > 0.5:
+                self.with_statements.append(random.choice(['sight glasses', 'glasses']))
+            # 50% -> wearing sightglasses
+            else:
+                self.wearing_full_attributes.append(random.choice(['sight glasses', 'glasses']))
+
     def goatee_attribute_processing(self):
         goatee_attribute = self.attributes['Goatee']
         if goatee_attribute == 1:
@@ -826,6 +850,7 @@ class textual_description:
         self.high_cheekbones_attribute_processing()
         self.heavy_makeup_attribute_processing()
         self.wearing_lipstick_attribute_processing()
+        self.wearing_glasses_attribute_processing()
         self.goatee_attribute_processing()
         self.mustache_attribute_processing()
         self.beard_attribute_processing()
@@ -880,6 +905,7 @@ class textual_description:
         else:
             putting_statement = ''
             puts_statement = ''
+
         
         # not putting statement
         if len(self.not_putting_full_attributes) > 0:
@@ -889,10 +915,22 @@ class textual_description:
         else:
             not_putting_statement = ''
 
+        
+        # wearing statement
+        if len(self.wearing_full_attributes) > 0:
+            random.shuffle(self.wearing_full_attributes)
+            wearing_attribute = self.and_combine(self.wearing_full_attributes)
+            wearing_statement = self.pronoun + ' is wearing ' + wearing_attribute.lower() + '.'
+            wears_statement = self.pronoun + ' wears ' + wearing_attribute.lower() + '.'
+        else:
+            wearing_statement = ''
+            wears_statement = ''
+
 
         put_statement = random.choice([puts_statement,putting_statement])
+        wear_statement = random.choice([wears_statement,wearing_statement])
 
-        statements = [not_putting_statement, put_statement, has_statement, has_not_statement, is_statement, is_not_statement] + self.full_statements
+        statements = [not_putting_statement, put_statement, wear_statement, has_statement, has_not_statement, is_statement, is_not_statement] + self.full_statements
         random.shuffle(statements)
         # full description
         separator = ' '

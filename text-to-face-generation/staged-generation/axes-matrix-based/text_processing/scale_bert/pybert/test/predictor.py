@@ -32,6 +32,7 @@ class Predictor(object):
             'Blond_Hair',
             'Brown_Hair',
             'Gray_Hair',
+            'Red_Hair',
             'Receding_Hairline',
             'Bald',
             'Bangs',
@@ -48,7 +49,9 @@ class Predictor(object):
             'High_Cheekbones',
             'Pointy_Nose',
             'Rosy_Cheeks',
-            'Heavy_Makeup'
+            'Heavy_Makeup',
+            'Wearing_SightGlasses',
+            'Wearing_SunGlasses'
         ]
 
     def make_logits(self, logits):
@@ -57,7 +60,12 @@ class Predictor(object):
             attributes = list(self.attributes_max_values.keys())
 
             logits_mod = {attributes[i]: log[i] for i in range(len(attributes))} 
-            print(logits_mod)
+
+            # print()
+            # print()
+            # for key in logits_mod.keys():
+            #     print(key, ':', logits_mod[key])
+
             # option 1 - zero start
             for zs_attr in self.zero_start_attributes:
                 # not mentioned
@@ -90,8 +98,19 @@ class Predictor(object):
                 else:
                     logits_mod[nzs_attr] = logits_mod[nzs_attr] / (self.attributes_max_values[nzs_attr] - 1)
 
+
+            # clip on 1 max
+            for key in logits_mod.keys():
+                if logits_mod[key] > 1:
+                    logits_mod[key] = 1
+            
             logits_mod_list = list(logits_mod.values())
             all_logits_mod_list.append(logits_mod_list)
+
+        print()
+        print()
+        for key in logits_mod.keys():
+            print(key, ':', logits_mod[key])
 
         return all_logits_mod_list
 

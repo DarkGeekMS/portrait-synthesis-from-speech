@@ -48,7 +48,7 @@ class BERTMultiLabelClassifier():
         results = self.predictor.predict(data=test_dataloader)[0]
         return results
 
-description = "an asian female with tanned skin and receding hairline without tiny lips.   her hair is medium-length, blond and wavy.  She has blue eyes, pointy nose, arched eyebrows and big ears. She has not large nose. She is putting makeup "
-# description = "a young man. He is fat. His eyes is narrow. His nose is tiny. He doesn't have mustache."
-bert = BERTMultiLabelClassifier()
-logits = bert.predict(description)
+# description = "an asian female with tanned skin and receding hairline without tiny lips.   her hair is medium-length, blond and wavy.  She has blue eyes, pointy nose, arched eyebrows and big ears. She has not large nose. She is putting makeup "
+# # description = "a young man. He is fat. His eyes is narrow. His nose is tiny. He doesn't have mustache."
+# bert = BERTMultiLabelClassifier()
+# logits = bert.predict(description)
