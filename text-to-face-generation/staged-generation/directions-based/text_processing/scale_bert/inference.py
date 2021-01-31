@@ -26,7 +26,7 @@ class BERTMultiLabelClassifier():
 
         self.model = BertForMultiLable.from_pretrained(self.checkpoint_dir, num_labels=self.num_labels)
         self.predictor = Predictor(model=self.model,
-                            path_to_max_attributes = 'scale_bert/attributes_max.pkl',
+                            path_to_max_attributes = config['max_attributes_path'],
                             n_gpu='0')
         self.target = [0]*self.num_labels
 
@@ -47,8 +47,3 @@ class BERTMultiLabelClassifier():
         
         results = self.predictor.predict(data=test_dataloader)[0]
         return results
-
-description = "an asian female with tanned skin and receding hairline without tiny lips.   her hair is medium-length, blond and wavy.  She has blue eyes, pointy nose, arched eyebrows and big ears. She has not large nose. She is putting makeup "
-# description = "a young man. He is fat. His eyes is narrow. His nose is tiny. He doesn't have mustache."
-bert = BERTMultiLabelClassifier()
-logits = bert.predict(description)

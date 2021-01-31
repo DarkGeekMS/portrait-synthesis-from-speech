@@ -1,7 +1,8 @@
 from stylegan2_generator import StyleGAN2Generator
 from text_processing.scale_bert.inference import BERTMultiLabelClassifier
-from seed_generation import generate_seed
-from latent_manipulation import manipulate_latent
+from utils.seed_generation import generate_seed
+from utils.latent_manipulation import manipulate_latent
+from utils.text_postprocessing import postprocess_text_logits
 
 from numba import cuda
 import numpy as np
@@ -32,7 +33,7 @@ def generate_faces(config):
     text_output = []
     for idx, sent in enumerate(sent_list):
         sent_pred = bert_model.predict(sent)
-        sent_pred_scaled = np.array([(logit*config['axes_range']*2.0)-config['axes_range'] if logit != -1 else -1 for logit in sent_pred])
+        sent_pred_scaled = postprocess_text_logits(sent_pred, config['axes_range'])
         text_output.append(sent_pred_scaled)
         # DEBUG : print debug features
         if config['debug_mode']:
