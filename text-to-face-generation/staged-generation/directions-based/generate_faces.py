@@ -52,6 +52,9 @@ def generate_faces(config):
     # read pre-defined feature directions
     print('\nReading feature directions ...\n')
     feature_directions = np.load(config['directions_npy'])
+    # read initial seed latent vectors
+    print('\nReading initial seed latent vectors ...\n')
+    seed_latent_vectors = np.load(config['initial_seed_npy'])
     # loop over each text description to generate the corresponding face image
     print('Starting face generation from text ...\n')
     for idx, text_logits in enumerate(text_output):
@@ -59,8 +62,7 @@ def generate_faces(config):
         print(f'Face ID : {idx}')
         # generate a random seed of extended latent vector and corresponding logits
         print('Generating initial seed ...')
-        seed = np.random.randint(config['seed_lower_bound'], config['seed_upper_bound'])
-        latent_vector, image_logits = generate_seed(feature_directions, stylegan2_generator, seed)
+        latent_vector, image_logits = generate_seed(seed_latent_vectors, feature_directions)
         # DEBUG : print debug features and save initial face image
         if config['debug_mode']:
             logger.debug(f'Random vector[{idx}] :')
