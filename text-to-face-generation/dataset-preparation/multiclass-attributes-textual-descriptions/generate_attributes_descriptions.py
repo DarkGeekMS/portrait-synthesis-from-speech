@@ -20,7 +20,7 @@ def main(attributes_csv_path, paraphrase = False):
         descriptions[i] = description
 
         # after each 1000 descriptions save        
-        if i % 1000 == 0:
+        if i % 10000 == 0:
             table['Description'] = descriptions
             table.to_csv(attributes_csv_path,index=False)
 

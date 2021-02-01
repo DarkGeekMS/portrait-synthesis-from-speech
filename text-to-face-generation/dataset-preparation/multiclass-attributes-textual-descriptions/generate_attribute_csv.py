@@ -7,6 +7,103 @@ import pickle
 import numpy as np
 import copy
 
+def make_record_resonable(record, attributes_max):
+    # some constraints on attributes
+    # females and babies and children cannot have facial hair and cannot be bald
+    if record['Male'] == 0 or record['Old'] == 1 or record['Old'] == 2:
+        record['Goatee'] = 0
+        record['Mustache'] = 0
+        record['Beard'] = 0
+        record['Sideburns'] = 0
+    # females cannot be bald
+    if record['Male'] == 0:
+        record['Bald'] = 0
+
+    # males and babies cannot have makeup or lipstick
+    if record['Male'] == 1 or record['Old'] == 1:
+        record['Heavy_Makeup'] = 0
+        record['Wearing_Lipstick'] = 0
+
+    # if bald is mentioned -> delete bald or hair
+    if record['Bald'] == 1:
+        # 40% keep bald, make hair not mentioned
+        if random.random() < 0.4:
+            record['Black_Hair'] = 0
+            record['Red_Hair'] = 0
+            record['Blond_Hair'] = 0
+            record['Brown_Hair'] = 0
+            record['Gray_Hair'] = 0
+            record['Straight_Hair'] = 0
+            record['Receding_Hairline'] = 0
+            record['Bangs'] = 0
+            record['Hair_Length'] = 0
+        # make bald not mentioned
+        else:
+            record['Bald'] = 0
+
+    # one hair color no more
+    if record['Black_Hair'] or record['Red_Hair'] or record['Blond_Hair'] or record['Brown_Hair'] or record['Gray_Hair']:
+        # set all zeros
+        record['Black_Hair'] = 0
+        record['Red_Hair'] = 0
+        record['Blond_Hair'] = 0
+        record['Brown_Hair'] = 0
+        record['Gray_Hair'] = 0
+
+        prob = random.random()
+        # set one of them
+        if prob < 0.2:
+            record['Black_Hair'] = random.randint(1, attributes_max['Black_Hair'] - 1)
+        elif prob < 0.4:
+            record['Red_Hair'] = random.randint(1, attributes_max['Red_Hair'] - 1)
+        elif prob < 0.6:
+            record['Blond_Hair'] = random.randint(1, attributes_max['Blond_Hair'] - 1)
+        elif prob < 0.8:
+            record['Brown_Hair'] = random.randint(1, attributes_max['Brown_Hair'] - 1)   
+        else:
+            record['Gray_Hair'] = random.randint(1, attributes_max['Gray_Hair'] - 1)
+    
+
+
+    # one eye color no more
+    if record['Black_Eyes'] or record['Blue_Eyes'] or record['Brown_Eyes'] or record['Green_Eyes']:
+        # set all zeros
+        record['Black_Eyes'] = 0
+        record['Blue_Eyes'] = 0
+        record['Brown_Eyes'] = 0
+        record['Green_Eyes'] = 0
+
+        prob = random.random()
+        # set one of them
+        if prob < 0.25:
+            record['Black_Eyes'] = random.randint(1, attributes_max['Black_Eyes'] - 1)
+        elif prob < 0.5:
+            record['Blue_Eyes'] = random.randint(1, attributes_max['Blue_Eyes'] - 1)
+        elif prob < 0.75:
+            record['Brown_Eyes'] = random.randint(1, attributes_max['Brown_Eyes'] - 1)   
+        else:
+            record['Green_Eyes'] = random.randint(1, attributes_max['Green_Eyes'] - 1)
+
+
+    # receding hairline or bangs
+    if record['Bangs'] or record['Receding_Hairline']:
+        if random.random() < 0.5:
+            record['Bangs'] = 0
+            record['Receding_Hairline'] = 1
+        else:
+            record['Bangs'] = 1
+            record['Receding_Hairline'] = 0
+
+    # eyeglasses one type only
+    if record['Wearing_SightGlasses'] or record['Wearing_SunGlasses']:
+        if random.random() > 0.5:
+            record['Wearing_SightGlasses'] = 1
+            record['Wearing_SunGlasses'] = 0
+        else:
+            record['Wearing_SightGlasses'] = 0
+            record['Wearing_SunGlasses'] = 1
+
+
 def main(number_of_records):
     attributes = {
         # eyebrows
@@ -70,7 +167,11 @@ def main(number_of_records):
 
         # make up
         'Heavy_Makeup': 4,          # 0-> not mentioned, 1-> no makeup, 2-> simple makeup, 3-> heavy makeup
-        'Wearing_Lipstick': 3,      # 0-> not mentioned, 1-> no lipstick, 2-> with lipstick 
+        'Wearing_Lipstick': 3,      # 0-> not mentioned, 1-> no lipstick, 2-> with lipstick
+
+        # eyeglasses 
+        'Wearing_SightGlasses': 2,      # 0-> not mentioned, 1-> with sightglasses 
+        'Wearing_SunGlasses': 2,        # 0-> not mentioned, 1-> with sunglasses 
 
         # textual description
         'Description': 'description'
@@ -80,101 +181,53 @@ def main(number_of_records):
     max_attributes = copy.deepcopy(attributes)
     max_attributes.popitem()
     with open('attributes_max.pkl', 'wb') as f:
-        pickle.dump(max_attributes, f, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(max_attributes, f)
 
     # create dataframe to generate records in
     df = pd.DataFrame(columns = attributes.keys())
 
     for i in tqdm(range(number_of_records)):
         record = copy.deepcopy(attributes)
-        for attribute in list(attributes.keys())[:-1]:
-            record[attribute]= random.randint(0, attributes[attribute] - 1)
-        # some constraints on attributes
-        # females and babies and children cannot have facial hair and cannot be bald
-        if record['Male'] == 0 or record['Old'] == 1 or record['Old'] == 2:
-            record['Goatee'] = 0
-            record['Mustache'] = 0
-            record['Beard'] = 0
-            record['Sideburns'] = 0
-        # females cannot be bald
-        if record['Male'] == 0:
-            record['Bald'] = 0
+        prob = random.random()
 
-        # males and babies cannot have makeup or lipstick
-        if record['Male'] == 1 or record['Old'] == 1:
-            record['Heavy_Makeup'] = 0
-            record['Wearing_Lipstick'] = 0
+        if prob > 0.6:
+            # full random mode
+            for attribute in list(attributes.keys())[:-1]:
+                record[attribute]= random.randint(0, attributes[attribute] - 1)
 
-        # if bald is mentioned -> delete bald or hair
-        if record['Bald'] == 1:
-            # 40% keep bald, make hair not mentioned
-            if random.random() < 0.4:
-                record['Black_Hair'] = 0
-                record['Red_Hair'] = 0
-                record['Blond_Hair'] = 0
-                record['Brown_Hair'] = 0
-                record['Gray_Hair'] = 0
-                record['Straight_Hair'] = 0
-                record['Receding_Hairline'] = 0
-                record['Bangs'] = 0
-                record['Hair_Length'] = 0
-            # make bald not mentioned
-            else:
-                record['Bald'] = 0
+        elif prob > 0.35:
+            # half length not mentioned mode
+            for attribute in list(attributes.keys())[:-1]:
+                if attribute != "Male":
+                    if random.random() > 0.5:
+                        record[attribute]= random.randint(1, attributes[attribute] - 1)
+                    else:
+                        record[attribute]= 0
+            record["Male"] = random.randint(0, attributes["Male"] - 1)
 
-        # one hair color no more
-        if record['Black_Hair'] or record['Red_Hair'] or record['Blond_Hair'] or record['Brown_Hair'] or record['Gray_Hair']:
-            # set all zeros
-            record['Black_Hair'] = 0
-            record['Red_Hair'] = 0
-            record['Blond_Hair'] = 0
-            record['Brown_Hair'] = 0
-            record['Gray_Hair'] = 0
+        elif prob > 0.15:
+            # 80% not mentioned mode
+            for attribute in list(attributes.keys())[:-1]:
+                if attribute != "Male":
+                    if random.random() > 0.8:
+                        record[attribute]= random.randint(1, attributes[attribute] - 1)
+                    else:
+                        record[attribute]= 0
+            record["Male"] = random.randint(0, attributes["Male"] - 1)
 
-            prob = random.random()
-            # set one of them
-            if prob < 0.2:
-                record['Black_Hair'] = random.randint(1, attributes['Black_Hair'] - 1)
-            elif prob < 0.4:
-                record['Red_Hair'] = random.randint(1, attributes['Red_Hair'] - 1)
-            elif prob < 0.6:
-                record['Blond_Hair'] = random.randint(1, attributes['Blond_Hair'] - 1)
-            elif prob < 0.8:
-                record['Brown_Hair'] = random.randint(1, attributes['Brown_Hair'] - 1)   
-            else:
-                record['Gray_Hair'] = random.randint(1, attributes['Gray_Hair'] - 1)
-        
+        else:
+            # 95% not mentioned mode
+            for attribute in list(attributes.keys())[:-1]:
+                if attribute != "Male":
+                    if random.random() > 0.9:
+                        record[attribute]= random.randint(1, attributes[attribute] - 1)
+                    else:
+                        record[attribute]= 0
+            record["Male"] = random.randint(0, attributes["Male"] - 1)
+            
 
-
-        # one eye color no more
-        if record['Black_Eyes'] or record['Blue_Eyes'] or record['Brown_Eyes'] or record['Green_Eyes']:
-            # set all zeros
-            record['Black_Eyes'] = 0
-            record['Blue_Eyes'] = 0
-            record['Brown_Eyes'] = 0
-            record['Green_Eyes'] = 0
-
-            prob = random.random()
-            # set one of them
-            if prob < 0.25:
-                record['Black_Eyes'] = random.randint(1, attributes['Black_Eyes'] - 1)
-            elif prob < 0.5:
-                record['Blue_Eyes'] = random.randint(1, attributes['Blue_Eyes'] - 1)
-            elif prob < 0.75:
-                record['Brown_Eyes'] = random.randint(1, attributes['Brown_Eyes'] - 1)   
-            else:
-                record['Green_Eyes'] = random.randint(1, attributes['Green_Eyes'] - 1)
-
-
-        # receding hairline or bangs
-        if record['Bangs'] or record['Receding_Hairline']:
-            if random.random() < 0.5:
-                record['Bangs'] = 0
-                record['Receding_Hairline'] = 1
-            else:
-                record['Bangs'] = 1
-                record['Receding_Hairline'] = 0
-
+        # constraints on records
+        make_record_resonable(record, attributes)
 
         # add the record to the dataframe
         df.loc[len(df)] = record
