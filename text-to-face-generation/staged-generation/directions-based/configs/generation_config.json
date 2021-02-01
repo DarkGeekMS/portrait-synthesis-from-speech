@@ -2,6 +2,7 @@
     "n_classes" : 33,
     "truncation_psi" : 0.5,
     "axes_range" : 4.0,
+    "recalculate_logits" : true,
     "initial_seed_npy" : "dataset/initial_seed.npy",
     "directions_npy" : "stylegan2_directions/grouped_directions.npy",
     "stylegan_pkl" : "networks/stylegan2-ffhq-config-f.pkl",

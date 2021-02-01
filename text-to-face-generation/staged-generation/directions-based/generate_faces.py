@@ -73,7 +73,7 @@ def generate_faces(config):
             io.imsave(f'results/{idx}_init.png', initial_face_image[0])
         # manipulate latent space to get the target latent vector
         print('Performing latent manipulation ...')
-        target_latent = manipulate_latent(latent_vector, image_logits, text_logits, feature_directions)
+        target_latent = manipulate_latent(latent_vector, image_logits, text_logits, feature_directions, recalculate=config["recalculate_logits"])
         target_latent = np.expand_dims(target_latent, axis=0)
         # DEBUG : print debug features
         if config['debug_mode']:
