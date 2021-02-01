@@ -48,7 +48,9 @@ def generate_faces(config):
     device.reset()
     # initialize StyleGAN2 generator
     print('Initializing StyleGAN2 generator ...')
-    stylegan2_generator = StyleGAN2Generator(config['stylegan_pkl'], truncation_psi=config['truncation_psi'], use_projector=False)
+    stylegan2_generator = StyleGAN2Generator(
+        config['stylegan_pkl'], truncation_psi=config['truncation_psi'], use_projector=False
+    )
     # read pre-defined feature directions
     print('\nReading feature directions ...\n')
     feature_directions = np.load(config['directions_npy'])
@@ -73,7 +75,9 @@ def generate_faces(config):
             io.imsave(f'results/{idx}_init.png', initial_face_image[0])
         # manipulate latent space to get the target latent vector
         print('Performing latent manipulation ...')
-        target_latent = manipulate_latent(latent_vector, image_logits, text_logits, feature_directions, recalculate=config["recalculate_logits"])
+        target_latent = manipulate_latent(
+            latent_vector, image_logits, text_logits, feature_directions, recalculate=config["recalculate_logits"]
+        )
         target_latent = np.expand_dims(target_latent, axis=0)
         # DEBUG : print debug features
         if config['debug_mode']:
@@ -104,7 +108,9 @@ def generate_faces(config):
 if __name__ == "__main__":
     # arguments parsing
     argparser = argparse.ArgumentParser(description=__doc__)
-    argparser.add_argument('-cfg', '--config', type=str, help='path to config file of pipeline parameters', default='configs/generation_config.json')
+    argparser.add_argument(
+        '-cfg', '--config', type=str, help='path to config file of pipeline parameters', default='configs/generation_config.json'
+    )
 
     args = argparser.parse_args()
 
