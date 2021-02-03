@@ -337,7 +337,7 @@ class textual_description:
         if bushy_eyebrows_attribute == 1:
             self.eyebrows_attributes.append(random.choice(['thin', 'light']))
         elif bushy_eyebrows_attribute == 2:
-            self.eyebrows_attributes.append('bushy')
+            self.eyebrows_attributes.append(random.choice(['thick', 'heavy', 'bushy']))
 
         
         # add eyebrows attributes to three way attributes
@@ -457,7 +457,7 @@ class textual_description:
             self.three_way_pos_attribute_dict['face'] = []
 
             thin_adjectives = ['thin', 'skinny', 'slim', 'oval']
-            chubby_adjectives = ['circular', 'round', 'fat', 'chubby']
+            chubby_adjectives = ['circular', 'round', 'fat', 'chubby', 'thick']
 
             if chubby_attribute == 1:
                 self.three_way_pos_attribute_dict['face'].append(random.choice(thin_adjectives))

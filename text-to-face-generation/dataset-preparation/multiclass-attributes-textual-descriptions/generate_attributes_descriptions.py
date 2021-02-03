@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import argparse
 import sys
+import os
 from tqdm import tqdm
 from textual_description import textual_description
 
@@ -10,10 +11,15 @@ def main(attributes_csv_path, paraphrase = False):
 
     rows_count = len(table.index)
     
-    descriptions = [0] * len(table)
-    ages = table['Old']
+    descriptions = list(table['Description'].values)
+    ages = list(table['Old'].values)
 
-    for i in tqdm(range(rows_count)):
+    if os.path.exists('last_desc_generated.npy'):
+        start = np.load('last_desc_generated.npy')[0]
+    else:
+        start = 0
+
+    for i in tqdm(range(start,rows_count)):
         attr_record = table.iloc[i]
         textual_description_object = textual_description(attr_record, paraphrase)
         description = textual_description_object.description
@@ -22,13 +28,20 @@ def main(attributes_csv_path, paraphrase = False):
         ages[i] = textual_description_object.age_attribute
 
         # after each 1000 descriptions save        
-        if i % 10000 == 0:
+        if i % 10 == 0:
             table['Description'] = descriptions
             table['Old'] = ages
             table.to_csv(attributes_csv_path,index=False)
+            np.save('last_desc_generated.npy',[i])
+
+
 
     table['Description'] = descriptions
+    table['Old'] = ages
     table.to_csv(attributes_csv_path,index=False)
+
+    # delete last_desc_generated.npy file
+    os.remove('last_desc_generated.npy') 
 
 
 if __name__ == '__main__':

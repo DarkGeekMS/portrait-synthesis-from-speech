@@ -115,10 +115,10 @@ class Predictor(object):
             logits_mod_list = list(logits_mod.values())
             all_logits_mod_list.append(logits_mod_list)
 
-        # print()
-        # print()
-        # for key in logits_mod.keys():
-        #     print(key, ':', logits_mod[key])
+        print()
+        print()
+        for key in logits_mod.keys():
+            print(key, ':', logits_mod[key])
 
         return all_logits_mod_list
 

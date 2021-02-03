@@ -145,3 +145,6 @@ out
 # BERT models
 pytorch_model.bin
 train_checkpoint.pth
+
+# paraphrasing files
+last_desc_generated.npy
