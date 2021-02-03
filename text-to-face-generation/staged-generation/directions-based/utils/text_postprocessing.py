@@ -72,11 +72,10 @@ def postprocess_text_logits(sent_pred, axes_range):
     proc_pred[28] = sent_pred[34]
     # [29] lipstick attribute
     proc_pred[29] = sent_pred[35]
-    # TODO : uncomment the following attributes when added to text
-    # # [30] sight glasses attribute
-    # proc_pred[30] = sent_pred[36]
-    # # [31] sun glasses attribute
-    # proc_pred[31] = sent_pred[37]
+    # [30] sight glasses attribute
+    proc_pred[30] = sent_pred[36]
+    # [31] sun glasses attribute
+    proc_pred[31] = sent_pred[37]
     # re-scale all attributes based on considered axes range
     proc_pred_scaled = np.array(
         [(logit*axes_range*2.0)-axes_range if logit != -1.0 else -1.0 for logit in proc_pred]
