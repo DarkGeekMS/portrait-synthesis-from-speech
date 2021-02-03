@@ -66,6 +66,12 @@ class Predictor(object):
             # for key in logits_mod.keys():
             #     print(key, ':', logits_mod[key])
 
+
+
+            # round on glasses
+            logits_mod['Wearing_SightGlasses'] = np.round(logits_mod['Wearing_SightGlasses'])
+            logits_mod['Wearing_SunGlasses'] = np.round(logits_mod['Wearing_SunGlasses'])
+
             # option 1 - zero start
             for zs_attr in self.zero_start_attributes:
                 # not mentioned
@@ -103,6 +109,8 @@ class Predictor(object):
             for key in logits_mod.keys():
                 if logits_mod[key] > 1:
                     logits_mod[key] = 1
+
+            
             
             logits_mod_list = list(logits_mod.values())
             all_logits_mod_list.append(logits_mod_list)

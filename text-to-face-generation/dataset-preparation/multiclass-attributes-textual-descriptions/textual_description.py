@@ -127,34 +127,34 @@ class textual_description:
         add correct pronoun and possessive pronoun
         '''
         # age
-        age_attribute = self.attributes['Old']
+        self.age_attribute = self.attributes['Old']
 
         # not mentioned
-        if   age_attribute == 0:
+        if   self.age_attribute == 0:
             self.age_adj = ''
 
         # baby
-        elif age_attribute == 1:
+        elif self.age_attribute == 1:
             self.age_adj = random.choice(['baby', 'toddler'])
         
         # kid
-        elif age_attribute == 2:
+        elif self.age_attribute == 2:
             self.age_adj = random.choice(['kid', 'child'])
 
         # teenager
-        elif age_attribute == 3:
+        elif self.age_attribute == 3:
             self.age_adj = random.choice(['teenager', 'teen', 'young', 'very young'])
 
         # middle-aged
-        elif age_attribute == 4:
+        elif self.age_attribute == 4:
             self.age_adj = random.choice(['middle-aged', 'adult', 'grown'])
         
         # old
-        elif age_attribute == 5:
+        elif self.age_attribute == 5:
             self.age_adj = 'old'
         
         # very old
-        elif age_attribute == 6:
+        elif self.age_attribute == 6:
             self.age_adj = random.choice(['very old', 'elderly'])
 
 
@@ -170,22 +170,61 @@ class textual_description:
         self.gender_attribute = self.attributes['Male']
         # male
         if self.gender_attribute == 1:
-            # middle-aged, old, very old
-            if age_attribute > 3:
+            # middle-aged, old, very old (mentioned)
+            if self.age_attribute > 3:
                 self.gender = random.choice(['male', 'guy', 'man'])
-            # baby, kid, teen
-            else:
+            # baby, kid, teen (mentioned)
+            elif self.age_attribute > 0:
                 self.gender = random.choice(['male', 'boy'])
+            # age not mentioned
+            else:
+                prob = random.random()
+
+                if prob > 0.7:
+                    # add gender as male without age update
+                    self.gender = 'male'
+
+                elif prob > 0.3:
+                    # add it as guy/man with age update to middle-aged or old
+                    self.gender = random.choice(['guy', 'man'])
+                    self.age_attribute = random.choice([4, 5])
+
+                else:
+                    # add it as boy with age update to kid or teenager
+                    self.gender = 'boy'
+                    self.age_attribute = random.choice([2, 3])
+                
             self.pronoun = 'He'
             self.possessive_pronoun = 'his'
+
+
         # female
         else:
-            # middle-aged, old, very old
-            if age_attribute > 3:
+            # middle-aged, old, very old (mentioned)
+            if self.age_attribute > 3:
                 self.gender = random.choice(['female', 'lady', 'woman'])
-            # baby, kid, teen
-            else:
+            # baby, kid, teen (mentioned)
+            elif self.age_attribute > 0:
                 self.gender = random.choice(['female', 'girl'])
+            # age not mentioned
+            else:
+                prob = random.random()
+
+                if prob > 0.7:
+                    # add gender as female without age update
+                    self.gender = 'female'
+
+                elif prob > 0.3:
+                    # add it as lady/woman with age update to middle-aged or old
+                    self.gender = random.choice(['lady', 'woman'])
+                    self.age_attribute = random.choice([4, 5])
+
+                else:
+                    # add it as girl with age update to kid or teenager
+                    self.gender = 'girl'
+                    self.age_attribute = random.choice([2, 3])
+
+
             self.pronoun = 'She'
             self.possessive_pronoun = 'her'
         
