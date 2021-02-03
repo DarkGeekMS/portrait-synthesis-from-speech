@@ -28,7 +28,7 @@ def main(attributes_csv_path, paraphrase = False):
         ages[i] = textual_description_object.age_attribute
 
         # after each 1000 descriptions save        
-        if i % 10 == 0:
+        if i % 1000 == 0:
             table['Description'] = descriptions
             table['Old'] = ages
             table.to_csv(attributes_csv_path,index=False)
