@@ -1,6 +1,6 @@
 from stylegan2_generator import StyleGAN2Generator
 from face_classifier.model import FaceClassifier
-from bert.inference import BERTMultiLabelClassifier
+from text_processing.legacy_bert.inference import BERTMultiLabelClassifier
 from navigation.latent_manipulation import get_feature_axes, manipulate_latent, get_target_latent_vector
 
 import torch
