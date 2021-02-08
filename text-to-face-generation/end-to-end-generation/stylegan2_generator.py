@@ -83,9 +83,3 @@ class StyleGAN2GeneratorPT(object):
         )
 
         return gen_img
-
-
-
-        
-
-    
