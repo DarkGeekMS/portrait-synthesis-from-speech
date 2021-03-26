@@ -1,60 +1,56 @@
-import argparse
-import numpy as np
-import PIL.Image
+import torch
 import dnnlib
-import dnnlib.tflib as tflib
-import re
-import os
-import sys
+import numpy as np
 
-import pretrained_networks
+import legacy
 
-#----------------------------------------------------------------------------
-
-class StyleGAN2Generator(object):
+class StyleGAN2Generator:
     """StyleGAN2 generator class, used for face generation"""
-    def __init__(self, network_pkl, truncation_psi=1.0, use_projector=False):
+    def __init__(
+        self, network_pkl, truncation_psi=1.0, noise_mode='const',
+        use_projector=False
+    ):
         # initialize network and other class attributes
         print('Loading networks from "%s"...' % network_pkl)
-        _G, _D, self.Gs = pretrained_networks.load_networks(network_pkl)
+        self.device = torch.device('cuda')
+        with dnnlib.util.open_url(network_pkl) as f:
+            self.G = legacy.load_network_pkl(f)['G_ema'].to(self.device)
         self.truncation_psi = truncation_psi
+        self.noise_mode = noise_mode
         self.use_projector = use_projector
 
     def map_latent_vector(self, latent_vector):
         # map unextended latent vector (z) to extended latent vector (w)
-        # initialize random state
-        noise_seed = np.random.randint(10000)
-        rnd = np.random.RandomState(noise_seed)
-        # feed input noise
-        noise_vars = [var for name, var in self.Gs.components.synthesis.vars.items() if name.startswith('noise')]
-        tflib.set_vars({var: rnd.randn(*var.shape.as_list()) for var in noise_vars})
-        # define generator arguments
-        Gs_kwargs = dnnlib.EasyDict()
-        Gs_kwargs.output_transform = dict(func=tflib.convert_images_to_uint8, nchw_to_nhwc=True)
-        Gs_kwargs.randomize_noise = False
-        if self.truncation_psi is not None:
-            Gs_kwargs.truncation_psi = self.truncation_psi
+        # define empty label tensor
+        label = torch.zeros([1, self.G.c_dim], device=self.device)
+        # convert latent vector to tensor
+        latent_vector = torch.from_numpy(latent_vector).to(self.device)
         # project latent vector
-        extended_latent_vector = self.Gs.components.mapping.run(latent_vector, None)
-        return extended_latent_vector
+        extended_latent_vector = self.G.mapping(
+            latent_vector, label, truncation_psi=self.truncation_psi
+        )
+        return extended_latent_vector.cpu().detach().numpy()
 
     def generate_images(self, latent_vector):
         # generate face image from given latent vector
-        # initialize random state
-        noise_seed = np.random.randint(10000)
-        rnd = np.random.RandomState(noise_seed)
-        # feed input noise
-        noise_vars = [var for name, var in self.Gs.components.synthesis.vars.items() if name.startswith('noise')]
-        tflib.set_vars({var: rnd.randn(*var.shape.as_list()) for var in noise_vars})
-        # define generator arguments
-        Gs_kwargs = dnnlib.EasyDict()
-        Gs_kwargs.output_transform = dict(func=tflib.convert_images_to_uint8, nchw_to_nhwc=True)
-        Gs_kwargs.randomize_noise = False
-        if self.truncation_psi is not None:
-            Gs_kwargs.truncation_psi = self.truncation_psi
+        # define empty label tensor
+        label = torch.zeros([1, self.G.c_dim], device=self.device)
+        # convert latent vector to tensor
+        latent_vector = torch.from_numpy(latent_vector).to(self.device)
         # generate face image
-        if self.use_projector == True:
-            images = self.Gs.run(latent_vector, None, **Gs_kwargs)
+        if self.use_projector:
+            images = self.G(
+                latent_vector, label,
+                truncation_psi=self.truncation_psi,
+                noise_mode=self.noise_mode
+            )
         else:
-            images = self.Gs.components.synthesis.run(latent_vector, **Gs_kwargs)
+            images = self.G.synthesis(
+                latent_vector, noise_mode=self.noise_mode
+            )
+        images = images.permute(0, 2, 3, 1).cpu().detach().numpy()
+        images[images < -1.0] = -1.0
+        images[images > 1.0] = 1.0
+        images = (images + 1.0) * 127.5
+        images = images.astype(np.uint8)
         return images
