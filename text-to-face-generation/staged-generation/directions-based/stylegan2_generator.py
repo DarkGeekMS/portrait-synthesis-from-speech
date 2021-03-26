@@ -1,5 +1,6 @@
 import torch
 import dnnlib
+import numpy as np
 
 import legacy
 
@@ -47,4 +48,9 @@ class StyleGAN2Generator:
             images = self.G.synthesis(
                 latent_vector, noise_mode=self.noise_mode
             )
-        return images.cpu().detach().numpy()
+        images = images.permute(0, 2, 3, 1).cpu().detach().numpy()
+        images[images < -1.0] = -1.0
+        images[images > 1.0] = 1.0
+        images = (images + 1.0) * 127.5
+        images = images.astype(np.uint8)
+        return images

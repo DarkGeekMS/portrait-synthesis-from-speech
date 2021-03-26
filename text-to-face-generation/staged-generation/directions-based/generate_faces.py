@@ -40,12 +40,6 @@ def generate_faces(config):
             logger.debug(f'Sent[{idx}] :')
             for logit_idx in config['debug_features']:
                 logger.debug(f'[{logit_idx}] : {sent_pred_scaled[logit_idx]}')
-    # de-allocate BERT model
-    print('Deallocating BERT classifier ...\n')
-    del bert_model
-    # free CUDA GPU memory
-    device = cuda.get_current_device()
-    device.reset()
     # initialize StyleGAN2 generator
     print('Initializing StyleGAN2 generator ...')
     stylegan2_generator = StyleGAN2Generator(
@@ -98,12 +92,6 @@ def generate_faces(config):
         print('Saving output face image ...')
         io.imsave(f'results/{idx}.png', face_image[0])
         print('\n-------------------------------------------------------------\n')
-    # de-allocate StyleGAN2 generator
-    print('Deallocating StyleGAN2 generator ...')
-    del stylegan2_generator
-    # free CUDA GPU memory
-    device = cuda.get_current_device()
-    device.reset()
 
 if __name__ == "__main__":
     # arguments parsing
