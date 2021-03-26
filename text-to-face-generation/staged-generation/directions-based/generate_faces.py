@@ -13,11 +13,13 @@ import argparse
 import json
 import os
 
+
 def generate_faces(config):
     # generate face images from text descriptions using directions-based latent navigation
     # initialize debug logger
     logger = logging.getLogger(__name__)
     coloredlogs.install(level='DEBUG', logger=logger)
+
     # read text descriptions
     print('Reading required text descriptions ...\n')
     sent_list = []
@@ -25,37 +27,41 @@ def generate_faces(config):
         for line in f:
             line = line.strip()
             sent_list.append(line)
+    
     # initialize BERT multi-label classifier model
-    print('Initializing BERT classifier ...')
+    print('Initializing BERT classifier ...\n')
     bert_model = BERTMultiLabelClassifier()
-    # get text logits for each sentence
-    print('Performing BERT inference ...')
-    text_output = []
+
+    # initialize StyleGAN2 generator
+    print('Initializing StyleGAN2 generator ...\n')
+    stylegan2_generator = StyleGAN2Generator(
+        config['stylegan_pkl'], truncation_psi=config['truncation_psi'], use_projector=False
+    )
+
+    # read pre-defined feature directions
+    print('Reading feature directions ...\n')
+    feature_directions = np.load(config['directions_npy'])
+
+    # read initial seed latent vectors
+    print('Reading initial seed latent vectors ...\n')
+    seed_latent_vectors = np.load(config['initial_seed_npy'])
+
+    # loop over each text description to generate the corresponding face image
+    print('Starting face generation from text ...\n')
     for idx, sent in enumerate(sent_list):
+        # print face id
+        print(f'Face ID : {idx}')
+
+        # extract logits from text
+        print('Extracting attributes values from text ...')
         sent_pred = bert_model.predict(sent)
-        sent_pred_scaled = postprocess_text_logits(sent_pred, config['axes_range'])
-        text_output.append(sent_pred_scaled)
+        text_logits = postprocess_text_logits(sent_pred, config['axes_range'])
         # DEBUG : print debug features
         if config['debug_mode']:
             logger.debug(f'Sent[{idx}] :')
             for logit_idx in config['debug_features']:
-                logger.debug(f'[{logit_idx}] : {sent_pred_scaled[logit_idx]}')
-    # initialize StyleGAN2 generator
-    print('Initializing StyleGAN2 generator ...')
-    stylegan2_generator = StyleGAN2Generator(
-        config['stylegan_pkl'], truncation_psi=config['truncation_psi'], use_projector=False
-    )
-    # read pre-defined feature directions
-    print('\nReading feature directions ...\n')
-    feature_directions = np.load(config['directions_npy'])
-    # read initial seed latent vectors
-    print('\nReading initial seed latent vectors ...\n')
-    seed_latent_vectors = np.load(config['initial_seed_npy'])
-    # loop over each text description to generate the corresponding face image
-    print('Starting face generation from text ...\n')
-    for idx, text_logits in enumerate(text_output):
-        # print face id
-        print(f'Face ID : {idx}')
+                logger.debug(f'[{logit_idx}] : {text_logits[logit_idx]}')
+        
         # generate a random seed of extended latent vector and corresponding logits
         print('Generating initial seed ...')
         latent_vector, image_logits = generate_seed(seed_latent_vectors, feature_directions)
@@ -67,6 +73,7 @@ def generate_faces(config):
             logger.debug('Saving initial face image ...')
             initial_face_image = stylegan2_generator.generate_images(np.expand_dims(latent_vector, axis=0))
             io.imsave(f'results/{idx}_init.png', initial_face_image[0])
+        
         # manipulate latent space to get the target latent vector
         print('Performing latent manipulation ...')
         target_latent = manipulate_latent(
@@ -85,13 +92,16 @@ def generate_faces(config):
                     )
                     components.append(np.dot(target_latent[0][layer_idx], unit_direction))
                 logger.debug(f'[{logit_idx}] : {sum(components) / len(components)}')
+        
         # generate the required face image
         print('Performing face generation ...')
         face_image = stylegan2_generator.generate_images(target_latent)
+
         # save the generated face image
         print('Saving output face image ...')
         io.imsave(f'results/{idx}.png', face_image[0])
         print('\n-------------------------------------------------------------\n')
+
 
 if __name__ == "__main__":
     # arguments parsing
