@@ -22,16 +22,20 @@ class StyleGAN2Generator:
         # map unextended latent vector (z) to extended latent vector (w)
         # define empty label tensor
         label = torch.zeros([1, self.G.c_dim], device=self.device)
+        # convert latent vector to tensor
+        latent_vector = torch.from_numpy(latent_vector).to(self.device)
         # project latent vector
         extended_latent_vector = self.G.mapping(
             latent_vector, label, truncation_psi=self.truncation_psi
         )
-        return extended_latent_vector
+        return extended_latent_vector.cpu().detach().numpy()
 
     def generate_images(self, latent_vector):
         # generate face image from given latent vector
         # define empty label tensor
         label = torch.zeros([1, self.G.c_dim], device=self.device)
+        # convert latent vector to tensor
+        latent_vector = torch.from_numpy(latent_vector).to(self.device)
         # generate face image
         if self.use_projector:
             images = self.G(
@@ -43,4 +47,4 @@ class StyleGAN2Generator:
             images = self.G.synthesis(
                 latent_vector, noise_mode=self.noise_mode
             )
-        return images
+        return images.cpu().detach().numpy()

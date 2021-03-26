@@ -5,7 +5,7 @@
     "recalculate_logits" : true,
     "initial_seed_npy" : "dataset/initial_seed.npy",
     "directions_npy" : "stylegan2_directions/grouped_directions.npy",
-    "stylegan_pkl" : "networks/stylegan2-ffhq-config-f.pkl",
+    "stylegan_pkl" : "networks/ffhq.pkl",
     "text_desc" : "dataset/test_desc.txt",
     "debug_mode" : true,
     "debug_features" : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
