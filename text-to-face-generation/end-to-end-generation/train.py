@@ -19,6 +19,7 @@ from sent_embed import SentEmbedEncoder
 from stylegan2_generator import StyleGAN2GeneratorTF, StyleGAN2GeneratorPT
 from vgg import Vgg16
 from loss import PixelwiseDistanceLoss, KLDLoss, LatentLoss
+import pytorch_ssim
 
 def train(network_config, train_config):
     # perform networks initialization and training
@@ -60,6 +61,7 @@ def train(network_config, train_config):
     # define losses
     latent_loss = LatentLoss(losses_list=['kl'], reduction='mean')
     pixel_loss = PixelwiseDistanceLoss(reduction='mean')
+    ssim_loss = pytorch_ssim.SSIM()
 
     # training loop
     print(f'Training on {len(train_dataset)} samples')
@@ -69,8 +71,9 @@ def train(network_config, train_config):
         epoch_r_loss = 0.0
         epoch_p_loss = 0.0
         epoch_total_loss = 0.0
-        viz_samples = []
-        for embeds, images in tqdm(train_loader):
+        #viz_samples = []
+        t = tqdm(train_loader)
+        for embeds, images in t:
             i += 1
             # data to device
             embeds = embeds.to(device)
@@ -84,9 +87,9 @@ def train(network_config, train_config):
             #l_loss = latent_loss(out_embed, l_vecs)
 
             # reconstruction loss
-            recons_imgs = stylegan_gen.generate(out_embed)
-            r_loss = pixel_loss(torch.div(recons_imgs, 255.0), images)
-
+            recons_imgs = stylegan_gen.generate(out_embed, input_type=network_config["input_type"])
+            #r_loss = pixel_loss(torch.div(recons_imgs, 255.0), images)
+            r_loss = -1 * ssim_loss(torch.div(recons_imgs, 255.0), images)
             # perceptual loss
             recons_features = vgg_model(torch.div(recons_imgs, 255.0))
             target_features = vgg_model(images)
@@ -95,13 +98,18 @@ def train(network_config, train_config):
                     pixel_loss(recons_features.relu3_3, target_features.relu3_3) + \
                     pixel_loss(recons_features.relu4_3, target_features.relu4_3)
 
+
+
             # add a visualization sample to samples list
-            rand_idx = np.random.randint(train_config['batch_size'])
-            if recons_imgs.shape[0] > rand_idx and i%train_config['save_interval'] == 0:
-                viz_samples.append(recons_imgs[rand_idx].transpose(2, 1, 0))
-            
+            viz_samples = []
+            if i%train_config['save_interval'] == 0:
+                for _ in range(3):
+                    rand_idx = np.random.randint(train_config['batch_size'])
+                    viz_samples.append(recons_imgs[rand_idx].detach().cpu().numpy())
+                viz_data = np.stack(viz_samples, axis=0)
+                writer.add_images('output_samples', torch.from_numpy(viz_data), global_step=(epoch*total_step)+i)
             # back-propagation on all losses
-            total_loss = r_loss + p_loss
+            total_loss = p_loss
             optimizer.zero_grad()
             total_loss.backward()
             optimizer.step()
@@ -110,6 +118,8 @@ def train(network_config, train_config):
             epoch_r_loss += r_loss.item()
             epoch_p_loss += p_loss.item()
             epoch_total_loss += total_loss.item()
+            t.set_description("Rec Loss: %.4f, Per Loss: %.4f, Total Loss: %.4f"%(epoch_r_loss/i, epoch_p_loss/i, epoch_total_loss/i))
+            t.refresh()
 
             # write training logs to tensorboard writer
             writer.add_scalar('reconstruction_loss', r_loss.item(), epoch*total_step+i)
@@ -121,8 +131,7 @@ def train(network_config, train_config):
                 .format(epoch + 1, train_config['num_epoch'], epoch_r_loss, epoch_p_loss, epoch_total_loss))
 
         # write visualization samples to tensorboard writer
-        viz_data = np.stack(viz_samples, axis=0)
-        writer.add_images('output_samples', torch.from_numpy(viz_data), global_step=epoch+1)
+
             
         # LR scheduler step
         scheduler.step()

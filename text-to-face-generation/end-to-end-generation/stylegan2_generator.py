@@ -68,7 +68,7 @@ class StyleGAN2GeneratorPT(object):
         self.generator.load_state_dict(checkpoint["g_ema"])
 
     
-    def generate(self, inp, feed_extended=False):
+    def generate(self, inp, input_type="z"):
 
         if self.truncation_psi < 1:
             with torch.no_grad():
@@ -76,17 +76,10 @@ class StyleGAN2GeneratorPT(object):
         else:
             mean_latent = None
 
-        with torch.no_grad():
-            self.generator.eval()
+        self.generator.eval()
 
-            gen_img , _ = self.generator(
-                [inp], truncation=self.truncation_psi, truncation_latent=mean_latent
-            )
+        gen_img , _ = self.generator(
+            [inp], truncation=self.truncation_psi, truncation_latent=mean_latent, input_type="w"
+        )
 
-            return gen_img
-
-
-
-        
-
-    
+        return gen_img

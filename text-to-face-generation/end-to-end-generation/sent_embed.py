@@ -20,9 +20,9 @@ class SentEmbedEncoder(torch.nn.Module):
         self.linear_final = torch.nn.Linear(config["lstm_hid_dim"]*2, config["out_dim"])
         self.lstm_hid_dim = config["lstm_hid_dim"]
         self.r = config["att_hops"]
-        self.extended_out = config["extended_out"]
+        self.input_type = config["input_type"]
         self.config = config
-        if(self.extended_out):
+        if(self.input_type == "w+"):
             self.expantion_block = torch.nn.Sequential(
                 torch.nn.Conv1d(18,18,kernel_size=3, padding=1),
                 torch.nn.ReLU(inplace=True),
@@ -51,11 +51,12 @@ class SentEmbedEncoder(torch.nn.Module):
         sentence_embeddings = attention@outputs
         avg_sentence_embeddings = torch.sum(sentence_embeddings, 1) / self.r
 
-        if self.extended_out:
+        if self.input_type == "w+":
             repeated = avg_sentence_embeddings.repeat(1, 18).reshape(-1, self.config["out_dim"], 18)
             extended_vec = repeated.permute(0,2,1)
             extended_vec = self.expantion_block(extended_vec)
             return extended_vec
 
         else:
-            return self.linear_final(avg_sentence_embeddings)
+            out = self.linear_final(avg_sentence_embeddings)
+            return out

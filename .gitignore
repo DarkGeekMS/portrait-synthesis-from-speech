@@ -128,14 +128,17 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# data folders
+# cache folders
 .vscode
+.stylegan2-cache/
+_cudacache
+
+# data folders
 dataset/
 datasets/
 results/
 w2v-models/
 networks/
-.stylegan2-cache/
 
 # output files
 Pipfile

@@ -221,10 +221,13 @@ class ModulatedConv2d(nn.Module):
             f"upsample={self.upsample}, downsample={self.downsample})"
         )
 
-    def forward(self, input, style):
+    def forward(self, input, style, input_type):
         batch, in_channel, height, width = input.shape
 
-        style = self.modulation(style).view(batch, 1, in_channel, 1, 1)
+        if(input_type != "w+"):
+            style = self.modulation(style).view(batch, 1, in_channel, 1, 1)
+        else:
+            style = style.view(batch, 1, in_channel, 1, 1)
         weight = self.scale * self.weight * style
 
         if self.demodulate:
@@ -320,8 +323,8 @@ class StyledConv(nn.Module):
         # self.activate = ScaledLeakyReLU(0.2)
         self.activate = FusedLeakyReLU(out_channel)
 
-    def forward(self, input, style, noise=None):
-        out = self.conv(input, style)
+    def forward(self, input, style, input_type = "z", noise=None):
+        out = self.conv(input, style, input_type)
         out = self.noise(out, noise=noise)
         # out = out + self.bias
         out = self.activate(out)
@@ -339,8 +342,8 @@ class ToRGB(nn.Module):
         self.conv = ModulatedConv2d(in_channel, 3, 1, style_dim, demodulate=False)
         self.bias = nn.Parameter(torch.zeros(1, 3, 1, 1))
 
-    def forward(self, input, style, skip=None):
-        out = self.conv(input, style)
+    def forward(self, input, style, skip=None, input_type="z"):
+        out = self.conv(input, style, input_type=input_type)
         out = out + self.bias
 
         if skip is not None:
@@ -469,8 +472,9 @@ class Generator(nn.Module):
         input_is_latent=False,
         noise=None,
         randomize_noise=True,
+        input_type = "z"
     ):
-        if not input_is_latent:
+        if input_type == "z":
             styles = [self.style(s) for s in styles]
 
         if noise is None:
@@ -510,17 +514,17 @@ class Generator(nn.Module):
             latent = torch.cat([latent, latent2], 1)
 
         out = self.input(latent)
-        out = self.conv1(out, latent[:, 0], noise=noise[0])
+        out = self.conv1(out, latent[:, 0], noise=noise[0], input_type=input_type)
 
-        skip = self.to_rgb1(out, latent[:, 1])
+        skip = self.to_rgb1(out, latent[:, 1], input_type=input_type)
 
         i = 1
         for conv1, conv2, noise1, noise2, to_rgb in zip(
             self.convs[::2], self.convs[1::2], noise[1::2], noise[2::2], self.to_rgbs
         ):
-            out = conv1(out, latent[:, i], noise=noise1)
-            out = conv2(out, latent[:, i + 1], noise=noise2)
-            skip = to_rgb(out, latent[:, i + 2], skip)
+            out = conv1(out, latent[:, i], noise=noise1, input_type=input_type)
+            out = conv2(out, latent[:, i + 1], noise=noise2, input_type=input_type)
+            skip = to_rgb(out, latent[:, i + 2], skip, input_type=input_type)
 
             i += 2
 
