@@ -1,0 +1,2 @@
+from stylegan2_generator import StyleGAN2Generator
+
