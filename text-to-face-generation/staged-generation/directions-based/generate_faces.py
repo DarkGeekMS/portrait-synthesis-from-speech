@@ -4,7 +4,6 @@ from utils.seed_generation import generate_seed
 from utils.latent_manipulation import manipulate_latent
 from utils.text_postprocessing import postprocess_text_logits
 
-from numba import cuda
 import numpy as np
 import skimage.io as io
 import coloredlogs
