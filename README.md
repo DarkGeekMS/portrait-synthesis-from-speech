@@ -1,14 +1,10 @@
 # Portrait Synthesis From Speech
 
-This repository contains the main code for `portrait synthesis from speech` project and its experiments. The project mainly consists of :
--   Speech Recognition.
--   Face generation from Text.
--   Face Refinement.
--   Multiple Head Poses Generation.
+This repository contains the main code for `portrait synthesis from speech` experiments associated with [Retratista application](https://github.com/DarkGeekMS/Retratista).
 
 __Refer to the wiki for more information about the project application, architecture and workflow.__
 
-## Installation
+## Dependencies
 
 -   Install `python3` and `python3-pip`.
 
