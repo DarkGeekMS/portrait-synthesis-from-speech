@@ -10,7 +10,7 @@ This folder contains the main code for `staged` experiments of `face generation 
 
 -   Download [initial seed latent vectors](https://drive.google.com/file/d/1f-TAGkMTcjLh4zR2Q-gdCwiqPpsIXCCM/view?usp=sharing) into `dataset` folder.
 
--   Refer to `text_processing/scale_bert/README.md` for _BERT_ model installation.
+-   Refer to `text_processing/README.md` for _BERT_ model installation.
 
 ## Usage
 
