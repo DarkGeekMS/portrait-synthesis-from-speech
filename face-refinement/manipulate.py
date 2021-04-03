@@ -1,17 +1,20 @@
-from stylegan2_generator import StyleGAN2Generator
+from stylegan2_networks import SynthesisNetwork
 
 import numpy as np
 import skimage.io as io
 import argparse
 
 def refine_faces(
-    network_pkl, truncation_psi, latent_vector, attributes_directions,
+    network_pt, truncation_psi, latent_vector, attributes_directions,
     morph_directions, attributes_changes, morph_changes
 ):
+    # initialize CUDA device
+    device = torch.device('cuda')
+
     # initialize StyleGAN2 generator
-    stylegan2_generator = StyleGAN2Generator(
-        network_pkl, truncation_psi=truncation_psi, use_projector=False
-    )
+    stylegan2_generator = SynthesisNetwork(w_dim=512, img_resolution=1024, img_channels=3)
+    stylegan2_generator.load_state_dict(torch.load(network_pt))
+    stylegan2_generator.to(device)
 
     # attributes edits
     for idx in range(attributes_changes):
@@ -24,7 +27,13 @@ def refine_faces(
             latent_vector += morph_changes[idx] * morph_directions[idx]
 
     # generate new face
-    face_image = stylegan2_generator.generate_images(latent_vector)[0]
+    w_tensor = torch.tensor(np.expand_dims(latent_vector, axis=0), device=device)
+    face_image = stylegan2_generator(w_tensor, noise_mode='const')
+    face_image = face_image.permute(0, 2, 3, 1).cpu().detach().numpy()[0]
+    face_image[face_image < -1.0] = -1.0
+    face_image[face_image > 1.0] = 1.0
+    face_image = (face_image + 1.0) * 127.5
+    face_image = face_image.astype(np.uint8)
 
     # save refined face
     io.imsave(f'refined_face.png', face_image)
@@ -33,7 +42,7 @@ if __name__ == "__main__":
     # arguments parsing
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument(
-        '-pkl', '--network_pkl', type=str, help='path to stylegan2 network pickle', default='networks/ffhq.pkl'
+        '-pt', '--network_pt', type=str, help='path to stylegan2 network .pt file', default='networks/stgan2_model.pt'
     )
     argparser.add_argument(
         '-psi', '--trunc_psi', type=int, help='truncation psi', default=0.5
@@ -59,5 +68,5 @@ if __name__ == "__main__":
     args = argparser.parse_args()
 
     # run face refinement function
-    refine_faces(args.network_pkl, args.truncation_psi, args.latent_vector, args.attributes_directions,
+    refine_faces(args.network_pt, args.truncation_psi, args.latent_vector, args.attributes_directions,
                 args.morph_directions, args.attributes_changes, args.morph_changes)
