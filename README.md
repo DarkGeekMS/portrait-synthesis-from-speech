@@ -1,8 +1,10 @@
 # Portrait Synthesis From Speech
 
-This repository contains the main code for `portrait synthesis from speech` experiments associated with [Retratista application](https://github.com/DarkGeekMS/Retratista).
+<div align=center><img width="50%" height="50%" src="logo.png"/></div>
 
-__Refer to the wiki for more information about the project application, architecture and workflow.__
+--------------------------------------------------------------------------------
+
+This repository contains the main code for `portrait synthesis from speech` experiments associated with [Retratista](https://github.com/DarkGeekMS/Retratista) application.
 
 ## Dependencies
 
@@ -19,3 +21,13 @@ __Refer to the wiki for more information about the project application, architec
     ```
 
 -   Refer to individual `README.md` inside each component folder for further installation notes.
+
+## System Architecture
+
+<div align=center><img width="100%" height="100%" src="architecture.png"/></div>
+
+<div align="center">
+Figure(1): Complete system architecture diagram showing the flow between different modules.
+</div><br>
+
+__Refer to the wiki for more information about the project application, architecture and workflow.__
