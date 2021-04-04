@@ -17,7 +17,10 @@ This repository contains the main code for `portrait synthesis from speech` expe
 
 -   Alternatively, `Dockerfile` is provided with all required dependencies :
     ```bash
-    docker build . -t portrait_syn_from_speech
+    # build image from dockerfile
+    docker build . -t portrait_syn_from_speech:latest
+    # run container from image in interactive session
+    docker run --runtime=nvidia -it portrait_syn_from_speech:latest /bin/bash
     ```
 
 -   Refer to individual `README.md` inside each component folder for further installation notes.
