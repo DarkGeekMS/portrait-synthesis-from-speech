@@ -5,7 +5,7 @@ import copy
 
 def differentiate_logits(l_text, l_img):
     # differentiate between text and image labels, while keeping unspecified labels as zero
-    l_diff = np.array([l1 - l2 if l1 != -1.0 else 0.0 for l1, l2 in zip(l_text, l_img)])
+    l_diff = np.array([l1 - l2 if l1 != -100.0 else 0.0 for l1, l2 in zip(l_text, l_img)])
     # return differentiated logits
     return l_diff
 
