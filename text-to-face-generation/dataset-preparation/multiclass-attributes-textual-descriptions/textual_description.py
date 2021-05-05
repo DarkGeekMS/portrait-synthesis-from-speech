@@ -324,12 +324,12 @@ class textual_description:
         '''
         add arched and bushy eyebrows attributes
         '''
-        # ARCHED EYEBROWS
-        arched_eyebrows_attribute = self.attributes['Arched_Eyebrows']
-        if arched_eyebrows_attribute == 1:
-            self.eyebrows_attributes.append(random.choice(['slightly arched', 'a little arched', 'a bit arched']))
-        elif arched_eyebrows_attribute == 2:
-            self.eyebrows_attributes.append('arched')
+        # # ARCHED EYEBROWS
+        # arched_eyebrows_attribute = self.attributes['Arched_Eyebrows']
+        # if arched_eyebrows_attribute == 1:
+        #     self.eyebrows_attributes.append(random.choice(['slightly arched', 'a little arched', 'a bit arched']))
+        # elif arched_eyebrows_attribute == 2:
+        #     self.eyebrows_attributes.append('arched')
 
 
         # BUSHY EYEBROWS
@@ -722,30 +722,30 @@ class textual_description:
             else:
                 self.wearing_full_attributes.append(random.choice(['sight glasses', 'glasses']))
 
-    def goatee_attribute_processing(self):
-        goatee_attribute = self.attributes['Goatee']
-        if goatee_attribute == 1:
-            self.add_has_with_attribute('goatee')
+    # def goatee_attribute_processing(self):
+    #     goatee_attribute = self.attributes['Goatee']
+    #     if goatee_attribute == 1:
+    #         self.add_has_with_attribute('goatee')
 
 
-    def mustache_attribute_processing(self):
-        mustache_attribute = self.attributes['Mustache']
+    # def mustache_attribute_processing(self):
+    #     mustache_attribute = self.attributes['Mustache']
 
-        # no mustache
-        if mustache_attribute == 1:
-            r = random.random()
-            if r < 0.25:
-                self.has_not_full_attributes.append('a mustache')
-            elif r < 0.5:
-                self.without_statements.append('a mustache')
-            elif r < 0.75:
-                self.with_statements.append('no mustache')
-            else:
-                self.has_full_attributes.append('no mustache')
+    #     # no mustache
+    #     if mustache_attribute == 1:
+    #         r = random.random()
+    #         if r < 0.25:
+    #             self.has_not_full_attributes.append('a mustache')
+    #         elif r < 0.5:
+    #             self.without_statements.append('a mustache')
+    #         elif r < 0.75:
+    #             self.with_statements.append('no mustache')
+    #         else:
+    #             self.has_full_attributes.append('no mustache')
 
-        # with mustache
-        if mustache_attribute == 2:
-            self.add_has_with_attribute('a mustache')
+    #     # with mustache
+    #     if mustache_attribute == 2:
+    #         self.add_has_with_attribute('a mustache')
         
 
     def beard_attribute_processing(self):
@@ -772,10 +772,10 @@ class textual_description:
             self.add_has_with_attribute(random.choice(['a heavy beard', 'a long beard']))
         
 
-    def sideburns_attribute_processing(self):
-        sideburns_attribute = self.attributes['Sideburns']
-        if sideburns_attribute == 1:
-            self.add_has_with_attribute('sideburns')
+    # def sideburns_attribute_processing(self):
+    #     sideburns_attribute = self.attributes['Sideburns']
+    #     if sideburns_attribute == 1:
+    #         self.add_has_with_attribute('sideburns')
 
 
     # three-way attributes: he has attribute, his attribute is adjective, with attribute
@@ -890,10 +890,10 @@ class textual_description:
         self.heavy_makeup_attribute_processing()
         self.wearing_lipstick_attribute_processing()
         self.wearing_glasses_attribute_processing()
-        self.goatee_attribute_processing()
-        self.mustache_attribute_processing()
+        # self.goatee_attribute_processing()
+        # self.mustache_attribute_processing()
         self.beard_attribute_processing()
-        self.sideburns_attribute_processing()
+        # self.sideburns_attribute_processing()
         self.three_way_attributes_processing()
 
 

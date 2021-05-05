@@ -11,10 +11,10 @@ def make_record_resonable(record, attributes_max):
     # some constraints on attributes
     # females and babies and children cannot have facial hair and cannot be bald
     if record['Male'] == 0 or record['Old'] == 1 or record['Old'] == 2:
-        record['Goatee'] = 0
-        record['Mustache'] = 0
+        # record['Goatee'] = 0
+        # record['Mustache'] = 0
         record['Beard'] = 0
-        record['Sideburns'] = 0
+        # record['Sideburns'] = 0
     # females cannot be bald
     if record['Male'] == 0:
         record['Bald'] = 0
@@ -107,7 +107,7 @@ def make_record_resonable(record, attributes_max):
 def main(number_of_records):
     attributes = {
         # eyebrows
-        'Arched_Eyebrows': 3,       # 0-> not mentioned, 1-> slightly arched eyebrows, 2-> arched eyebrows
+        # 'Arched_Eyebrows': 3,       # 0-> not mentioned, 1-> slightly arched eyebrows, 2-> arched eyebrows
         'Bushy_Eyebrows': 3,        # 0-> not mentioned, 1-> light eyebrows, 2-> bushy eyebrows
 
         # hair color
@@ -127,10 +127,10 @@ def main(number_of_records):
         'Hair_Length': 4,           # 0-> not mentioned, 1-> short hair, 2-> hair of average-length, 3-> long hair
 
         # facial hair
-        'Goatee': 2,                # 0-> not mentioned, 1-> with goatee
-        'Mustache': 3,              # 0-> not mentioned, 1-> no mustache, 2-> with mustache
+        # 'Goatee': 2,                # 0-> not mentioned, 1-> with goatee
+        # 'Mustache': 3,              # 0-> not mentioned, 1-> no mustache, 2-> with mustache
         'Beard': 4,                 # 0-> not mentioned, 1-> no beard, 2-> with small beard, 3-> with heavy beard
-        'Sideburns': 2,             # 0-> not mentioned, 1-> with sideburns
+        # 'Sideburns': 2,             # 0-> not mentioned, 1-> with sideburns
 
         # skin color
         'Skin_Color': 4,            # 0-> not mentioned, 1-> black-african, 2-> tanned (between black and white), 3-> white
