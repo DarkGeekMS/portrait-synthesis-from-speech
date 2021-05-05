@@ -20,7 +20,7 @@ import inspect
 import copy
 import uuid
 import types
-import dnnlib
+import utils
 
 #----------------------------------------------------------------------------
 
@@ -113,7 +113,7 @@ def persistent_class(orig_class):
 
         @property
         def init_kwargs(self):
-            return dnnlib.EasyDict(copy.deepcopy(self._init_kwargs))
+            return utils.EasyDict(copy.deepcopy(self._init_kwargs))
 
         def __reduce__(self):
             fields = list(super().__reduce__())
@@ -154,7 +154,7 @@ def import_hook(hook):
 
         hook(meta) -> modified meta
 
-    `meta` is an instance of `dnnlib.EasyDict` with the following fields:
+    `meta` is an instance of `utils.EasyDict` with the following fields:
 
         type:       Type of the persistent object, e.g. `'class'`.
         version:    Internal version number of `torch_utils.persistence`.
@@ -180,8 +180,8 @@ def _reconstruct_persistent_obj(meta):
     r"""Hook that is called internally by the `pickle` module to unpickle
     a persistent object.
     """
-    meta = dnnlib.EasyDict(meta)
-    meta.state = dnnlib.EasyDict(meta.state)
+    meta = utils.EasyDict(meta)
+    meta.state = utils.EasyDict(meta.state)
     for hook in _import_hooks:
         meta = hook(meta)
         assert meta is not None

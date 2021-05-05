@@ -6,6 +6,10 @@ This folder contains the main code for `staged` experiments of `face generation 
 
 -   Install requirements in main `README.md`.
 
+-   Download [FFHQ StyleGAN2 model](https://nvlabs-fi-cdn.nvidia.com/stylegan2/networks/) into `networks` folder.
+
+-   Refer to `text_processing/scale_bert/README.md`  or `text_processing/legacy_bert/README.md` for _BERT_ model installation.
+
 ## Usage
 
 -   Edit `configs/config.json` with required parameters. Note that `operation` parameter can be :

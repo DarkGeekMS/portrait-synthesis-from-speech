@@ -1,6 +1,6 @@
 torch torchvision
+tensorflow-gpu==1.15
 tensorboardX
-tensorflow-gpu
 scipy
 requests
 Pillow
@@ -45,3 +45,5 @@ coloredlogs
 colorama
 deep-translator
 lpips
+imageio-ffmpeg
+pyspng

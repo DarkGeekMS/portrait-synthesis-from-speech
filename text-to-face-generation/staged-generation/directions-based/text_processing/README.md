@@ -4,7 +4,7 @@
 
 2. Rename it from `bert-base-uncased-pytorch_model.bin` to `pytorch_model.bin` and place it into `/pybert/pretrain/bert/base-uncased` directory.
 
-3. Download Pseudo-text dataset auto-generated from random auto-generated attributes from [Scaled Attributes](https://drive.google.com/file/d/1NlGnXNI02zDEdAxpJhaM6siGtGb-DL1v/view?usp=sharing)
+3. Download [Pseudo-text dataset]((https://drive.google.com/file/d/1Pw7myk-tj5CDEakHeRqvrL3Pj6Ap335Z/view?usp=sharing)) auto-generated from random auto-generated attributes from Scaled Attributes.
 
 4. Place it into `/pybert/dataset` directory.
 
