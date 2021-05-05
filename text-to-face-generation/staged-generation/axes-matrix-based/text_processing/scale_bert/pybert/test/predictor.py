@@ -61,10 +61,10 @@ class Predictor(object):
 
             logits_mod = {attributes[i]: log[i] for i in range(len(attributes))} 
 
-            # print()
-            # print()
-            # for key in logits_mod.keys():
-            #     print(key, ':', logits_mod[key])
+            print()
+            print()
+            for key in logits_mod.keys():
+                print(key, ':', logits_mod[key])
 
 
 

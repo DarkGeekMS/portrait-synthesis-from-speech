@@ -213,11 +213,11 @@ class EnglishPreProcessor(object):
         x = sentence
         # x = self.lower(x)
         x = self.replace(x)
-        x = self.remove_website(x)
-        x = self.remove_name_tag(x)
-        x = self.remove_time(x)
+        # x = self.remove_website(x)
+        # x = self.remove_name_tag(x)
+        # x = self.remove_time(x)
         x = self.remove_breaks(x)
-        x = self.remove_ip(x)
-        x = self.adjust_common(x)
-        x = self.remove_chinese(x)
+        # x = self.remove_ip(x)
+        # x = self.adjust_common(x)
+        # x = self.remove_chinese(x)
         return x

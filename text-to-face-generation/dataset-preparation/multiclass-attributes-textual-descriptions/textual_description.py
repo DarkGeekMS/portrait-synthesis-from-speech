@@ -187,12 +187,12 @@ class textual_description:
                 elif prob > 0.3:
                     # add it as guy/man with age update to middle-aged or old
                     self.gender = random.choice(['guy', 'man'])
-                    self.age_attribute = random.choice([4, 5])
+                    self.age_attribute = random.choice([4])
 
                 else:
                     # add it as boy with age update to kid or teenager
                     self.gender = 'boy'
-                    self.age_attribute = random.choice([2, 3])
+                    self.age_attribute = random.choice([3])
                 
             self.pronoun = 'He'
             self.possessive_pronoun = 'his'
@@ -217,12 +217,12 @@ class textual_description:
                 elif prob > 0.3:
                     # add it as lady/woman with age update to middle-aged or old
                     self.gender = random.choice(['lady', 'woman'])
-                    self.age_attribute = random.choice([4, 5])
+                    self.age_attribute = random.choice([4])
 
                 else:
                     # add it as girl with age update to kid or teenager
                     self.gender = 'girl'
-                    self.age_attribute = random.choice([2, 3])
+                    self.age_attribute = random.choice([3])
 
 
             self.pronoun = 'She'

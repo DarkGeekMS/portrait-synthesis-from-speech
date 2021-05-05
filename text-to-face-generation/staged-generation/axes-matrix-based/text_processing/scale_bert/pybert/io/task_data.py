@@ -65,7 +65,7 @@ class TaskData(object):
         :return:
         '''
         targets, sentences = [], []
-        data = pd.read_csv(raw_data_path)
+        data = pd.read_csv(raw_data_path, error_bad_lines=False)
         for row in data.values:
             if is_train:
                 target = row[:-1]
