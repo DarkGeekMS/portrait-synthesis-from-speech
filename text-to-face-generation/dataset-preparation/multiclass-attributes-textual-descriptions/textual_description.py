@@ -982,6 +982,11 @@ class textual_description:
         try:
             translated = GoogleTranslator(target=lang).translate(text)
             translated = GoogleTranslator(target='en').translate(translated)
+            if self.attributes['Old'] == 0:
+                translated = translated.replace('woman', 'female')
+                translated = translated.replace('Woman', 'Female')
+                translated = translated.replace('man', 'male')
+                translated = translated.replace('Man', 'Male')
         except:
             return text
         return translated
