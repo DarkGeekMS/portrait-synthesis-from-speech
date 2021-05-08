@@ -12,7 +12,7 @@ This directory contains different versions of bert used as a text processor
 
 # To Train 
 
-1. Download [Pseudo-text dataset]((https://drive.google.com/file/d/1Pw7myk-tj5CDEakHeRqvrL3Pj6Ap335Z/view?usp=sharing)) auto-generated from random auto-generated attributes from Scaled Attributes.
+1. Download [Pseudo-text dataset](https://drive.google.com/file/d/1Pw7myk-tj5CDEakHeRqvrL3Pj6Ap335Z/view?usp=sharing) auto-generated from random auto-generated attributes from Scaled Attributes.
 
 2. Place it into `dataset` directory.
 
