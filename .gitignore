@@ -148,6 +148,9 @@ out
 # BERT models
 pytorch_model.bin
 train_checkpoint.pth
-*.pth
+albert-base-v2.pth
+bert-base-uncased.pth
+roberta-base.pth
+distilbert-base-uncased.pth
 # paraphrasing files
 last_desc_generated.npy
