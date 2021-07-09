@@ -1,0 +1,259 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[english]{babel}
+% \usepackage[latin1]{inputenc}
+\usepackage[a4paper,margin=0.75in,footskip=0.25in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{indentfirst}
+\usepackage[utf8]{inputenc}
+\newcommand{\link}[1]{{\color{blue}\href{#1}{#1}}}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Retratista $|$ \textcolor{blue}{2021}}
+\rfoot{\thepage $|$ Page}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\usepackage{arabtex}
+\usepackage{utf8}
+\usepackage{setspace}
+\renewcommand{\baselinestretch}{1.15}
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+
+\begin{document}
+\setcode{utf8}
+\begin{titlepage}
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+\center % Center everything on the page
+ 
+\begin{minipage}{0.45\textwidth}
+\begin{flushleft} \large
+\includegraphics[scale=0.4]{images/uni_logo.png}\\
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.45\textwidth}
+\begin{flushright}
+\end{flushright}
+\end{minipage}\\[0.1cm]
+
+\begin{minipage}{0.7\textwidth}
+\begin{flushleft}
+\hspace*{-2.0cm}
+\textsc{Cairo University}\\[0.2cm]
+\hspace*{-2.0cm}
+\textsc{Faculty of Engineering} \\[0.2cm]
+\hspace*{-2.0cm}
+\textsc{Department of Computer Engineering} \\
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.45\textwidth}
+\begin{flushright}
+\end{flushright}
+\end{minipage}\\[1cm]
+% Name of your heading such as course name
+\textsc{\large }\\[0.5cm] % Minor heading such as course title
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+\begin{minipage}{\textwidth}
+\begin{center}
+\textbf{\Huge Retratista} \\[0.25cm]
+\includegraphics[scale=0.2]{images/logo.png} \\[0.25cm]
+A Graduation Project Report Submitted \\[0.1cm]
+to \\[0.1cm]
+Faculty of Engineering, Cairo University \\[0.1cm]
+in Partial Fulfillment of the requirements of the degree \\[0.1cm]
+of \\[0.1cm]
+Bachelor of Science in Computer Engineering. \\[0.1cm]
+\end{center} 
+\end{minipage} \\[1cm]
+ 
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+\begin{minipage}{\textwidth}
+\begin{center}
+\textbf{\Large Presented by}
+\end{center} 
+\end{minipage} \\[0.5cm]
+
+\begin{minipage}{0.45\textwidth}
+\begin{center} 
+Mohamed Shawky Zaky AbdelAal Sabae \\[0.5cm]
+Mohamed Ahmed Mohamed Ahmed
+\end{center}
+\end{minipage}
+~
+\begin{minipage}{0.45\textwidth}
+\begin{center}
+Remonda Talaat Eskarous \\[0.5cm]
+Mohamed Ramzy Helmy Ibrahim
+\end{center}
+\end{minipage} \\[1cm]
+
+\begin{minipage}{\textwidth}
+\begin{center}
+\textbf{\Large Supervised by}
+\end{center} 
+\end{minipage} \\[0.5cm]
+
+\begin{minipage}{0.45\textwidth}
+\begin{center} 
+Dr. Mayada Hadhoud
+\end{center}
+\end{minipage} \\[1cm]
+
+\begin{minipage}{0.45\textwidth}
+\begin{center} 
+26th July, 2021
+\end{center}
+\end{minipage} \\[0.5cm]
+
+\begin{minipage}{\textwidth}
+\begin{center} 
+\small All rights reserved. This report may not be reproduced in whole or in part, by photocopying or other means, without the permission of the authors/department.
+\end{center}
+\end{minipage}
+
+\end{titlepage}
+
+%----------------------------------------------------------------------------------------
+%	REPORT SECTIONS
+%----------------------------------------------------------------------------------------
+
+\section*{Abstract}
+\input{abstract/abstract_en}
+\addcontentsline{toc}{section}{Abstract (English)}
+
+\newpage
+
+\begin{minipage}{\textwidth}
+\begin{flushright}
+\section*{\<الملخص>}
+\input{abstract/abstract_ar}
+\end{flushright}
+\end{minipage}
+\addcontentsline{toc}{section}{Abstract (Arabic)}
+
+\newpage
+
+\section*{Acknowledgement}
+\input{abstract/ack}
+\addcontentsline{toc}{section}{Acknowledgement}
+
+\newpage
+
+\tableofcontents
+\addcontentsline{toc}{section}{Table of Contents}
+
+\newpage
+
+\listoffigures
+\addcontentsline{toc}{section}{List of Figures}
+
+\newpage
+
+\listoftables
+\addcontentsline{toc}{section}{List of Tables}
+
+\newpage
+
+\section*{List of Abbreviation}
+\input{abstract/abbrev}
+\addcontentsline{toc}{section}{List of Abbreviation}
+
+\newpage
+
+\section*{List of Symbols}
+\input{abstract/symbols}
+\addcontentsline{toc}{section}{List of Symbols}
+
+\newpage
+
+\section*{Contacts}
+\input{abstract/contacts}
+\addcontentsline{toc}{section}{Contacts}
+
+\newpage
+
+\section{Introduction}
+\input{core/intro}
+
+\newpage
+
+\section{Market Feasibility Study}
+\input{core/market}
+
+\newpage
+
+\section{Literature Survey}
+\input{core/literature}
+
+\newpage
+
+\section{System Design and Architecture}
+\input{core/design}
+
+\newpage
+
+\section{System Testing and Verification}
+\input{core/testing}
+
+\newpage
+
+\section{Conclusions and Future Work}
+\input{core/conclusion}
+
+\newpage
+
+%----------------------------------------------------------------------------------------
+%	REFERENCES SECTION
+%----------------------------------------------------------------------------------------
+
+\medskip
+
+\bibliographystyle{unsrt}
+\bibliography{proposal}
+
+\newpage
+
+%----------------------------------------------------------------------------------------
+%	APPENDIX SECTIONS
+%----------------------------------------------------------------------------------------
+
+\appendix
+
+\section{Development Platforms and Tools}
+\input{appendices/tools}
+
+\section{Use Cases}
+\input{appendices/use_cases}
+
+\section{User Guide}
+\input{appendices/guide}
+
+\section{Code Documentation}
+\input{appendices/code_doc}
+
+\section{Feasibility Study}
+\input{appendices/feasibility}
+
+%**********************************************%
+
+\end{document}
