@@ -35,7 +35,7 @@ def disentangle_axes(source_axis, target_axis):
                 math.degrees(math.acos(np.dot(
                     get_unit_vector(new_source_direction[layer]), get_unit_vector(target_direction[layer])
             ))))
-    print(f'Angle before disentanglement = {sum(final_angles)/len(final_angles)}')
+    print(f'Angle after disentanglement = {sum(final_angles)/len(final_angles)}')
     # convert into unit direction
     final_source_direction = np.zeros(new_source_direction.shape)
     for layer in range(new_source_direction.shape[0]):

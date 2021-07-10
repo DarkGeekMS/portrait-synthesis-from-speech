@@ -70,22 +70,47 @@ The previous flow provides a very versatile framework to generate face portrait 
 
 \subsection{System Architecture}
 
-Now, let's discuss our system architecture. The system consists of $6$ modules, $3$ core modules of the project and $3$ auxiliary modules.
+Now, let's discuss our system architecture. The system consists of $6$ modules, $3$ core modules of the project and $3$ auxiliary modules. These modules are deployed in a \emph{web application} to provide an easy-to-use interface for face generation and manipulation. Figure \ref{fig:system} shows the complete block diagram of the system architecture. Meanwhile, figure \ref{fig:app} shows the application design and how the modules are deployed in a web application. The \emph{core} modules are listed as follows :
+\begin{itemize}
+    \item \textbf{Text Processing :} processes the input textual description and extracts the corresponding numerical values of facial attributes. This problem is similar to \emph{multi-label text classification}, however the outputs are normalized scores of facial attributes, which are designed carefully to match the \emph{face code generation} process.
+    \item \textbf{Face Generation :}
+    \begin{itemize}
+        \item \textbf{Code Generation :} converts the numerical attributes values to be low dimensional face embedding. This is the most \emph{important} and \emph{innovative} module of our system, because it glues the desired attributes scored with the latent space of the generative model (used to generate the face), resulting in more accurate quality outputs.
+        \item \textbf{Code-to-Face Translation :} translates the low dimensional face embedding into the actual face portrait. For this purpose, we use \texttt{StyleGAN2}, which is a \emph{state-of-art latent-based generative model}, whose latent space can be manipulated easily to fit our needs.
+    \end{itemize}
+\end{itemize}
+
+Meanwhile, the \emph{auxiliary} modules are listed as follows :
+\begin{itemize}
+    \item \textbf{Speech Recognition :} translates the input speech to textual description.
+    \item \textbf{Face Refinement :} uses the same generative model to manually refine the generated face portrait through navigating the latent space.
+    \item \textbf{Multiple Head Poses Generation :} rotates the generated face portrait and renders it into multiple poses.
+\end{itemize}
+
+We discuss each module in more details in the subsequent sections. Also, these modules are organized into a web application for easier usage, as shown in Figure \ref{fig:app}. The application is divided into :
+\begin{itemize}
+    \item\textbf{ Web (Frontend) :} which contains the user interface and, also, the \emph{speech recognizer}. The speech recognizer is moved to the frontend to reduce the network communication overhead between the web application and the server, as transmitting text is easier than transmitting speech. Moreover, the speech recognizer doesn't require high computational power, so it can be embedded in the web application.
+    \item \textbf{Server (Backend) :} which is separated into two servers. First server contains the \emph{text processor} and the \emph{generative model} and serves the requests of face generation and refinement. Second server contains the \emph{pose generator} and serves the requests of face rotation.
+\end{itemize}
+
+\newpage
+
+The two servers can communicate with each other to exchange the generated face portraits through \texttt{TCP sockets}. Meanwhile, the web application communicates and sends requests to the servers through \texttt{HTTP REST API}.
 
 \subsubsection{Block Diagram}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/system-design.png}
     \caption{Block diagram of complete system architecture}
     \label{fig:system}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{images/app-design.png}
     \caption{Block diagram of application design}
-    \label{fig:system}
+    \label{fig:app}
 \end{figure}
 
 \subsection{Module 1 : Speech Recognition}
