@@ -46,7 +46,16 @@ So, let's discuss how we adapted \texttt{StyleGAN2} to our work :
     \end{itemize}
 \end{itemize}
 
-After the previous modifications, the output model can directly translate the face embedding vector (\emph{latent space}) into a complete human face portrait.
+After the previous modifications, the output model can directly translate the face embedding vector (\emph{latent space}) into a complete human face portrait. 
+
+Notice that using this methodology of \textbf{code-to-face translation} along with \textbf{code generation} makes the sequential navigation in the latent space is \emph{easily invertible}, which eases the generation and the refinement (discussed in \ref{sec:face_ref}) of the synthetic face and gives the system versatility and fault tolerance. Figure \ref{fig:latent_nav} illustrates the idea of \emph{invertibility} of sequential edits on a $2D$ latent space example. Here, we show a simplified $2D$ latent space with $3$ feature direction. $AB$ vector represents the \emph{hair color} direction and $BC$ vector represents the \emph{gender} direction. Point $A$ starts with a \emph{blonde girl}, moving along $AB$ vector results in a \emph{girl with black hair} at point $B$. Then, moving along $BC$ vector gives us a \emph{man with black hair} at point $c$. Consequently, moving along $CA$ vector, which is the opposite of the resultant of $AB$ and $BC$, gives us the original face, thus inverting the sequential changes.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/latent-nav.png}
+    \caption{Illustration of sequential navigation and invertibility in a $2D$ latent space}
+    \label{fig:latent_nav}
+\end{figure}
 
 \subsubsection{Design Constraints}
 

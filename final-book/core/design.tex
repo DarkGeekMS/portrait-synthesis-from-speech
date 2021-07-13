@@ -1,4 +1,4 @@
-In this chapter, we discuss our working pipeline and system architecture in details.  Generally, our system takes a speech note, textual description or numerical attributes as an input. It processes the input description and outputs the initial human face portrait that corresponds to the given description. Afterwards, the user is allowed to manually control some facial attributes and morphological features and to rotate the face and render it in multiple poses. In the first section, we give an overview about the system. Then, we discuss the system architecture in the second section. In the subsequent sections, each module implementation is discussed in details.
+In this chapter, we discuss our working pipeline and system architecture in details.  Generally, our system takes a speech note, textual description or numerical attributes as an input. It processes the input description and outputs the initial human face portrait that corresponds to the given description. Afterwards, the user is allowed to manually control some facial attributes and morphological features and to rotate the face and render it in multiple poses. In the first section, we give an overview about the final system. Then, we discuss the final system architecture in the second section. In the subsequent sections, each module implementation is discussed in details. In the last section, we discuss the other conducted experiments, why we choose this final system and suggestions that can possibly improve the other experiments.
 
 \subsection{Overview and Assumptions}
 
@@ -136,6 +136,10 @@ The two servers can communicate with each other to exchange the generated face p
 \subsection{Module 6 : Multiple Head Poses Generation}
 \label{sec:poses}
 \input{core/modules/face_pose}
+
+\subsection{Module 7 : Web Application}
+\label{sec:web_app}
+\input{core/modules/web_app}
 
 \subsection{Other Approaches}
 \label{sec:other_app}

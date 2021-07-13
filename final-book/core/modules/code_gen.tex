@@ -1,4 +1,4 @@
-Here, we discuss the face code generation from numerical values of facial attributes. This is the most important and innovative module in our system and the first stage of \emph{face generation}. It's worth noting that we use both of the terms \emph{"feature"} and \emph{"attribute"} to refer to a facial attribute, like hair color or nose size.
+Here, we discuss the face code generation from numerical values of facial attributes. This is the most important and innovative module in our system and the first stage of \emph{face generation}. It's worth \textbf{noting} that we use both of the terms \emph{"feature"} and \emph{"attribute"} to refer to a facial attribute, like hair color or nose size.
 
 \begin{figure}[H]
     \centering
@@ -47,7 +47,7 @@ Our method of extracting the feature directions (\emph{hyperplanes}) consists of
         Y = A_f \cdot X
     \end{equation}
     Where $A_f$ is the axis (direction) of feature $f$. \\
-    We can obtain the solution to this equation in a closed form. However, due to the noise in both generation and classification, along with the non-linear nature of the problem, we opt to use \emph{ML} methods, specifically \textbf{Logistic Regression} and \textbf{SVM}. Meanwhile, we cannot see any difference between both methods, as they yield almost the same results. \\
+    We can obtain the solution to this equation in a closed form. However, due to the noise in both generation and classification, along with the non-linear nature of the problem, we opt to use \emph{ML} methods, specifically \textbf{Logistic Regression} and \textbf{SVM} to get an \emph{approximate solution}. Meanwhile, we cannot see any difference between the two methods, as they yield almost the same results. \\
     Finally, the generated feature directions are normalized to unit vectors :
     \begin{equation}
         A_{unit} = \frac{A}{||A||}
@@ -60,7 +60,17 @@ Our method of extracting the feature directions (\emph{hyperplanes}) consists of
     \begin{equation}
         A_{orthogonal} = A - A_{proj}
     \end{equation}
-    To ensure convergence to reasonable set of feature directions, we use a threshold margin to stop the orthogonalization process, which is from $85$ to $90$ degrees ($5$ degrees on each side of normal angle).
+    
+    Figure \ref{fig:ortho} visually illustrates the \emph{directions orthogonalization} process on $2D$ vectors.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\textwidth]{images/orthogonalization.png}
+        \caption{Illustration of orthogonalization relative to a reference vector}
+        \label{fig:ortho}
+    \end{figure}
+    
+    To ensure convergence to reasonable set of feature directions, we use a threshold margin to stop the orthogonalization process, which is from $85$ to $95$ degrees ($5$ degrees on each side of normal angle).
 \end{enumerate}
 
 \paragraph{Initial Seed Generation}
@@ -112,5 +122,14 @@ The design constraints of this module are enumerated as follows :
 \begin{enumerate}
     \item \textbf{Facial attributes entanglement} is the main challenge of the face code generation module. Naturally, human face attributes are related to each other. For example, Asians barely have curly hair, no woman cannot have beard and most women have long hair and wear makeup. We mentioned before that \texttt{StyleGAN2} is trained and refined on \texttt{FFHQ} dataset, which contains real human faces. Consequently, it's normal to see heavy entanglement between features in the latent space. Due to this \emph{entanglement}, we have to perform extra computations to get decent results.
     \item \textbf{Random initialization} of the latent vector can cause some issues with the final output, as the vector can be initialized in a noisy area of the latent vector. We try to \emph{limit} the initialization of latent vector to a certain set of random vectors to avoid this effect. This method significantly reduces the \emph{random initialization effect}, however it's not fully cured.
-    \item \textbf{Directions accuracy} can be a challenge as well. Some factors can negatively affect the feature directions accuracy. These factors include \textbf{synthetic image clustering} and \textbf{directions fitting} process. We already discussed our solutions to this problem.
+    \item \textbf{Directions accuracy} can be a challenge as well. Some factors can negatively affect the feature directions accuracy. These factors include \textbf{synthetic image clustering} (whether \emph{classification} or \emph{regression}) and \textbf{directions fitting} process. We already discussed our solutions to this problem.
+\end{enumerate}
+
+\subsubsection{Synthetic Image Clustering}
+
+As we mentioned before, it's required to cluster the generated synthetic images, in order to be able to fit the feature directions. The \emph{clustering} process can be performed through \emph{classification} or \emph{regression}. For example, features like hair and skin colors should be classified (grouped) into discrete categories, however features like hair length and mouth size should be assigned a continuous value. We do this task using one of three different methods :
+\begin{enumerate}
+    \item \textbf{Manual labelling} is the first idea to come to our minds. It's straight forward to manually classify a group of faces according to a certain feature. This method is used with some features, however it's very cumbersome and only works for classification.
+    \item \textbf{Classical image processing techniques} are, also, used to classify images based on some features. Mainly, we use these techniques to detect \emph{colors} like eye color and hair color. We use \emph{morphological operators} and \emph{classical segmentation} to detect \emph{the eye} or \emph{the hair} and then retrieve its color.
+    \item \textbf{Deep learning techniques} (\emph{neural networks)} are used to perform regression on the rest of the features. We basically use \emph{facial landmark detection} pretrained networks to detect the important facial landmarks, which is, then, used to calculate \emph{sizes} and \emph{distances}.
 \end{enumerate}
