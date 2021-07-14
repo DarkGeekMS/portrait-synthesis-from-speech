@@ -1,4 +1,51 @@
+Figure \ref{fig:latent_nav} shows that \texttt{StyleGAN2} latent space can be used to perform \emph{directed manipulation} by using the feature directions extract in \textbf{code generation} \ref{sec:code_gen}. We discussed how we use this technique for \emph{conditional sampling} from latent space by starting from an initial seed and editing it until we reach the desired latent vector. Now let's discuss our methodology of applying the same technique is \emph{directed manipulation} of one or more features to be used in \emph{face refinement}.
+
 \subsubsection{Functional Description}
+
+This module basically gives the users a chance to further refine the generated face portrait to their liking. The user can refine the generated face using the same facial features used in \textbf{face generation}, along with some additional features related to \emph{face morphology}, which are hard to describe in words. We adapt the techniques used in \emph{face generation} to perform \emph{face refinement}.
+
+\begin{itemize}
+    \item \textbf{Input :}
+    \begin{itemize}
+        \item Generated human face image (portrait).
+    \end{itemize}
+    \item \textbf{Output :}
+    \begin{itemize}
+        \item Refined human face image (portrait).
+    \end{itemize}
+\end{itemize}
+
 \subsubsection{Modular Decomposition}
+
+We utilize the same technique used \emph{face generation} to perform \emph{directed manipulation} of one or more features. This is exactly what is required by \emph{face refinement}. Consequently, we opt to stick with our \emph{face generation} pipeline, due to the following reasons :
+\begin{itemize}
+    \item Latent manipulation in \texttt{StyleGAN2} yields better results than most attribute-editing GANs.
+    \item We use the same network, which significantly reduces the memory footprint.
+    \item Since \texttt{StyleGAN2} has an artistic control over its output, we can expand the number of target facial features, which improves the system scalability. 
+\end{itemize}
+
+Using latent space navigation, we can easily perform \emph{directed manipulation} on a subset of the facial features, which is required for \emph{face refinement}. The \emph{directed manipulation} over a single facial feature can be formulated as :
+
+\begin{equation}
+    E_{refined} = E_{old} + \delta_{feature} * d_{feature}
+\end{equation}
+
+Where $E_{refined}$ is the refined latent vector, $E_{old}$ is the old latent vector, $\delta_{feature}$ is the change offset of the facial feature and $d_{feature}$ is the feature direction.
+
+Subsequently, we pass the \emph{refined latent vector} through the \emph{synthesis network} of \texttt{StyleGAN2} to produce the new refined face portrait.
+
+Finally, more feature directions are generated for the purpose of \emph{face refinement}, which are hard to describe in words. These features are more related to \emph{face morphology} and listed as follows :
+\begin{itemize}
+    \item Distance between eyes.
+    \item Distance between eyes and eyebrows.
+    \item Distance between nose and mouth.
+    \item Eyes opening.
+    \item Mouth opening.
+    \item Smiling or not.
+\end{itemize}
+
+These feature directions are obtained using the same technique described in \ref{sec:code_gen}, however all of these features are clustered using regression techniques. Overall, we use both facial features used in \emph{face generation} and the new facial features (which sum up to $38$ features) to refine the generated face.
+
 \subsubsection{Design Constraints}
-\subsubsection{Other Description}
+
+The only constraint, imposed on this module, is the difficulty to generate the feature directions. The new features describe spare facial attributes related to morphology, so it's hard to regress them. We use \emph{facial landmark detection} techniques to detect the distances, in order to fit the feature directions. We couldn't further expand the morphological feature directions, due to \emph{limited resources} and \emph{time constraints}. Our \emph{recommendation} is that using the facial landmarks detection can actually further expand the morphological features, so it's worth spending more time on it.
