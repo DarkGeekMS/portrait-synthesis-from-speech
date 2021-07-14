@@ -2,6 +2,9 @@
 
 This folder contains the main code and experiments for `multiple head poses generation`.
 
-## Installation
+## Running the code
 
--   Install requirements in main `README.md`.
+
+
+
+
