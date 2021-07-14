@@ -68,6 +68,8 @@ The previous flow provides a very versatile framework to generate face portrait 
     \end{itemize}
 \end{itemize}
 
+\newpage
+
 \subsection{System Architecture}
 
 Now, let's discuss our system architecture. The system consists of $6$ modules, $3$ core modules of the project and $3$ auxiliary modules. These modules are deployed in a \emph{web application} to provide an easy-to-use interface for face generation and manipulation. Figure \ref{fig:system} shows the complete block diagram of the system architecture. Meanwhile, figure \ref{fig:app} shows the application design and how the modules are deployed in a web application. The \emph{core} modules are listed as follows :
@@ -93,8 +95,6 @@ We discuss each module in more details in the subsequent sections. Also, these m
     \item \textbf{Server (Backend) :} which is separated into two servers. First server contains the \emph{text processor} and the \emph{generative model} and serves the requests of face generation and refinement. Second server contains the \emph{pose generator} and serves the requests of face rotation.
 \end{itemize}
 
-\newpage
-
 The two servers can communicate with each other to exchange the generated face portraits through \texttt{TCP sockets}. Meanwhile, the web application communicates and sends requests to the servers through \texttt{HTTP REST API}.
 
 \subsubsection{Block Diagram}
@@ -113,33 +113,49 @@ The two servers can communicate with each other to exchange the generated face p
     \label{fig:app}
 \end{figure}
 
+\newpage
+
 \subsection{Module 1 : Speech Recognition}
 \label{sec:speech}
 \input{core/modules/speech}
+
+\newpage
 
 \subsection{Module 2 : Text Processing}
 \label{sec:text}
 \input{core/modules/text}
 
+\newpage
+
 \subsection{Module 3 : Face Code Generation}
 \label{sec:code_gen}
 \input{core/modules/code_gen}
+
+\newpage
 
 \subsection{Module 4 : Code-to-Face Translation}
 \label{sec:face_gen}
 \input{core/modules/face_trans}
 
+\newpage
+
 \subsection{Module 5 : Face Refinement}
 \label{sec:face_ref}
 \input{core/modules/face_refine}
+
+\newpage
 
 \subsection{Module 6 : Multiple Head Poses Generation}
 \label{sec:poses}
 \input{core/modules/face_pose}
 
+\newpage
+
 \subsection{Module 7 : Web Application}
 \label{sec:web_app}
 \input{core/modules/web_app}
+
+\newpage
 
 \subsection{Other Approaches}
 \label{sec:other_app}
