@@ -16,7 +16,8 @@ https://drive.google.com/file/d/18UQfDkGNzotKoFV0Lh_O-HnXsp1ABdjl/view
 
 5 - clone the neural renderer repo and install it using **pip install .** (Make sure to have torch==1.12 installed)
 
-6 - the **FaceRotator** class exists in **change_pose.py**
+6 - Download the face inpainting model https://drive.google.com/file/d/1Vdlpwghjo4a9rOdn2iJEVlPd0EJegAex/view?usp=sharing and place it in ./checkpoints/rs_model
+7 - the **FaceRotator** class exists in **change_pose.py**
 
 
 ## Running the code
