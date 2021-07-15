@@ -6,7 +6,7 @@ This folder contains the main code and experiments for `multiple head poses gene
 
 1 - Download the configs from here: https://drive.google.com/drive/folders/1dzwQNZNMppFVShLYoLEfU3EOj3tCeXOD?usp=sharing
 
-2 - place the files inside **train.config** folder and **3ddfa/train.config** folder
+2 - place the files inside **train.config** folder
 
 3 - Download the 3d fitting model from here: 
 
