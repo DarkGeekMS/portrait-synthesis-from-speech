@@ -35,20 +35,20 @@ import torch.multiprocessing as multiprocessing
 from models.networks.sync_batchnorm import DataParallelWithCallback
 import sys
 import data
+from data.data_utils import get_multipose_test_input
 from util.iter_counter import IterationCounter
 from options.test_options import TestOptions
 from models.test_model import TestModel
 from util.visualizer import Visualizer
 from util import html, util
 from torch.multiprocessing import Process, Queue, Pool
-from data.data_utils import init_parallel_jobs
+from data.data_utils import data_prefetcher
 from skimage import transform as trans
 import time
 from models.networks.rotate_render import TestRender
 import math
 import matplotlib.pyplot as plt
 
-multiprocessing.set_start_method('spawn', force=True)
 
 
 STD_SIZE = 120
@@ -148,7 +148,7 @@ class FaceRotator:
         self.opt.batchSize=1
         self.opt.isTrain = False
 
-        self.testing_queue = Queue(10)
+        #self.testing_queue = Queue(10)
 
         ngpus = self.opt.device_count
 
@@ -205,7 +205,7 @@ class FaceRotator:
 
         self.visualizer = Visualizer(self.opt)
         self.iter_counter = IterationCounter(self.opt, len(self.dataloaders[0]) * self.opt.render_thread)
-        self.test_tasks = init_parallel_jobs(self.testing_queue, self.dataloaders, self.iter_counter, self.opt, self.render_layer_list)
+        #self.test_tasks = init_parallel_jobs(self.testing_queue, self.dataloaders, self.iter_counter, self.opt, self.render_layer_list)
 
 
         # create a webpage that summarizes the all results  
@@ -311,12 +311,9 @@ class FaceRotator:
         process_num = self.opt.list_start
         first_time = time.time()
         try:
-            for i, data_i in enumerate(range(len(self.dataloaders[0]) * self.opt.render_thread)):
-                # if i * self.opt.batchSize >= self.opt.how_many:
-                #     break
-                # data = trainer.get_input(data_i)
+            for data in self.dataloaders[0]:
                 start_time = time.time()
-                data = self.testing_queue.get(block=True)
+                data = get_multipose_test_input(data, self.render_layer, self.opt.yaw_poses, [])
 
                 current_time = time.time()
                 time_per_iter = (current_time - start_time) / self.opt.batchSize
@@ -371,14 +368,4 @@ class FaceRotator:
         except Exception as e:
             print(e)
             pass
-
-
-if __name__ == '__main__':
-    renderer = FaceRotator()
-    img = cv2.imread("face_data/Images/target.jpg")
-    rotated =renderer.rotate_face(img,0)
-    rotated = renderer.rotate_face(img, 30, reuse=True)
-    rotated = renderer.rotate_face(img, 60, reuse=True)
-    rotated = renderer.rotate_face(img,90, reuse=True)
-
 
