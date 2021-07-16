@@ -232,3 +232,6 @@ Text Processing & Latent Manipulation & Face Generation \\
 \caption{The execution time of different stages of the core of our system (measured in seconds).}
 \label{tab:exec_time}
 \end{table}
+
+
+Finally, most of the application backend runs on \emph{CUDA GPUs}. The whole system without \textbf{multiple head poses generation} module occupies around $5.5$ \emph{GB} of \emph{VRAM}. Meanwhile, this module occupies up to $4$ \emph{GB}. So, in total, the whole system occupies between $9$ to $10$ \emph{GB} of \emph{VRAM}.
