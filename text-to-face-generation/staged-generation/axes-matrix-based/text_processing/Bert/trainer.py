@@ -26,11 +26,11 @@ class Trainer():
         #device
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+        # checkpoint tracker to save model checkpoint
+        self.checkpoint_tracker = CheckpointTracker(self.architecture, self.device)
+
         # load model weights
-        if self.resume and os.path.exists('./checkpoints/' + self.architecture + '.pkl'):
-            self.model = torch.load('./checkpoints/' + self.architecture + '.pkl').to(self.device)
-        else:
-            self.model = BertRegressor(self.architecture).to(self.device)
+        self.model = self.checkpoint_tracker.load_checkpoint(self.resume)
 
         # dataset
         train_encodings, train_labels, val_encodings, val_labels = do_data(csv_file = 'dataset/attributes.csv', model_type = self.architecture)
@@ -48,8 +48,7 @@ class Trainer():
         # loss
         self.loss_criterion = MSELoss()
 
-        # checkpoint tracker to save model checkpoint
-        self.checkpoint_tracker = CheckpointTracker(self.device, self.architecture)
+        
     
 
 
@@ -58,25 +57,21 @@ class Trainer():
         Function defining the entire training loop
         '''
         for epoch in range(self.num_of_epochs):
-            # self.training_epoch()            
+            self.training_epoch()            
 
-            # if epoch % validate_step == (validate_step - 1):
-            #     with torch.no_grad():
-            #         self.validation_epoch()
-            #     print(f'{datetime.now().time().replace(microsecond=0)} --- '
-            #         f'Epoch: {epoch}\t'
-            #         f'Train loss: {self.training_epoch_loss:.4f}\t'
-            #         f'Valid loss: {self.validation_epoch_loss:.4f}\t'
-            #         f'Valid acc:  {self.validation_epoch_accuracy:.4f}\t'
-            #         )
+            if epoch % validate_step == (validate_step - 1):
+                with torch.no_grad():
+                    self.validation_epoch()
+                print(f'{datetime.now().time().replace(microsecond=0)} --- '
+                    f'Epoch: {epoch}\t'
+                    f'Train loss: {self.training_epoch_loss:.4f}\t'
+                    f'Valid loss: {self.validation_epoch_loss:.4f}\t'
+                    f'Valid acc:  {self.validation_epoch_accuracy:.4f}\t'
+                    )
                                     
-            # torch.save(self.model, './checkpoints/' + self.architecture + '.pkl')
-            
-            # traced_cell = torch.jit.trace(model, (dummy_input))
-            # torch.jit.save(traced_cell, './checkpoints/' + self.architecture + '.pth')
-
             # save checkpoint
             self.checkpoint_tracker.save_checkpoint(self.model)
+
             self.scheduler.step()
 
 

@@ -12,7 +12,7 @@ This directory contains different versions of bert used as a text processor
 
 # To Train 
 
-1. Download [Pseudo-text dataset](https://drive.google.com/file/d/1Pw7myk-tj5CDEakHeRqvrL3Pj6Ap335Z/view?usp=sharing) auto-generated from random auto-generated attributes from Scaled Attributes.
+1. Download [Pseudo-text dataset](https://drive.google.com/file/d/1pX25WdsHw0IqjWqWMp1nWL0KHFlT77gc/view?usp=sharing) auto-generated from random auto-generated scaled Attributes.
 
 2. Place it into `dataset` directory.
 
@@ -30,7 +30,7 @@ This directory contains different versions of bert used as a text processor
     -validate_step <validation_step>\
     -epochs <number_of_epochs>\
 ```
-- **bert_version**: any version of the 4 stated above, default is `distilbert-base-uncased`
+- **bert_version**: any version of the 4 stated above, default is `distelbert-base-uncased`
 - **learning_rate**: learning rate used to train bert model, default is `5e-5`
 - **batch_size**: number of samples per batch, default is `16`
 - **validation_step**: validate each how many epochs, default is `1`
