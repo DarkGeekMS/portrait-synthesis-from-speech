@@ -94,8 +94,6 @@ class Trainer():
             attention_mask = batch['attention_mask'].to(self.device)
             y_true = batch['labels'].to(self.device)
             
-            print(input_ids.size())
-
             self.optimizer.zero_grad()
 
             y_hat = self.model(input_ids, attention_mask=attention_mask)
