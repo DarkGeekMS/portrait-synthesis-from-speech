@@ -30,7 +30,7 @@ This directory contains different versions of bert used as a text processor
     -validate_step <validation_step>\
     -epochs <number_of_epochs>\
 ```
-- **bert_version**: any version of the 4 stated above, default is `distilbert-base-uncased`
+- **bert_version**: any version of the 4 stated above, default is `distelbert-base-uncased`
 - **learning_rate**: learning rate used to train bert model, default is `5e-5`
 - **batch_size**: number of samples per batch, default is `16`
 - **validation_step**: validate each how many epochs, default is `1`
