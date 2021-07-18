@@ -11,7 +11,7 @@ class TextProcessor():
         if checkpoint_path is None:
             checkpoint_path = 'Bert/checkpoints/' + architecture + '.pth'
 
-        self.model = BertRegressor(architecture).to(self.device)
+        self.model = BertRegressor(architecture, False).to(self.device)
         self.model.load_state_dict(torch.load(checkpoint_path, self.device)) 
         # model.load_state_dict(copy.deepcopy(torch.load("model_state.pth",device)))
         # tokenizer
