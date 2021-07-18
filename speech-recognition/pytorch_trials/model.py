@@ -14,8 +14,8 @@ class ResCNN(nn.Module):
     def __init__(self, inChannels, outChannels, kernel, dropOut, features):
         super(ResCNN, self).__init__()
 
-        self.CNN1 = nn.Conv2d(inChannels, outChannels, kernel, 2, padding=kernel//2)
-        self.CNN2 = nn.Conv2d(outChannels, outChannels, kernel, 2, padding=kernel//2)
+        self.CNN1 = nn.Conv2d(inChannels, outChannels, kernel, 1, padding=kernel//2)
+        self.CNN2 = nn.Conv2d(outChannels, outChannels, kernel, 1, padding=kernel//2)
         self.dropOut = nn.Dropout(dropOut)
         self.layerNorm = nn.LayerNorm(features)
 
@@ -49,9 +49,7 @@ class BidirectionalGRU(nn.Module):
         self.dropOut = nn.Dropout(dropOut)
 
     def forward(self, x):
-        x = x.transpose(2,3).contiguous()
         x = self.layerNorm(x)
-        x = x.transpose(2,3).contiguous()
         x = F.gelu(x)
         x, _ = self.BiGRU(x)
         x = self.dropOut(x)
