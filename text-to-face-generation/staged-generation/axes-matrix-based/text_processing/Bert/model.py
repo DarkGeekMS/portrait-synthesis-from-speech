@@ -20,7 +20,7 @@ class BertRegressor(nn.Module):
         if model_type == 'roberta-base':
             self.bert = RobertaModel.from_pretrained('roberta-base') 
 
-        self.regressor = nn.Linear(768, 38, bias=True)
+        self.regressor = nn.Linear(768, 34, bias=True)
         self.dropout = nn.Dropout(0.1)
                 
     def forward(self, input_ids, attention_mask):
