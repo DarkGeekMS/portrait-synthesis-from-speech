@@ -31,10 +31,8 @@ class TextProcessor():
         with open('Bert/attributes_max.pkl', 'rb') as f:
             self.attributes_max_values = pickle.load(f)
         self.zero_start_attributes = [
-            'Arched_Eyebrows',
             'Bushy_Eyebrows',
             'Straight_Hair',
-            'Mustache',
             'Beard',
             'Skin_Color',
             'Chubby',
@@ -56,8 +54,6 @@ class TextProcessor():
             'Bald',
             'Bangs',
             'Hair_Length',
-            'Goatee',
-            'Sideburns',
             'Asian',
             'Bags_Under_Eyes',
             'Black_Eyes',
@@ -78,7 +74,7 @@ class TextProcessor():
         all_logits_mod_list = []
         for log in logits:
             attributes = list(self.attributes_max_values.keys())
-
+            print(attributes)
             logits_mod = {attributes[i]: log[i] for i in range(len(attributes))} 
 
             # print()
