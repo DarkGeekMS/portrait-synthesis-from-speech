@@ -74,7 +74,6 @@ class TextProcessor():
         all_logits_mod_list = []
         for log in logits:
             attributes = list(self.attributes_max_values.keys())
-            print(attributes)
             logits_mod = {attributes[i]: log[i] for i in range(len(attributes))} 
 
             # print()
@@ -141,7 +140,7 @@ class TextProcessor():
         attention_mask = torch.tensor(encodings['attention_mask']).to(self.device)
         logits = self.model(input_ids, attention_mask=attention_mask).cpu().data.numpy()
         logits = self.make_logits(logits)
-        return logits
+        return logits[0]
 
 # processor = TextProcessor('./checkpoints/distilbert-base-uncased.pkl', 'distilbert-base-uncased')
 # processor.predict('a guy with long hair and sunglasses.')
