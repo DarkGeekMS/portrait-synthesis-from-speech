@@ -11,7 +11,7 @@ class TextProcessor():
         if checkpoint_path is None:
             checkpoint_path = 'Bert/checkpoints/' + architecture + '.pth'
 
-        self.model = BertRegressor(architecture, False).to(self.device)
+        self.model = BertRegressor(architecture, True).to(self.device)
         self.model.load_state_dict(torch.load(checkpoint_path, self.device)) 
         # model.load_state_dict(copy.deepcopy(torch.load("model_state.pth",device)))
         # tokenizer
@@ -136,9 +136,13 @@ class TextProcessor():
     def predict(self, sentence):
         # encode the sentence
         encodings = self.tokenizer([sentence], truncation=True, padding=True)
+        # print(encodings)
         input_ids = torch.tensor(encodings['input_ids']).to(self.device)
+        # print(input_ids)
         attention_mask = torch.tensor(encodings['attention_mask']).to(self.device)
-        logits = self.model(input_ids, attention_mask=attention_mask).cpu().data.numpy()
+        # print(attention_mask)
+        logits = self.model(input_ids, attention_mask=attention_mask, train=False).cpu().data.numpy()
+        # print(logits)
         logits = self.make_logits(logits)
         return logits[0]
 
