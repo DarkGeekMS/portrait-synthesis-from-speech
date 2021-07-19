@@ -123,8 +123,6 @@ Since, we adapt \texttt{StyleGAN2} for the refinement process, so this module te
 
 \paragraph{Multiple Head Poses Generation}
 
-\paragraph{Web Application}
-
 \subsubsection{Integration Testing}
 The integration of the whole system into a web application is tested qualitatively and quantitatively. In this section, we show the visual results of our system in an \emph{end-to-end} manner. However, we show the quantitative metrics in the comparison with previous work. 
 
@@ -167,7 +165,7 @@ Our testing process is scheduled as follows :
 \end{itemize}
 
 \subsection{Comparative Results to Previous Work}
-As mentioned before, we compare our results quantitatively with $3$ baselines, using \textbf{FID score}, \textbf{average LPIPS} and \textbf{execution time}.
+First of all, it's worth mentioning that our system considers \emph{more facial features} than all previous research that worked on latent manipulation. As mentioned before, we compare our results quantitatively with $3$ baselines, using \textbf{FID score}, \textbf{average LPIPS} and \textbf{execution time}.
 
 Table \ref{tab:fid} and plot \ref{fig:fid} show the comparison of our system to \texttt{StyleGAN2} and \texttt{Image2StyleGAN}. We couldn't include \texttt{Faces à la Carte} in this comparison, as the authors didn't include it in the paper. Also, we couldn't replicate their work, as they didn't provide any specific details about the implementation. We can see that as the number of test images increases, the overall quality of the images increases (\emph{FID} score decreases). Our system performs better than \texttt{Image2StyleGAN}, but worse than the original \texttt{StyleGAN2}, because it is just image generation from random vector with no \emph{latent manipulation} (fewer artifacts).
 
@@ -217,7 +215,7 @@ Our System & Faces à la Carte \\
 \label{tab:lpips_comp}
 \end{table}
 
-Finally, table \ref{tab:exec_time} shows the execution time of different core stages of our system. We can see that the overall \emph{text-to-face generation} process takes only about $0.2$ seconds. However, the web application can take from $1$ second up to multiple seconds to generate a face portrait (from any description) depending on the \emph{connectivity} with the server. Meanwhile, our \emph{multiple head poses generation} module takes around $5$ seconds.
+Finally, table \ref{tab:exec_time} shows the execution time of different core stages of our system. We can see that the overall \emph{text-to-face generation} process takes only about $0.2$ seconds on an \emph{Nvidia GTX 1080 ti}. However, the web application can take from $1$ second up to multiple seconds to generate a face portrait (from any description) using the same GPU, depending on the \emph{connectivity} with the server. Meanwhile, our \emph{multiple head poses generation} module takes around $5$ seconds on the same GPU as well. Most of the application backend runs on \emph{CUDA GPUs}. The whole system without \textbf{multiple head poses generation} module occupies around $5.5$ \emph{GB} of \emph{VRAM}. Meanwhile, this module occupies up to $4$ \emph{GB}. So, in total, the whole system occupies between $9$ to $10$ \emph{GB} of \emph{VRAM}.
 
 \begin{table}[ht]
 \centering

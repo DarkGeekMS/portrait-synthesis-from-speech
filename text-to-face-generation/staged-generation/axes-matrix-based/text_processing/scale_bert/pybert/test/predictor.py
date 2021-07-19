@@ -58,7 +58,7 @@ class Predictor(object):
         all_logits_mod_list = []
         for log in logits:
             attributes = list(self.attributes_max_values.keys())
-
+            print(self.attributes_max_values)
             logits_mod = {attributes[i]: log[i] for i in range(len(attributes))} 
 
             print()

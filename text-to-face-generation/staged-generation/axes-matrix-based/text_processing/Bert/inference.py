@@ -11,7 +11,7 @@ class TextProcessor():
         if checkpoint_path is None:
             checkpoint_path = 'Bert/checkpoints/' + architecture + '.pth'
 
-        self.model = BertRegressor(architecture).to(self.device)
+        self.model = BertRegressor(architecture, True).to(self.device)
         self.model.load_state_dict(torch.load(checkpoint_path, self.device)) 
         # model.load_state_dict(copy.deepcopy(torch.load("model_state.pth",device)))
         # tokenizer
@@ -31,10 +31,8 @@ class TextProcessor():
         with open('Bert/attributes_max.pkl', 'rb') as f:
             self.attributes_max_values = pickle.load(f)
         self.zero_start_attributes = [
-            'Arched_Eyebrows',
             'Bushy_Eyebrows',
             'Straight_Hair',
-            'Mustache',
             'Beard',
             'Skin_Color',
             'Chubby',
@@ -56,8 +54,6 @@ class TextProcessor():
             'Bald',
             'Bangs',
             'Hair_Length',
-            'Goatee',
-            'Sideburns',
             'Asian',
             'Bags_Under_Eyes',
             'Black_Eyes',
@@ -78,7 +74,6 @@ class TextProcessor():
         all_logits_mod_list = []
         for log in logits:
             attributes = list(self.attributes_max_values.keys())
-
             logits_mod = {attributes[i]: log[i] for i in range(len(attributes))} 
 
             # print()
@@ -141,11 +136,15 @@ class TextProcessor():
     def predict(self, sentence):
         # encode the sentence
         encodings = self.tokenizer([sentence], truncation=True, padding=True)
+        # print(encodings)
         input_ids = torch.tensor(encodings['input_ids']).to(self.device)
+        # print(input_ids)
         attention_mask = torch.tensor(encodings['attention_mask']).to(self.device)
-        logits = self.model(input_ids, attention_mask=attention_mask).cpu().data.numpy()
+        # print(attention_mask)
+        logits = self.model(input_ids, attention_mask=attention_mask, train=False).cpu().data.numpy()
+        # print(logits)
         logits = self.make_logits(logits)
-        return logits
+        return logits[0]
 
 # processor = TextProcessor('./checkpoints/distilbert-base-uncased.pkl', 'distilbert-base-uncased')
 # processor.predict('a guy with long hair and sunglasses.')

@@ -1,3 +1,28 @@
-\subsection{Hardware Platforms}
+Our project is completely software, so we discuss the software tools and packages used to develop our system.
 
 \subsection{Software Tools}
+
+\subsubsection{Ready-made Models}
+
+\paragraph{Facial Landmark Detection Model}
+The facial landmark detection model, used to extract some the feature directions, is completely ready-made. We used the open-source implementation of \textbf{High-resolution networks (HRNets) for facial landmark detection} \cite{sun2019highresolution} to do the landmark detection task, in order to get different facial distances and sizes.
+
+\paragraph{Neural Face Renderer}
+We used a ready-made neural network model for rendering $3D$ faces from $2D$ images to perform face rotation. This model is an open-source \emph{PyTorch} implementation for \textbf{Neural 3D Mesh Renderer} \cite{kato2017neural}.
+
+\subsubsection{Frameworks and Packages}
+
+\paragraph{PyTorch}
+An highly-optimized open-source \emph{ML} library used to implement, train and deploy all \emph{DL} models used in our system.
+
+\paragraph{OpenCV}
+An open-source library for optimized image processing and computer vision applications. It's used in facial attributes classification in feature directions extraction.
+
+\paragraph{Flask}
+An open-source \emph{Python} framework, used to implement the server \emph{API} endpoints.
+
+\paragraph{Vuejs}
+An open-source \emph{JavaScript} framework, used to implement the web user interface.
+
+\paragraph{Docker}
+An open-source software used for containerization. It has been used throughout the project and through deployment for automation and to handle conflicting dependencies.

@@ -1,7 +1,225 @@
+This module is the first stage in our pipeline that adds the feature of face generation from bare textual descriptions, not just manual manipulators. It's responsible for understanding the input textual description and converting it into facial features logits, where each logit describes how much the generated face should be saturated with. This task is done for 34 different facial attributes where each of them may or may not be entangled with other attributes, such as gender and beard attributes. Attributes may be on different levels as well, some of them are continuous, such as age, some are discrete, such as wearing sunglasses. see figure \ref{fig:scores_example} as an example. 
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/scores-example.png}
+        \caption{Attributes Scores Example}
+        \label{fig:scores_example}
+    \end{figure}
+
+
 \subsubsection{Functional Description}
+This module takes the input text and tries to 
+\begin{enumerate}
+    \item extract mentioned facial attributes.
+    \item extract a score for each mentioned facial attribute referring to the level of saturation of this facial attribute.
+    \item extract other non-mentioned attributes.
+\end{enumerate}
+
+Here’s the supported list of facial attributes that can be extracted:
+
+\begin{itemize}
+
+    \item Eyebrows
+    \begin{itemize}
+         \item Bushy Eyebrows               \hspace*{\fill Binary}
+    \end{itemize}
+
+
+
+    \item Hair Color
+    \begin{itemize}
+    	 \item Black Hair                   \hspace*{\fill Binary}
+    	 \item Red Hair                     \hspace*{\fill Binary}
+    	 \item Blonde Hair                  \hspace*{\fill Binary}
+    	 \item Brown Hair                   \hspace*{\fill Binary}
+    	 \item Gray Hair                    \hspace*{\fill Binary}
+    \end{itemize}
+
+
+    \item Hair Style
+    \begin{itemize}
+    	 \item Curly-Straight Hair          \hspace*{\fill Continuous}
+    	 \item Receding Hairline            \hspace*{\fill Binary}
+    	 \item Baldness                     \hspace*{\fill Binary}
+    	 \item Bangs                        \hspace*{\fill Binary}
+    	 \item Hair Length                  \hspace*{\fill Continuous}
+    \end{itemize}
+
+
+    \item Facial Hair
+    \begin{itemize}
+    	 \item Beard                        \hspace*{\fill Continuous}
+    \end{itemize}
+
+
+    \item Race
+    \begin{itemize}
+    	 \item Asian Race                   \hspace*{\fill Binary}
+    	 \item Skin Color                   \hspace*{\fill Continuous}
+    \end{itemize}
+
+
+    \item General Facial Attributes
+    \begin{itemize}
+    	 \item Face Thickness               \hspace*{\fill Continuous}
+    	 \item Gender                       \hspace*{\fill Binary}
+    	 \item Age                          \hspace*{\fill Continuous}
+    	 \item Lips Size                    \hspace*{\fill Continuous}
+    	 \item Nose Size                    \hspace*{\fill Continuous}
+    	 \item Ears Size                    \hspace*{\fill Continuous}
+    	 \item Double Chin                  \hspace*{\fill Binary}
+    	 \item High Cheekbones              \hspace*{\fill Binary}   
+    	 \item Pointy Nose                  \hspace*{\fill Binary}
+    	 \item Rosy Cheeks                  \hspace*{\fill Binary}
+    \end{itemize}
+
+
+    \item Eyes
+    \begin{itemize}
+    	 \item Black Eyes                   \hspace*{\fill Binary}
+    	 \item Green Eyes                   \hspace*{\fill Binary}
+    	 \item Blue Eyes                    \hspace*{\fill Binary}
+    	 \item Brown Eyes                   \hspace*{\fill Binary}
+    	 \item Eye Size                     \hspace*{\fill Continuous}
+    	 \item Eye Bags                     \hspace*{\fill Binary}
+    \end{itemize}
+
+
+    \item Makeup
+    \begin{itemize}
+    	 \item Makeup Saturation            \hspace*{\fill Continuous}
+    	 \item Lipstick                     \hspace*{\fill Binary}
+    \end{itemize}
+
+
+    \item Eyeglasses
+    \begin{itemize}
+    	 \item Sight Glasses                \hspace*{\fill Binary}
+    	 \item Sun Glasses                  \hspace*{\fill Binary}
+    \end{itemize}
+
+\end{itemize}
+
+
 
 \subsubsection{Modular Decomposition}
+This module is considered as an NLP task that can be tackled using classical approaches, such as Text Parsing and Tagging, and Deep Learning approaches. The final design for this module is to use the power of Deep Learning approaches especially transformers to analyze and understand the text. This is because that the classical approaches failed in such a task as there are a lot of sequence dependencies on the textual description that may arise such as restricting the age of the described person to the range of low-to-medium beard levels and gender attribute, except in the case of age attribute is mentioned explicitly or implicitly in the text, for example "a boy", "a boy with a beard" and "a boy almost in his thirties", the first description should be understood as a child or teenager, while other descriptions refer to a middle-aged man. a lot of other dependencies that may arise that make the classical approaches not feasible and makes the deep learning solutions a must to tackle such a task. 
+\\
+\\
+The biggest challenge in the Deep Learning approaches is that there are no available datasets mapping textual descriptions to facial features. That’s what led us to use synthesize our own dataset that must be much likely to be human-generated. This what made the module to be split into two sub-modules as shown in figure \ref{fig:text_processing_pipeline}. First one is the Dataset Synthesis sub-module and the Deep Learning Sequence Model to be trained on the synthesized dataset.
+
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/text-processing-submodule.png}
+        \caption{Text Processing Pipeline}
+        \label{fig:text_processing_pipeline}
+    \end{figure}
+
+\paragraph{Dataset Synthesis sub-module}
+This sub-module is the most critical one, as it should be as likely as possible to be human-generated. The approach we used to do so consists of three main stages as shown in figure \ref{fig:dataset_syn} in the reverse order of what needed in the training phase.
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/data-synthesis.png}
+        \caption{Dataset Synthesis Pipeline}
+        \label{fig:dataset_syn}
+    \end{figure}
+
+\begin{enumerate}
+    \item Random Attribute Generation
+    
+        In this stage, we generate any random attribute scores for all 34 attributes. Each attribute is generated with its pre-defined range of scores with one of random different modes
+        
+        \begin{itemize}
+            \item Full Random Mode: All attributes will be mentioned in the text with random scores.
+            
+            \item Half-Length Random Mode: 50\% of attributes will be mentioned in the text with random scores, while other 50\% will not be mentioned.
+            
+            \item Short Random Mode: 20\% of attributes will be mentioned in the text with random scores, while other 80\% will not be mentioned.
+            
+            \item Very-Short Random Mode: 10\% of attributes will be mentioned in the text with random scores, while other 90\% will not be mentioned.
+        \end{itemize}
+        
+        Mentioned Attributes are generated with some restrictions to make their scores consistent with others, such as
+        \begin{itemize}
+            \item Females, babies and children cannot have facial hair.
+            \item Females cannot be bald.
+            \item Males and babies cannot put makeup or lipstick.
+            \item Bald people cannot have any hair attribute mentioned, such as hair color or hair style.
+            \item One hair color at most can be mentioned (i.e. no person can have both yellow and red hair).
+            \item One eye color at most can be mentioned (i.e. no person can have both blue and black eyes).
+            \item People with bangs cannot have receding hairline and vice versa.
+            \item One Eyeglasses type at most can be mentioned (i.e. no person wear both sun and sight glasses).
+        \end{itemize}
+    
+    
+    \item Random Textual Die Generation
+    
+    In this sub-module, a textual description is generated in a textual die using the random scores of facial attributes. Attributes are categorized using different categories, such as
+    
+    \begin{itemize}
+    \item First Categorization is based on the facial part that is described, such as all hair attributes (Black Hair, Blonde Hair, Gray Hair, Red Hair, Brown Hair, Straight Hair, Hair Length) can be combined in a single description of the hair (e.g. a woman with long, brown and curly hair).
+    \item Second Categorization is based on the grammatical way that the attribute can be described with. Each attribute can be of one or more of types below
+        \begin{itemize}
+            \item With Attributes: attributes that can be described using with statement (e.g. a man with brown hair and blue eyes.)
+            \item Has Attributes: attributes that can be described using has statement (e.g. a man who has brown hair and blue eyes.)
+            \item Puts Attributes: attributes that can be described using put statement (e.g. a woman is putting heavy makeup.)
+            \item Wears Attributes: attributes that can be described using wear statement (e.g. a woman is wearing a glasses.)
+            \item Full Statement Attributes: attributes that can be described using a full statement (e.g. His hair is brown. His Eyes is blue)
+            \item Adjective Attributes: attributes that can be described using adjectives (e.g. a blond old man.)
+        \end{itemize}    
+    \end{itemize}
+    
+    Each mentioned attribute can have a form of different forms, such as
+    \begin{itemize}
+        \item Positive Attributes using Synonyms: describing an attribute with one of its synonyms randomly (e.g. “a man with a thick face.” can be described as a “a chubby man.”).
+        \item Positive Attributes using Antonyms and Negation: describing an attribute with the negation of one of its antonyms randomly (e.g. “a man with a thick face.” can be described as a “He is not thin” or “a man with non-thin face.” and so forth).
+        \item Negative Attributes using Antonyms: describing a negative attribute with one of its antonyms randomly (e.g. “a man with no thick face.” can be described as a “a thin man.”).
+        \item Negative Attributes using Synonyms and Negation: describing a negative attribute with the negation of one of its synonyms randomly (e.g. “a man with no thick face.” can be described as a “He is not chubby” or “a man with non-thick face.” and so forth).
+    \end{itemize}
+    
+    Each mentioned attribute chooses one of its categories and one of its forms randomly and reserve a slot in the textual die represented in figure \ref{fig:textual_die} .
+    
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/textual-die.png}
+        \caption{Textual Die where each attribute chooses a random slot for itself}
+        \label{fig:textual_die}
+    \end{figure}
+    
+    
+    \item Paraphrasing
+    
+    
+    As we use deep learning approaches, using the textual die to train a model is just making the model learn the die itself, not to generalize and extract the attributes from any other textual description. So, in this sub-module, we tried different approaches to restructure and paraphrase the textual die generated in the previous step, so that the generated description is more likely to be human-generated and to be general. To do so, we tried two approaches as a paraphraser
+    
+    \begin{itemize}
+        \item First Approach: Training a Sequence-To-Sequence model using the “entailment” class in Stanford Natural Language Inference Dataset (SNLI) to re-structure any English statement to any other English statement based on the diversity of expressing ways in the English Language
+        \item Second Approach: Using a random cycle of machine translators (e.g. translates the die in the sequence “English To Arabic To Spanish To Italian To English” or in the sequence “English To Chinese To English”). Using the power of different linguistic ways in different languages makes the paraphrased description more generic. 
+    \end{itemize}
+\end{enumerate}
+
+\paragraph{Deep Learning Sequence Model}
+
+The main task of Text Processing module is to map input textual description to corresponding attributes scores, so It’s a multi-class multi-label NLP problem. Therefore, in this sub-module we trained different deep learning architectures on the previously generated dataset. We tried 
+
+\begin{itemize}
+    \item LSTM Architecture: 2 BiLSTMs followed by a linear layer.
+    \item Transformers Architecture: DistelBert-base-uncased, Bert-base-uncased, Albert-base-v2, Roberta-base
+\end{itemize}
+
+Where transformers architectures out-performed, so the final choice was DistelBert-base-uncased, as it’s the lightest one out of them with accuracy hit +99\% on validation.
+
+
 
 \subsubsection{Design Constraints}
+The design constraints of this module are enumerated as follows :
+\begin{itemize}
+    \item Human-like Dataset Synthesis: The biggest challenge of this module is that there’s no available dataset to tackle such a task. So, we needed to synthesize our own dataset that should be as generic and human-generated as possible, so that what made the paraphraser performance really matters.
+    \item Conditional entailment of different facial attributes: as different facial attribute may affect each other, so the dataset should be generated in a robust way so that it can train the deep learning model to detect such relations, such as entanglement between beard, gender and age.
+    \item Accuracy matters: as this is one of the early modules in the pipeline, the results of all other modules depend on its performance and accuracy. So, lack of accuracy in this module will be catastrophic for the whole pipeline.
+\end{itemize}
 
-\subsubsection{Other Description}
