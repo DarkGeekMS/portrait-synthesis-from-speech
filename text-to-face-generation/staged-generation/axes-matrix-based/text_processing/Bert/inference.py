@@ -74,7 +74,7 @@ class TextProcessor():
         all_logits_mod_list = []
         for log in logits:
             attributes = list(self.attributes_max_values.keys())
-            logits_mod = {attributes[i]: log[i] for i in range(len(attributes))} 
+            logits_mod = {attributes[i]: np.round(log[i]) for i in range(len(attributes))} 
 
             # print()
             # print()
