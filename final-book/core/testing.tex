@@ -32,7 +32,10 @@ To assess the $4$ previously-mentioned properties, multiple metrics are used, wh
     
     \item \textbf{Edit Consistency Score} : We use this metric to ensure that the final facial attributes values are consistent with the input values after the \emph{latent manipulation} process. This metric is simply calculated by projecting the final latent vector over all feature directions and compare it to the input values.
     
-    \item \textbf{Directions Disentanglement Score} : The disentanglement between feature directions are assessed by using the \emph{angles} between each pairs of directions. Angles of values $85$ to $95$ degrees usually indicates low entanglement.
+    \item \textbf{Directions Disentanglement Score} : The disentanglement between feature directions are assessed by using the \emph{angles} between each pairs of directions. Angles of values $85$ to $95$ degrees usually indicates low entanglement. The angles between two directions is calculated by taking the \emph{inverse cosine} of the dot product between their unit vectors :
+    \begin{equation}
+        \theta_{1,2} = arccos(d1_{unit} \cdot d2_{unit})
+    \end{equation}
 \end{enumerate}
 
 \subsubsection{Module Testing}
@@ -40,6 +43,47 @@ To assess the $4$ previously-mentioned properties, multiple metrics are used, wh
 \paragraph{Speech Recognition}
 
 \paragraph{Text Processing}
+Our Final Design for Text Processing module is considered as a multi-label multi-class classification using DistelBERT base uncased, so we finetuned then tested it on  a testing dataset of 100,000 records based on the metrics shown in table \ref{tab:text_metrics}. The metrics proved that it will work very well (almost perfect) in inference time.
+
+\begin{table}[ht]
+\centering
+\caption{DistelBERT Testing Metrics.}
+\begin{tabular}[t]{| c | c |}
+\hline
+Metric & Value \\
+\hline
+Accuracy & 0.995 \\
+\hline
+Precision & 0.988 \\
+\hline
+Recall & 0.991\\
+\hline
+F1-Score & 0.989 \\
+\hline
+\end{tabular}
+\label{tab:text_metrics}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\caption{Runtime for different architectures.}
+\begin{tabular}[t]{| c | c |}
+\hline
+Architecture & Runtime \\
+\hline
+DistelBERT & 0.0072 sec \\
+\hline
+ALBERT & 0.0143 sec \\
+\hline
+BERT-base-uncased & 0.0127 sec \\
+\hline
+ROBERTA-base & 0.0125 sec \\
+\hline
+\end{tabular}
+\label{tab:text_runtime}
+\end{table}
+
+We tried different architectures such as ALBERT, BERT-base-uncased, ROBERTA-base. All of them converged on almost the same metrics mentioned above from DistelBERT. On the other hand, DistelBERT is the lightest out of them as shown in table \ref{tab:text_runtime} of average runtime. So, DistelBERT was the optimal choice to use.
 
 \paragraph{Code Generation}
 To test the quality of the generated feature directions that are used for \emph{code generation}. We use two methods, which are \textbf{directions disentanglement scores} and \textbf{visual result} of moving along directions.
@@ -49,6 +93,7 @@ Table \ref{tab:angles} shows the angles between the directions of a subset of fe
 Moreover, figure \ref{fig:dir_results} shows the \emph{visual results} of moving along some feature directions. We use these results to qualitatively measure the accuracy of the extracted feature directions.
 
 \begin{table}[ht]
+\caption{Angles between different feature directions using a subset of the considered facial features (closer to $90$ degrees is better).}
 \centering
 \begin{tabular}[t]{| c | c | c | c | c |}
 \hline
@@ -63,7 +108,7 @@ Makeup & 88.0 & 107.7 & 100.5 & 94.5 \\
 Hair Length & 89.7 & 95.9 & 90.6 & 96.6 \\
 \hline
 \end{tabular}
-\caption{Angles between different feature directions using a subset of the considered facial features (closer to $90$ degrees is better).}
+
 \label{tab:angles}
 \end{table}
 
@@ -90,6 +135,7 @@ Also, table \ref{tab:lpips} shows the relation between \emph{LPIPS} score (betwe
 
 \begin{table}[ht]
 \centering
+\caption{LPIPS values against the number of navigated directions for sample text (lower is better).}
 \begin{tabular}[t]{| c | c | c |}
 \hline
 Input Text & Number of Navigated Directions & LPIPS \\
@@ -107,7 +153,6 @@ Young black man with long hair and beard  & 5 & 0.5733 \\
 Old man with chubby face and glasses & 4 & 0.4905 \\
 \hline
 \end{tabular}
-\caption{LPIPS values against the number of navigated directions for sample text (lower is better).}
 \label{tab:lpips}
 \end{table}
 
@@ -171,9 +216,10 @@ Table \ref{tab:fid} and plot \ref{fig:fid} show the comparison of our system to 
 
 \begin{table}[ht]
 \centering
+\caption{FID scores comparison on different number of test images (lower is better).}
 \begin{tabular}[t]{| c | c | c | c |}
 \hline
-Test Size & StyleGAN2 & Image2StyleGAN & Our System \\
+Test Size & StyleGAN2 & Image2StyleGAN & Retratista \\
 \hline
 50 & 129.15 & 179.58 & 151.58 \\
 \hline
@@ -188,7 +234,6 @@ Test Size & StyleGAN2 & Image2StyleGAN & Our System \\
 500 & 80.09 & 119.02 & 99.02 \\
 \hline
 \end{tabular}
-\caption{FID scores comparison on different number of test images (lower is better).}
 \label{tab:fid}
 \end{table}
 
@@ -203,6 +248,7 @@ Next, we compare our system with \texttt{Faces à la Carte} using the only metri
 
 \begin{table}[ht]
 \centering
+\caption{LPIPS comparison with Faces à la Carte (lower is better).}
 \begin{tabular}[t]{| c | c |}
 \hline
 Our System & Faces à la Carte \\
@@ -211,7 +257,6 @@ Our System & Faces à la Carte \\
 0.595±0.008 & 0.634±0.005 \\
 \hline
 \end{tabular}
-\caption{LPIPS comparison with Faces à la Carte (lower is better).}
 \label{tab:lpips_comp}
 \end{table}
 
@@ -219,6 +264,7 @@ Finally, table \ref{tab:exec_time} shows the execution time of different core st
 
 \begin{table}[ht]
 \centering
+\caption{The execution time of different stages of the core of our system (measured in seconds).}
 \begin{tabular}[t]{| c | c | c |}
 \hline
 Text Processing & Latent Manipulation & Face Generation \\
@@ -227,6 +273,5 @@ Text Processing & Latent Manipulation & Face Generation \\
 0.048 & 0.11 & 0.024 \\
 \hline
 \end{tabular}
-\caption{The execution time of different stages of the core of our system (measured in seconds).}
 \label{tab:exec_time}
 \end{table}

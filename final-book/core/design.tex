@@ -6,7 +6,7 @@ As mentioned above, our system basically enables the user to describe a human fa
 \begin{itemize}
     \item The input speech notes are translated to text.
     \item The textual description (extracted from speech input or manually entered) is processed to extract the numerical values of the required facial features.
-    \item The numerical values are used generate a face embedding vector that encodes the facial attributes in low dimensional space ($512D$).
+    \item The numerical values are used to generate a face embedding vector that encodes the facial attributes in low dimensional space ($512D$).
     \item A generative model is specifically designed to translate from the low dimensional embedding into the full face portrait ($1024X1024$).
     \item The generated face portrait can be further refined by navigating the face embedding space and re-generating the face portrait.
     \item Once the user settles on the final face portrait, the system can render that face in multiple poses to provide further identification.
@@ -89,6 +89,15 @@ Meanwhile, the \emph{auxiliary} modules are listed as follows :
     \item \textbf{Multiple Head Poses Generation :} rotates the generated face portrait and renders it into multiple poses.
 \end{itemize}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/system-design.png}
+    \caption{Block diagram of complete system architecture}
+    \label{fig:system}
+\end{figure}
+
+\newpage
+
 We discuss each module in more details in the subsequent sections. Also, these modules are organized into a web application for easier usage, as shown in Figure \ref{fig:app}. The application is divided into :
 \begin{itemize}
     \item\textbf{ Web (Frontend) :} which contains the user interface and, also, the \emph{speech recognizer}. The speech recognizer is moved to the frontend to reduce the network communication overhead between the web application and the server, as transmitting text is easier than transmitting speech. Moreover, the speech recognizer doesn't require high computational power, so it can be embedded in the web application.
@@ -96,15 +105,6 @@ We discuss each module in more details in the subsequent sections. Also, these m
 \end{itemize}
 
 The two servers can communicate with each other to exchange the generated face portraits through \texttt{TCP sockets}. Meanwhile, the web application communicates and sends requests to the servers through \texttt{HTTP REST API}.
-
-\subsubsection{Block Diagram}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{images/system-design.png}
-    \caption{Block diagram of complete system architecture}
-    \label{fig:system}
-\end{figure}
 
 \begin{figure}[H]
     \centering

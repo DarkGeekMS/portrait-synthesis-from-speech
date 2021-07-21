@@ -4,13 +4,20 @@ In this chapter, we explain the necessary background, as well as the related wor
 We discuss the basic background knowledge that helps us throughout the document.
 
 \subsubsection{Convolutional Neural Networks}
-First we do a brief introduction for Convolutional Neural Networks (CNN). CNN is a special type of \emph{feed-forward} neural networks, which uses convolution operations to perform the forward computations. They are used in wide range of applications, especially \emph{computer vision}. There are $4$ basic types of layers in a CNN that we would like to mention :
+Convolutional Neural Networks (CNN) is a special type of \emph{feed-forward} neural networks, which uses convolution operations to perform the forward computations. They are used in wide range of applications, especially \emph{computer vision}. There are $4$ basic types of layers in a CNN that we would like to mention :
 \begin{enumerate}
     \item \textbf{Convolution layer} : uses filters (a.k.a. \emph{kernels}) to detect edges and shapes by convolution with the input map. The filter has certain dimensions and scans the map using certain stride. This helps the network to learn sparse connections and local structures.
     \item \textbf{Pooling layer} : is usually used to reduce the input dimensions through maximizing or averaging using a filter.
     \item \textbf{Upsampling layer} : increases the dimensions of the input map using traditional upsampling methods, such as bilinear upsampling, or learnable upsampling using \emph{deconvolution}.
     \item \textbf{Fully-connected layer} : is a normal feed-forward dense layer, usually used in classification.
 \end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/cnn.png}
+    \caption{A standard CNN with Upsampling layer.}
+    \label{fig:cnn}
+\end{figure}
 
 \subsubsection{Generative Adversarial Networks}
 Generative Adversarial Networks (\emph{GANs}) \cite{goodfellow2014generative} are generative models that can learn through \emph{adversarial training}. GANs have proven to be very good at generating high dimensional data like images. That's why they are used in wide range of applications including image and video generation, image-to-image translation and others.
@@ -53,21 +60,57 @@ Figure \ref{fig:lspace} shows a simple $2D$ latent space for \texttt{MNIST} data
 The problem of entanglement arises due to the data and training process of the architecture. Some datasets can show heavy correlation between different features, which causes the latent space to be less organized and the features clusters to be overlapping. Thus, the features are entangled in the latent space and extracting independent directions for every feature is hard or even infeasible. Consequently, moving along a certain direction can cause multiple features to change with certain amounts.
 
 \subsubsection{Multi-class Multi-label Text Classification}
+The problem of extracting specific features (or keywords) from an input text and describing the degree of importance for each feature is usually referred to as \emph{multi-class multi-label text classification} or \emph{keywords extraction}. There exists many approaches to such problem on different degrees of complexity, described as follows.
+
+\paragraph{Simple Statistical Approaches}
+Using \emph{statistics} is one of the simplest methods for identifying the main keywords and key phrases within a text. There are different types of statistical approaches, including \emph{word frequency}, \emph{word collocations} and \emph{co-occurrences}, \emph{TF-IDF} \textbf{(short for term frequency–inverse document frequency)}, and \emph{RAKE} \textbf{(Rapid Automatic Keyword Extraction)}. Although these methods are very simple and don't require any training data, they tend to overlook relevant words and don't work well in most cases.
+
+\paragraph{Linguistic Approaches}
+Keyword extraction methods often make use of \emph{linguistic information} about texts and the words they contain. Sometimes, \emph{morphological} or \emph{syntactic} information, such as the \emph{part-of-speech} of words or the relations between words in a \emph{dependency grammar representation} of sentences, is used to determine what keywords should be extracted. Most systems that use some kind of linguistic information outperform those that don’t do so.
+
+\paragraph{Graph-based Approaches}
+Many graph-based methods are used to represent the unstructured text and extract certain keywords from it. \emph{HMMs} \textbf{(Hidden Markov Models)} are used to perform \emph{part-of-speech tagging}, in order to structure the sentence and extract keywords from it. Other graph-based methods are used too.
+
+\paragraph{Machine Learning Approaches}
+Machine learning-based systems can be used for many text analysis tasks, including keyword extraction. In order to process unstructured text data, machine learning systems need to turn it into vectors of features that represent the text. There are different machine learning algorithms and techniques that can be used to extract the most relevant keywords in a text, including \emph{SVM} \textbf{(Support Vector Machines)} and \emph{deep learning}. Some of the Machine Learning-based techniques for keywords extraction are :
+\begin{itemize}
+    \item \textbf{Conditional Random Fields (CRF) :} a statistical approach that learns patterns by weighting different features in a sequence of words present in a text.
+    \item \textbf{End-to-end Deep Learning with Attention :} using neural network to learn keywords extraction in an end-to-end manner with metrics like : \emph{accuracy}, \emph{precision}, \emph{recall}, \emph{F1 score}, and \emph{ROUGE} \textbf{(recall-oriented understudy for gisting evaluation)}.
+    
+    \item \textbf{Deep Learning Transformers-Based Approaches}
+    
+    Especially BERT architectures, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models, BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pretrained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications.
+    BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks.
+    
+\end{itemize}
 
 \subsection{Face Modelling and Generation}
 In this sub-section, an overview is given about face generation and refinement methods.
 
 \subsubsection{Face Generation}
+Human face generation is a sub-problem of image generation. Usually generative models target face generation from random latent noise. However, the input for a face generation model can be extended to include a description of the desired facial features, not just random face generation. These descriptions can include voice, text or even feature values. The output of such process is a complete human face portrait, whose quality depends on the architecture of the model.
+
 The problem of human face generation is not new to the \emph{AI} research. Many generative models target the problem of face generation from scratch.
 
 \paragraph{StyleGAN}
-A new generator architecture is proposed that enables controlling the synthesis of the faces by learning the unsupervised separation of high level features. It generates a complete high quality face image controlled by the latent code. It basically works as follows :
+In \texttt{StyleGAN} \cite{karras2019stylebased}, a new generator architecture is proposed that enables controlling the synthesis of the faces by learning the unsupervised separation of high level features. It generates a complete high quality face image controlled by the latent code.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/stylegan-arch.png}
+    \caption{Different StyleGAN architectures diagram.}
+    \label{fig:stylegan_arch}
+\end{figure}
+
+\texttt{StyleGAN} has $2$ versions (shown in figure \ref{fig:stylegan_arch}), where is the second version adds more modifications to address generation artifacts. Generally, it works as follows :
 \begin{itemize}
-    \item Latent code first is mapped to an intermediate latent space.
-    \item The intermediate latent code controls the generator using adaptive instance normalization.
+    \item A random latent code $z$ is first generated.
+    \item Latent code $z$ is mapped to an intermediate latent space $w$, which is then transformed to extended latent space $w+$ through affine transformation.
+    \item The intermediate extended latent code $w+$ is used to control the generation process in the synthesis network using adaptive instance normalization (\emph{AdaIN}).
 \end{itemize}
 
-\paragraph{Visual Results}
+\texttt{StyleGAN2} \cite{karras2020analyzing} introduces improvement on the synthesis network by adding \emph{residuals} and changing the integration of latent variable to the synthesis network, as shown in figure \ref{fig:stylegan_arch}. These changes improves the output visual results and reduces generation artifacts. Figure \ref{fig:stgan_res} shows the visual results of face generation using \texttt{StyleGAN2}.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{images/stylegan-results.png}
@@ -83,7 +126,7 @@ Subsequent research work follows \texttt{StyleGAN} to try latent manipulation fo
 On the other hand, our work target face generation from bare description. Consequently, we utilize the concept of directed manipulation to do conditioned sampling, which is described later in this document.
 
 \paragraph{Faces à la Carte}
-To our knowledge, this \cite{wang2020faces} is the only current open-source research work that addressed the problem of face generation from text. It's based on \texttt{StyleGAN2} and uses a general framework to extract the feature directions and reach the target face.
+To our knowledge, \texttt{Faces à la Carte} \cite{wang2020faces} is the only current open-source research work that addressed the problem of face generation from text. It's based on \texttt{StyleGAN2} and uses a general framework to extract the feature directions and reach the target face.
 
 We couldn't replicate their results, because the authors don't provide sufficient information about their method. However, we managed to gain some insights that helped us throughout the project.
 
@@ -114,14 +157,14 @@ The process of face generation can be inaccurate, thus the stage of face refinem
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/attgan.png}
+    \includegraphics[width=0.7\textwidth]{images/attgan.png}
     \caption{Complete architecture of AttGAN.}
     \label{fig:attgan}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/attgan-results.png}
+    \includegraphics[width=0.7\textwidth]{images/attgan-results.png}
     \caption{Visual results of AttGAN.}
     \label{fig:attgan_res}
 \end{figure}
@@ -131,14 +174,14 @@ The process of face generation can be inaccurate, thus the stage of face refinem
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/injectiongan.png}
+    \includegraphics[width=0.7\textwidth]{images/injectiongan.png}
     \caption{Complete architecture of InjectionGAN.}
     \label{fig:injgan}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/injectiongan-results.png}
+    \includegraphics[width=0.6\textwidth]{images/injectiongan-results.png}
     \caption{Visual results of InjectionGAN.}
     \label{fig:injgan_res}
 \end{figure}
@@ -165,19 +208,14 @@ In this sub-section, we discuss different methods and approaches to generate mul
 
 \subsubsection{Rotate-and-Render}
 
-\paragraph{Brief Description}
-A DNN-based method under the title of \textbf{Rotate-and-Render: Unsupervised Photorealistic Face Rotation from Single-View Images} \cite{zhou2020rotateandrender}. The network is based on \emph{3D face modelling} with \emph{unsupervised deep learning}. 
-
-\paragraph{Workflow}
-It consists of three stages : 
+The network \cite{zhou2020rotateandrender} is based on \emph{3D face modelling} with \emph{unsupervised deep learning}. It consists of three stages : 
 \begin{itemize}
     \item \textbf{3D face fitting} which generates a 3D model of the face and extracts the face texture.
     \item \textbf{Rotate-and-render} which rotates the face in 3D space and renders it in different poses.
     \item \textbf{Render-to-image} which projects the 3D render of the face into a 2D image.
 \end{itemize}
-\textbf{Note :} The architecture, also, ensures \emph{cycle-consistency} through re-projecting the face into the initial pose.
+The architecture, also, ensures \emph{cycle-consistency} through re-projecting the face into the initial pose. Figure \ref{fig:r&r} shows the visual results of the network.
 
-\paragraph{Visual Results}
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/rotate-and-render.png}
@@ -186,19 +224,14 @@ It consists of three stages :
 \end{figure}
 
 \subsubsection{DepthNets}
-
-\paragraph{Brief Description}
-A DNN-based method under the title of \textbf{Unsupervised Depth Estimation, 3D Face Rotation and Replacement} \cite{moniz2018unsupervised}. The network is based on \emph{casting} a specific face to a pose provided by another face in an \emph{unsupervised way}.
-
-\paragraph{Workflow}
-It consists of three stages :
+The network \cite{moniz2018unsupervised} is based on \emph{casting} a specific face to a pose provided by another face in an \emph{unsupervised way}. It consists of three stages :
 \begin{itemize}
     \item \textbf{Landmark extraction} from both faces.
     \item \textbf{Image-to-image translation}.
     \item \textbf{Siamese-like architecture} that compares the generated face with the original one.
 \end{itemize}
+Figure \ref{fig:dn} shows the visual results of the network.
 
-\paragraph{Visual Results}
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/depthnets.png}
@@ -209,12 +242,8 @@ It consists of three stages :
 \subsubsection{PosIX-GAN}
 
 \paragraph{Brief Description}
-A DNN-based method under the title of \textbf{PosIX-GAN: Generating multiple poses using GAN for Pose-Invariant Face Recognition} \cite{inbook}. The network generates the provided faces in \emph{9 angles of rotation} in an \emph{end-to-end manner} that relies on datasets to train GANs.
+The network \cite{inbook} generates the provided faces in \emph{9 angles of rotation} in an \emph{end-to-end manner} that relies on datasets to train GANs. Tt's an end-to-end network that depends on datasets for training. Figure \ref{fig:posix} shows the visual results of the network.
 
-\paragraph{Workflow}
-It's an end-to-end network that depends on datasets for training.
-
-\paragraph{Visual Results}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{images/posix-gan.png}
@@ -223,14 +252,8 @@ It's an end-to-end network that depends on datasets for training.
 \end{figure}
 
 \subsubsection{CAPG-GAN}
+The network \cite{8578974} generates different head poses using a \emph{pose-conditioned generator} and \emph{couple-agent discriminator} that discriminates both identity and pose. It's an end-to-end network that depends on datasets for training. Figure \ref{fig:capg} shows the visual results of the network.
 
-\paragraph{Brief Description}
-A DNN-based method under the title of \textbf{Pose-Guided Photorealistic Face Rotation} \cite{8578974}. The network generates different head poses using a \emph{pose-conditioned generator} and \emph{couple-agent discriminator} that discriminates both identity and pose.
-
-\paragraph{Workflow}
-It's an end-to-end network that depends on datasets for training.
-
-\paragraph{Visual Results}
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/capg-gan.png}
