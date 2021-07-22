@@ -127,13 +127,13 @@ Based on a business case study and the specifications needed, the cost estimatio
 \hline
 Items and Supplies & Cost \\
 \hline
- Office Preparation ( offices, chairs , etc )&  \$5000  \\
+ Office Preparation ( offices, chairs , etc )&  \$4000  \\
 \hline
- PCs and Laptops & \$10000 \\
+ PCs and Laptops & \$8000 \\
 \hline
 Servers & \$3000 \\
 \hline
-Total Capex & \$18000 \\
+Total Capex & \$15000 \\
 \hline
 \end{tabular}
 \label{tab:capex}
@@ -146,20 +146,23 @@ Total Capex & \$18000 \\
 \hline
 Items and Supplies & Cost per month \\
 \hline
-Salaries & \$4500 \\
+Salaries & \$4000 \\
 \hline
-Rent & \$400 \\
+Rent & \$300 \\
 \hline
 Bills ( electricity , water, etc ) & \$450\\
 \hline
-Total Opex & \$5350 \\
+Total Opex & \$4750 \\
 \hline
 \end{tabular}
 \label{tab:opex}
 \end{table}
 
+It's clear from table \ref{tab:cash_flow} that the break points starts from the third month (March), so we subtract the taxes which consists of 25\% from the total profits at every month to get our net profits.  
+
 \begin{table}[H]
 \centering
+\small
 \caption{Cash flow Table over a year (in dollars)}
 \begin{adjustbox}{angle=90}
 \begin{tabular}[t]{ | l | l | l | l | l | l | l | l | l | l | l | l | l |}
@@ -168,41 +171,41 @@ Total Opex & \$5350 \\
 \hline
 \multicolumn{13}{|c|}{Capex}  \\
 \hline
-Office Equipment & 416 & 416 & 416 & 416 & 416 & 416 & 416 & 416 & 416 & 416 & 416 & 416 \\
+Office Equipment & 1000 & 1000 & 1000 & 1000 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 \hline
-Laptops and PCs & 833 & 833 & 833 & 833 & 833 & 833 & 833 & 833 & 833 & 833 & 833 & 833 \\
+Laptops and PCs & 800 & 800 & 800 & 800 & 800 & 1000 & 1000 & 1000 & 1000 & 0 & 0 & 0 \\
 \hline
-Servers & 250 & 250 & 250 & 250 & 250 & 250 & 250 & 250 & 250 & 250 & 250 & 250 \\
+Servers & 1500 & 1500 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 \hline
 \multicolumn{13}{|c|}{Opex}  \\
 \hline
-Salaries & 4500 & 4500 & 4500 & 4500 & 4500 & 4500 & 4500 & 4500 & 4500 & 4500 & 4500 & 4500 \\
+Salaries & 4000 & 4000 & 4000 & 4000 & 4000 & 4000 & 4000 & 4000 & 4000 & 4000 & 4000 & 4000 \\
 \hline
-Rent & 400 & 400 & 400 & 400 & 400 & 400 & 400 & 400 & 400 & 400 & 400 & 400 \\
+Rent & 300 & 300 & 300 & 300 & 300 & 300 & 300 & 300 & 300 & 300 & 300 & 300 \\
 \hline
 Bills & 450 & 450 & 450 & 450 & 450 & 450 & 450 & 450 & 450 & 450 & 450 & 450 \\
 \hline
-Sub Total & 6849 & 6849 & 6849 & 6849 & 6849 & 6849 & 6849 & 6849 & 6849 & 6849 & 6849 & 6849 \\
+Sub Total & 8050 & 8050 & 6550 & 6550 & 5550 & 5750 & 5750 & 5750 & 5750 & 4750 & 4750 & 4750 \\
 \hline
-Accumulative & 6849 & 13698 & 20547 & 27396 & 34245 & 41094 & 47943 & 54792 & 61641 & 68490 & 75339 & 82188 \\
+Accumulative & 8050 & 16100 & 22650 & 29200 & 34750 & 40500 & 46250 & 52000 & 57750 & 62500 & 67250 & 72000 \\
 \hline
 \multicolumn{13}{|c|}{Revenue}  \\
 \hline
-Purchasing & 5800 & 6500 & 7500 & 8000 & 5600 & 7000 & 6000 & 6500 & 5800 & 6800 & 7200 & 6700 \\
+Purchasing & 6000 & 8000 & 9500 & 12000 & 15000 & 15000 & 10000 & 15000 & 12500 & 16000 & 14000 & 18000 \\
 \hline
 Subscription & 100 & 150 & 180 & 200 & 220 & 180 & 230 & 180 & 200 & 150 & 180 & 190 \\
 \hline
-Ads & 50 & 75 & 80 & 80 & 90 & 88 & 74 & 100 & 110 & 80 & 98 & 88 \\
+Ads & 60 & 75 & 80 & 110 & 90 & 88 & 97 & 100 & 110 & 114 & 98 & 108 \\
 \hline
-Sub Total  & 5950 & 6725 & 7760 & 8280 & 5910 & 7268 & 6304 & 6780 & 6110 & 7030 & 7478 & 6978 \\
+Sub Total  & 6160 & 8225 & 9760 & 12310 & 15310 & 15268 & 10327 & 15280 & 12810 & 16264 & 14278 & 18298 \\
 \hline
-Accumulative & 5950 & 12675 & 20435 & 28715 & 34625 & 41893 & 48197 & 54977 & 61087 & 68117 & 75595 & 82573 \\
+Accumulative & 6160 & 14385 & 24145 & 36455 & 51765 & 67033 & 77360 & 92640 & 105450 & 121714 & 135992 & 154290 \\
 \hline
-Profits & -899 & -1023 & -112 & 1319 & 380 & 799 & 254 & 185 & -554 & -373 & 256 & 385 \\
+Profits & -1890 & -1715 & 1495 & 7255 & 17015 & 26533 & 31110 & 40640 & 47700 & 59214 & 68742 & 82290  \\
 \hline
-Taxes & - & - & - & 329.75 & 95 & 199.75 & 63.5 & 46.25 & - & - & 64 & 96.25 \\
+Taxes & - & - & 373.75 & 1813.75 & 4253.75 & 6633.25 & 7777.5 & 10160 & 11925 & 14803.5 & 17185.5 & 20572.5 \\
 \hline
-Net Profits & -899 & -1023 & -112 & 989.25 & 285 & 599.25 & 190.5 & 138.75 & -554 & -373 & 192 & 288.75 \\
+Net Profits & -1890 & -1715 & 1121.25 & 5441.25 & 12761.25 & 19899.75 & 23332.5 & 30480 & 35775 & 44410.5 & 51556.5 & 61717.5 \\
 \hline
 \end{tabular}
 \end{adjustbox}

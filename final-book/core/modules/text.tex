@@ -16,92 +16,61 @@ This module takes the input text and tries to
     \item extract other non-mentioned attributes.
 \end{enumerate}
 
-Here’s the supported list of facial attributes that can be extracted:
+Table \ref{tab:facial_att} show the list of supported facial attributes along with their types (whether continuous or binary).
 
-\begin{itemize}
-
-    \item Eyebrows
-    \begin{itemize}
-         \item Bushy Eyebrows               \hspace*{\fill Binary}
-    \end{itemize}
-
-
-
-    \item Hair Color
-    \begin{itemize}
-    	 \item Black Hair                   \hspace*{\fill Binary}
-    	 \item Red Hair                     \hspace*{\fill Binary}
-    	 \item Blonde Hair                  \hspace*{\fill Binary}
-    	 \item Brown Hair                   \hspace*{\fill Binary}
-    	 \item Gray Hair                    \hspace*{\fill Binary}
-    \end{itemize}
-
-
-    \item Hair Style
-    \begin{itemize}
-    	 \item Curly-Straight Hair          \hspace*{\fill Continuous}
-    	 \item Receding Hairline            \hspace*{\fill Binary}
-    	 \item Baldness                     \hspace*{\fill Binary}
-    	 \item Bangs                        \hspace*{\fill Binary}
-    	 \item Hair Length                  \hspace*{\fill Continuous}
-    \end{itemize}
-
-
-    \item Facial Hair
-    \begin{itemize}
-    	 \item Beard                        \hspace*{\fill Continuous}
-    \end{itemize}
-
-
-    \item Race
-    \begin{itemize}
-    	 \item Asian Race                   \hspace*{\fill Binary}
-    	 \item Skin Color                   \hspace*{\fill Continuous}
-    \end{itemize}
-
-
-    \item General Facial Attributes
-    \begin{itemize}
-    	 \item Face Thickness               \hspace*{\fill Continuous}
-    	 \item Gender                       \hspace*{\fill Binary}
-    	 \item Age                          \hspace*{\fill Continuous}
-    	 \item Lips Size                    \hspace*{\fill Continuous}
-    	 \item Nose Size                    \hspace*{\fill Continuous}
-    	 \item Ears Size                    \hspace*{\fill Continuous}
-    	 \item Double Chin                  \hspace*{\fill Binary}
-    	 \item High Cheekbones              \hspace*{\fill Binary}   
-    	 \item Pointy Nose                  \hspace*{\fill Binary}
-    	 \item Rosy Cheeks                  \hspace*{\fill Binary}
-    \end{itemize}
-
-
-    \item Eyes
-    \begin{itemize}
-    	 \item Black Eyes                   \hspace*{\fill Binary}
-    	 \item Green Eyes                   \hspace*{\fill Binary}
-    	 \item Blue Eyes                    \hspace*{\fill Binary}
-    	 \item Brown Eyes                   \hspace*{\fill Binary}
-    	 \item Eye Size                     \hspace*{\fill Continuous}
-    	 \item Eye Bags                     \hspace*{\fill Binary}
-    \end{itemize}
-
-
-    \item Makeup
-    \begin{itemize}
-    	 \item Makeup Saturation            \hspace*{\fill Continuous}
-    	 \item Lipstick                     \hspace*{\fill Binary}
-    \end{itemize}
-
-
-    \item Eyeglasses
-    \begin{itemize}
-    	 \item Sight Glasses                \hspace*{\fill Binary}
-    	 \item Sun Glasses                  \hspace*{\fill Binary}
-    \end{itemize}
-
-\end{itemize}
-
-
+\begin{table}[H]
+\centering
+\caption{The list of supported facial attributes with their types.}
+\begin{tabular}[t]{| c | c | c |}
+\hline
+Group & Attribute & Type \\
+\hline \hline
+Eyebrows & Bushy Eyebrows & Binary \\
+\hline
+\multirow{5}{*}{Hair Color} &  Black Hair & Binary \\
+& Red Hair & Binary \\
+& Blonde Hair & Binary \\
+& Brown Hair & Binary \\
+& Gray Hair & Binary \\
+\hline
+\multirow{5}{*}{Hair Style} & Curly-Straight Hair & Continuous \\
+& Receding Hairline & Binary \\
+& Baldness & Binary \\
+& Bangs & Binary \\
+& Hair Length & Continuous \\
+\hline
+Facial Hair & Beard & Continuous \\
+\hline
+\multirow{2}{*}{Race} & Asian Race & Binary \\
+& Skin Color & Continuous \\
+\hline
+\multirow{10}{*}{General Facial Attributes} & Face Thickness & Continuous \\
+& Gender & Binary \\
+& Age & Continuous \\
+& Lips Size & Continuous \\
+& Nose Size & Continuous \\
+& Ears Size & Continuous \\
+& Double Chin & Binary \\
+& High Cheekbones & Binary \\
+& Pointy Nose & Binary \\
+& Rosy Cheeks & Binary \\
+\hline
+\multirow{6}{*}{Eyes} & Black Eyes & Binary \\
+& Green Eyes & Binary \\
+& Blue Eyes & Binary \\
+& Brown Eyes & Binary \\
+& Eye Size & Continuous \\
+& Eye Bags & Binary \\
+\hline
+\multirow{2}{*}{Makeup} & Makeup Saturation & Continuous \\
+& Lipstick & Binary \\
+\hline
+\multirow{2}{*}{Eyeglasses} & Sight Glasses & Binary \\
+& Sun Glasses & Binary \\
+\hline
+\end{tabular}
+\label{tab:facial_att}
+\end{table}
 
 \subsubsection{Modular Decomposition}
 This module is considered as an NLP task that can be tackled using classical approaches, such as Text Parsing and Tagging, and Deep Learning approaches. The final design for this module is to use the power of Deep Learning approaches especially transformers to analyze and understand the text. This is because that the classical approaches failed in such a task as there are a lot of sequence dependencies on the textual description that may arise such as restricting the age of the described person to the range of low-to-medium beard levels and gender attribute, except in the case of age attribute is mentioned explicitly or implicitly in the text, for example "a boy", "a boy with a beard" and "a boy almost in his thirties", the first description should be understood as a child or teenager, while other descriptions refer to a middle-aged man. a lot of other dependencies that may arise that make the classical approaches not feasible and makes the deep learning solutions a must to tackle such a task. 
