@@ -41,6 +41,21 @@ To assess the $4$ previously-mentioned properties, multiple metrics are used, wh
 \subsubsection{Module Testing}
 
 \paragraph{Speech Recognition}
+Our final speech module is tested on \emph{LibriSpeech ASR} corpus, \emph{test-clean-speech} dataset. We use \emph{character error rate} (CER) and \emph{word error rate} (WER) to evaluate the accuracy of the model after $30$ epoch of training. Table \ref{tab:speech_results} show the results of our model.
+\begin{table}[ht]
+\centering
+\caption{Speech recognition results.}
+\begin{tabular}[t]{| c | c |}
+\hline
+CER & 0.25 \\
+\hline
+WER & 0.65 \\
+\hline
+CTC Losses & 0.7 \\
+\hline
+\end{tabular}
+\label{tab:speech_results}
+\end{table}
 
 \paragraph{Text Processing}
 Our Final Design for Text Processing module is considered as a multi-label multi-class classification using DistelBERT base uncased, so we finetuned then tested it on  a testing dataset of 100,000 records based on the metrics shown in table \ref{tab:text_metrics}. The metrics proved that it will work very well (almost perfect) in inference time.
@@ -168,6 +183,66 @@ Since, we adapt \texttt{StyleGAN2} for the refinement process, so this module te
 
 \paragraph{Multiple Head Poses Generation}
 
+In order to test the Multiple Head Pose Generation module, 2 Tests are performed : \\
+
+\begin{table}[H]
+\caption{NME mean and std for test data of AFLW and AFLW2000 dataset. NME is calculated for a various range of poses for 3DMMs}
+\centering
+\begin{tabular}[t]{| c | c | c |}
+\hline
+Pose Range & NME on \textbf{AFLW} & NME on \textbf{AFLW2000} \\
+\hline
+[0-30] & 7.65±5.41 & 5.668±2.88 \\
+\hline
+[30-60] & 9.11±6.47 & 7.05±4.04 \\
+\hline
+[30-90] & 10.04±8.33 & 8.28±4.42 \\
+\hline
+\textbf{[0-90]} & \textbf{8.93±0.98} & \textbf{7.002±1.06} \\
+\hline
+\end{tabular}
+\label{nme_table}
+\end{table}
+
+\begin{itemize}
+    \item \textbf{Quantitative Testing}: Calculating a metric on a Dataset to evaluate the performance of the 3D Fitting sub-module. The dataset used are AFLW (21 annotated facial landmarks) and AFLW2000 (68 annotated facial landmarks) datasets which contains Human faces and their corresponding Parameters for the 3DMM. The used metric is the Normalized Mean Error (NME) which is the standard metric for evaluating 3D Fitting models. NME is calculated for the single 3DMM as follows: \\
+    
+    \[ NME = \frac{1}{N} \sum_{k=1}^{N}\frac{l2norm(x _{k} - y _{k})}{d}\]
+    
+    Where d is the distance in the 3D model between the 2 eyes of the face. Results of NME metric are reported in table \ref{nme_table}
+
+    \item \textbf{Qualitative Testing}: In addition to the Quantitative evaluation for the module, A Quantitative evaluation is performed by generating and visually evaluating results for Images outputted from our previous modules. Doing this asserts that the generated images have a user-friendly quality and doesn't mess up with the quality of the image generated in the previous steps. In figure \ref{fig:input_pose} we provide an example of some input face images generated from the previous modules. Qualitative results for the 3 input examples are displayed in figure \ref{fig:pose_output1}, figure \ref{fig:pose_output2}, figure \ref{fig:pose_output3}
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/pose_results/faces.jpg}
+    \caption{Example of input faces from previous stage.}
+    \label{fig:input_pose}
+    \end{figure}
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/pose_results/1.png}
+    \caption{Example of output 8 poses for the first input face}
+    \label{fig:pose_output1}
+    \end{figure}
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/pose_results/2.png}
+    \caption{Example of output 8 poses for the second input face.}
+    \label{fig:pose_output2}
+    \end{figure}
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/pose_results/3.png}
+    \caption{Example of output 8 poses for the third input face.}
+    \label{fig:pose_output3}
+    \end{figure}
+
+\end{itemize}
+
 \subsubsection{Integration Testing}
 The integration of the whole system into a web application is tested qualitatively and quantitatively. In this section, we show the visual results of our system in an \emph{end-to-end} manner. However, we show the quantitative metrics in the comparison with previous work. 
 
@@ -260,7 +335,7 @@ Our System & Faces à la Carte \\
 \label{tab:lpips_comp}
 \end{table}
 
-Finally, table \ref{tab:exec_time} shows the execution time of different core stages of our system. We can see that the overall \emph{text-to-face generation} process takes only about $0.2$ seconds on an \emph{Nvidia GTX 1080 ti}. However, the web application can take from $1$ second up to multiple seconds to generate a face portrait (from any description) using the same GPU, depending on the \emph{connectivity} with the server. Meanwhile, our \emph{multiple head poses generation} module takes around $5$ seconds on the same GPU as well. Most of the application backend runs on \emph{CUDA GPUs}. The whole system without \textbf{multiple head poses generation} module occupies around $5.5$ \emph{GB} of \emph{VRAM}. Meanwhile, this module occupies up to $4$ \emph{GB}. So, in total, the whole system occupies between $9$ to $10$ \emph{GB} of \emph{VRAM}.
+Finally, table \ref{tab:exec_time} shows the execution time of different core stages of our system. We can see that the overall \emph{text-to-face generation} process takes only about $0.2$ seconds on an \emph{Nvidia GTX 1080 ti}. However, the web application can take from $1$ second up to multiple seconds to generate a face portrait (from any description) using the same GPU, depending on the \emph{connectivity} with the server. Meanwhile, our \emph{multiple head poses generation} module takes around $2$ seconds to generate a single pose on the same GPU as well. Most of the application backend runs on \emph{CUDA GPUs}. The whole system without \textbf{multiple head poses generation} module occupies around $5.5$ \emph{GB} of \emph{VRAM}. Meanwhile, this module occupies up to $3$ \emph{GB}. So, in total, the whole system occupies between $8$ to $9$ \emph{GB} of \emph{VRAM}.
 
 \begin{table}[ht]
 \centering
