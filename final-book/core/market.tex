@@ -1,4 +1,4 @@
-Face Generation is an important field in the market. It is used widely in missing people organizations or police stations, however it is not automated, using artists to draw the faces from their descriptions. Retratista is the first automated product in that field, so it can be used faster and more accurate. Retratista, also, offers face refinement, which is offered by many mobile applications just to enhance or edit taken photos for entertainment, not critical issues like the ones we target. 
+Face Generation is an important field in the market. It is used widely in missing people organizations or police stations, however it is not automated, using artists to draw the faces from their descriptions. Retratista is the first automated product in that field and it can operate in a fast and accurate way. Retratista, also, offers face refinement, which is offered by many mobile applications just to enhance or edit taken photos for entertainment, not critical issues like the ones we target. 
 
 \subsection{Targeted Customers}
 Our Project is directed to all governmental and volunteering organizations, that need to generate identical faces of missing people from bare human description of their facial features.
@@ -12,10 +12,10 @@ We can categorize the different target companies into the following :
         \end{itemize}
     \item \textbf{Missing People organizations like :}
         \begin{itemize}
-            \item International Center for Missing and Exploited Children. (ref: \link{https://www.icmec.org})
-            \item International Red Cross and Red Crescent Movement. (ref: \link{https://www.icrc.org})
-            \item International Commission on Missing Persons \emph{ICMP} (ref: \link{https://www.icmp.int})
-            \item Missing Persons Support Center. (ref: \link{https://www.mpsupportcenter.org})
+            \item International Center for Missing and Exploited Children (ref: \link{https://www.icmec.org}).
+            \item International Red Cross and Red Crescent Movement (ref: \link{https://www.icrc.org}).
+            \item International Commission on Missing Persons \emph{ICMP} (ref: \link{https://www.icmp.int}).
+            \item Missing Persons Support Center (ref: \link{https://www.mpsupportcenter.org}).
             \item Others.
         \end{itemize}
     \item \textbf{Historical Characters Identification :}
@@ -91,7 +91,7 @@ So, we are going to address those three aspects in this section. In the business
 \begin{tabular}[t]{| l | l | l | l | l | l |}
 \hline
 Years & Year 1 & Year 2 & Year 3 & Year 4 & Year 5 \\
-\hline
+\hline \hline
 Avg Number of Customers & 30 & 50 & 100 & 120 & 200 \\
 \hline
 Product Purchase & \$1500 & \$1500 & \$2000 & \$2300 & \$2800 \\
@@ -118,7 +118,7 @@ Total Profits & \$46100 & \$78670 & \$210200 & \$293400 & \$591680 \\
 
 \newpage
 
-Based on a business case study and the specifications needed, the cost estimation of our software as a service in a specific institution is the cost behind the hardware. Our application takes around 1 second on an \emph{Nvidia GTX 1080 ti} for generating the face from any description, but this can extend to be multiple seconds based on the connection. The whole system can be deployed on single PC with 11GB VRAM, around 700\$ for the GPU and 1500\$ to 2000\$ for the whole PC. For scalability, we can use 2 PCs one for generation and the other for Pose estimation to host the whole application. Also, we can scale out our system on more than 2 PCs for improved request parallelism. So, we can conclude the \emph{Capex} as shown in table \ref{tab:capex} and \emph{Opex} as shown in table \ref{tab:opex}. Given this information, we can construct the financial analysis as shown in table \ref{tab:cash_flow}.
+Based on a business case study and the specifications needed, the cost estimation of our software as a service in a specific institution is the cost behind the hardware. Our application takes around 1 second on an \emph{Nvidia GTX 1080 ti} for generating a face from any description, but this can extend to be multiple seconds based on the connection. The whole system can be deployed on single PC with 11GB VRAM, around 700\$ for the GPU and 1500\$ to 2000\$ for the whole PC. For scalability, we can use 2 PCs, one for face generation and the other for face rotation, to host the whole application. Also, we can scale out our system to more than 2 PCs for improved request parallelism. So, we can conclude the \emph{Capex} as shown in table \ref{tab:capex} and \emph{Opex} as shown in table \ref{tab:opex}. Given this information, we can construct the financial analysis as shown in table \ref{tab:cash_flow}.
 
 \begin{table}[H]
 \centering
@@ -126,7 +126,7 @@ Based on a business case study and the specifications needed, the cost estimatio
 \begin{tabular}[t]{| l | l |}
 \hline
 Items and Supplies & Cost \\
-\hline
+\hline \hline
  Office Preparation ( offices, chairs , etc )&  \$4000  \\
 \hline
  PCs and Laptops & \$8000 \\
@@ -145,7 +145,7 @@ Total Capex & \$15000 \\
 \begin{tabular}[t]{| l | l |}
 \hline
 Items and Supplies & Cost per month \\
-\hline
+\hline \hline
 Salaries & \$4000 \\
 \hline
 Rent & \$300 \\
@@ -168,7 +168,7 @@ It's clear from table \ref{tab:cash_flow} that the break points starts from the 
 \begin{tabular}[t]{ | l | l | l | l | l | l | l | l | l | l | l | l | l |}
 \hline
  & Jan & Feb & Mar & Apr & May & June & July & Aug & Sep & Oct & Nov & Dec \\
-\hline
+\hline \hline
 \multicolumn{13}{|c|}{Capex}  \\
 \hline
 Office Equipment & 1000 & 1000 & 1000 & 1000 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\

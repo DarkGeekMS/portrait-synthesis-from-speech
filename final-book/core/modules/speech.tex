@@ -24,8 +24,8 @@ Our aim is to add functionality that the user can enter a speech description of 
     \label{fig:speechModel}
 \end{figure}
 
-As mentioned we use \texttt{DeepSpeech2} with connectionist temporal classification (CTC) losses as a base to our speech recognition model. The model takes as input features from the audio in the form of spectrograms compressed by frequency and time masking to separate the spectrograms in time and frequency domains. \\
-The model architecture consists of one convolutional layer followed by 3 residual CNNs and 5 bidirectional gated recurrent units GRUs. \\
+As mentioned, we use \texttt{DeepSpeech2} with connectionist temporal classification (CTC) losses as a base to our speech recognition model. The model takes as input features from the audio in the form of spectrograms compressed by frequency and time masking to separate the spectrograms in time and frequency domains. \\
+The model architecture (shown in figure \ref{fig:speechModel}) consists of one convolutional layer followed by 3 residual CNNs and 5 bidirectional gated recurrent units GRUs. \\
 
 The first convolution layer used to compress the audio information in low dimension space, The residual CNN consists of layer normalization over the time axis of the speech then 2 convolution layers summed with the original input to the resCNN. \\
 

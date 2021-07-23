@@ -4,7 +4,7 @@ In this chapter, we explain the necessary background, as well as the related wor
 We discuss the basic background knowledge that helps us throughout the document.
 
 \subsubsection{Convolutional Neural Networks}
-Convolutional Neural Networks (CNN) is a special type of \emph{feed-forward} neural networks, which uses convolution operations to perform the forward computations. They are used in wide range of applications, especially \emph{computer vision}. There are $4$ basic types of layers in a CNN that we would like to mention :
+Convolutional Neural Networks (CNN) is a special type of \emph{feed-forward} neural networks, which uses convolution operations to perform the forward computations. They are used in wide range of applications, especially \emph{computer vision}. There are $4$ basic types of layers in a CNN (shown in figure \ref{fig:cnn}) that we would like to mention :
 \begin{enumerate}
     \item \textbf{Convolution layer} : uses filters (a.k.a. \emph{kernels}) to detect edges and shapes by convolution with the input map. The filter has certain dimensions and scans the map using certain stride. This helps the network to learn sparse connections and local structures.
     \item \textbf{Pooling layer} : is usually used to reduce the input dimensions through maximizing or averaging using a filter.
@@ -77,9 +77,7 @@ Machine learning-based systems can be used for many text analysis tasks, includi
     \item \textbf{Conditional Random Fields (CRF) :} a statistical approach that learns patterns by weighting different features in a sequence of words present in a text.
     \item \textbf{End-to-end Deep Learning with Attention :} using neural network to learn keywords extraction in an end-to-end manner with metrics like : \emph{accuracy}, \emph{precision}, \emph{recall}, \emph{F1 score}, and \emph{ROUGE} \textbf{(recall-oriented understudy for gisting evaluation)}.
     
-    \item \textbf{Deep Learning Transformers-Based Approaches}
-    
-    Especially BERT architectures, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models, BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pretrained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications.
+    \item \textbf{Deep Learning Transformers-Based Approaches :} especially BERT architectures, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models, BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pretrained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications.
     BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks.
     
 \end{itemize}

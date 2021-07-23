@@ -66,7 +66,7 @@ Our Final Design for Text Processing module is considered as a multi-label multi
 \begin{tabular}[t]{| c | c |}
 \hline
 Metric & Value \\
-\hline
+\hline \hline
 Accuracy & 0.995 \\
 \hline
 Precision & 0.988 \\
@@ -85,7 +85,7 @@ F1-Score & 0.989 \\
 \begin{tabular}[t]{| c | c |}
 \hline
 Architecture & Runtime \\
-\hline
+\hline \hline
 DistelBERT & 0.0072 sec \\
 \hline
 ALBERT & 0.0143 sec \\
@@ -108,12 +108,12 @@ Table \ref{tab:angles} shows the angles between the directions of a subset of fe
 Moreover, figure \ref{fig:dir_results} shows the \emph{visual results} of moving along some feature directions. We use these results to qualitatively measure the accuracy of the extracted feature directions.
 
 \begin{table}[ht]
-\caption{Angles between different feature directions using a subset of the considered facial features (closer to $90$ degrees is better).}
+\caption{Angles (measured in degrees) between different feature directions using a subset of the considered facial features (closer to $90$ degrees is better).}
 \centering
 \begin{tabular}[t]{| c | c | c | c | c |}
 \hline
 \textbf{Angles} & Age & Gender & Beard & Gray Hair \\
-\hline
+\hline \hline
 Age & 0.0 & 92.4 & 85.8 & 79.6 \\
 \hline
 Gender & 92.4 & 0.0 & 80.0 & 88.6 \\
@@ -154,7 +154,7 @@ Also, table \ref{tab:lpips} shows the relation between \emph{LPIPS} score (betwe
 \begin{tabular}[t]{| c | c | c |}
 \hline
 Input Text & Number of Navigated Directions & LPIPS \\
-\hline
+\hline \hline
 Female with chubby face & 2 & 0.3905 \\
 \hline
 Woman with long wavy hair & 3 & 0.4412 \\
@@ -191,7 +191,7 @@ In order to test the Multiple Head Pose Generation module, 2 Tests are performed
 \begin{tabular}[t]{| c | c | c |}
 \hline
 Pose Range & NME on \textbf{AFLW} & NME on \textbf{AFLW2000} \\
-\hline
+\hline \hline
 [0-30] & 7.65±5.41 & 5.668±2.88 \\
 \hline
 [30-60] & 9.11±6.47 & 7.05±4.04 \\
@@ -295,7 +295,7 @@ Table \ref{tab:fid} and plot \ref{fig:fid} show the comparison of our system to 
 \begin{tabular}[t]{| c | c | c | c |}
 \hline
 Test Size & StyleGAN2 & Image2StyleGAN & Retratista \\
-\hline
+\hline \hline
 50 & 129.15 & 179.58 & 151.58 \\
 \hline
 100 & 104.29 & 150.54 & 132.54 \\
@@ -326,7 +326,7 @@ Next, we compare our system with \texttt{Faces à la Carte} using the only metri
 \caption{LPIPS comparison with Faces à la Carte (lower is better).}
 \begin{tabular}[t]{| c | c |}
 \hline
-Our System & Faces à la Carte \\
+Retratista & Faces à la Carte \\
 \hline
 \hline
 0.595±0.008 & 0.634±0.005 \\
