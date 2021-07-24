@@ -211,7 +211,9 @@ def main():
     if operation == 'i' :
         text_transform = TextTransform()
         model = SpeechRecognition( CNN_number=NoCNNs, RNN_number=NoRNNs, RNNCells=RNNCells, NoClasses=NoClasses, features=Nofeatrues, dropOut=0.1).to(device)
-        inference(model= model, device=device, inputPath=sys.argv[2], text_transform=text_transform)
+        checkpoint = torch.load(sys.argv[2])
+        model.load_state_dict(checkpoint['model_state_dict'])
+        inference(model= model, device=device, inputPath=sys.argv[3], text_transform=text_transform)
     elif operation == 'l':
         loadSavedModel(sys.argv[2])
     else:
