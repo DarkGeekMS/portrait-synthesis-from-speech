@@ -1,4 +1,5 @@
 import os
+import sys
 import torch
 import torchaudio
 import torch.nn as nn
@@ -164,8 +165,7 @@ def loadSavedModel(PATH):
         Validate(model, device, testing_loader, criterion,text_transform , e, iter_meter)
         train(model, device, training_loader, criterion, optimizer, scheduler, e, iter_meter)
 
-def main():
-
+def startTrain():
     torch.manual_seed(7)
 
     text_transform = TextTransform()
@@ -203,3 +203,16 @@ def main():
         
 
 
+def main():
+    if (len(sys.argv) < 2) :
+        print("select the operation first")
+        return
+    operation = sys.argv[1]
+    if operation == 'i' :
+        text_transform = TextTransform()
+        model = SpeechRecognition( CNN_number=NoCNNs, RNN_number=NoRNNs, RNNCells=RNNCells, NoClasses=NoClasses, features=Nofeatrues, dropOut=0.1).to(device)
+        inference(model= model, device=device, inputPath=sys.argv[2], text_transform=text_transform)
+    elif operation == 'l':
+        loadSavedModel(sys.argv[2])
+    else:
+        startTrain()
