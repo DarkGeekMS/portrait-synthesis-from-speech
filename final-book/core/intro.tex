@@ -1,6 +1,8 @@
-In our project, we address the problem of \emph{face portrait generation} from \emph{various descriptions}. These descriptions include voice, textual and manual descriptions. We design our system for complete \emph{end-to-end} portrait generation, with a simple \emph{web user interface}. Moreover, rapid face refinement and rotation is provided to further improve face identification. Our system solves both duration and complexity issues of previous portrait sketching methods, while providing a high fidelity results and keeping simple interface. This eases the usage of portraits in many applications.
+Face portrait has been used for multiple important tasks related to visual search and study. Visual search of criminals and missing individuals is completely based on visual face portraits. Having an accurate face portrait can enable automated and efficient search through camera feeds and even faster manual search. Also, face portraits are the bases of the many studies related to history and archaeology. Despite of its importance, the process of generating a portrait from bare description is tedious and time-consuming. Traditionally, this process is done by professional portraitists that manually sketch the face portrait. This can take days or weeks to accomplish using traditional sketching and hours using digital sketching. In some cases, this can be unacceptable.
 
-\textbf{Retratista} (\emph{our final system}) combines the power of modern \emph{AI} solutions and the great applications of portraiture into a single tool that is available for everyone to use efficiently without experience and with minimum duration. 
+\texttt{Retratista} addresses the problem of \emph{face portrait generation} from \emph{various descriptions}. These descriptions include voice, textual and manual descriptions. We design our system for complete \emph{automated} portrait generation, with a simple \emph{web user interface}. Moreover, rapid face refinement and rotation is provided to further improve face identification. Our system solves both duration and complexity issues of previous portrait sketching methods, while providing a high fidelity results and keeping simple interface. This eases the usage of portraits in many applications.
+
+\texttt{Retratista} combines the power of modern \emph{AI} solutions and the great applications of portraiture into a single tool that is available for everyone to use efficiently without experience and with minimum duration. 
 
 \subsection{Motivation and Justification}
 Sketching a human face from bare description is a tedious task that requires specialization. Normally, professional portraitists are asked to sketch a face from description. The process of sketching a human face portrait from scratch can involve problems, such as :
@@ -17,7 +19,7 @@ Despite its difficulty, the process of sketching portrait has many applications,
     \item Search of surveillance video feeds for individuals' actions.
 \end{itemize}
 
-Here are some statistics from \emph{International Centre For Missing and Exploited Children} that can tell how our system is critically needed :
+Here are some statistics from \emph{International Centre For Missing and Exploited Children} (ref: \link{https://www.icmec.org}) that can tell how our system is critically needed :
 
 \begin{itemize}
     \item In \textbf{USA}, an estimated \textbf{460,000} children are reported missing every year.
@@ -30,8 +32,10 @@ Here are some statistics from \emph{International Centre For Missing and Exploit
     \item In \textbf{Spain}, an estimated \textbf{20,000} children are reported missing every year.
 \end{itemize}
 
+All cases of missing individuals require a visual face image to ease the search process. Most of them require sketching a face portrait (either for the missing person or a potential suspect), even with all the advances in photography.
+
 \subsection{Project Objectives and Problem Definition}
-The main focus of \textbf{Retratista} is to offer as many utilities as possible to identify a human face from any description. To do this, we have to :
+The main focus of \texttt{Retratista} is to offer as many utilities as possible to identify a human face from any description. To do this, we have to :
 \begin{itemize}
     \item Translate the input description to a complete human face image.
     \item Refine the generated face image, as needed, in order to reach the target face.
@@ -41,7 +45,7 @@ The main focus of \textbf{Retratista} is to offer as many utilities as possible 
 In order for our product to be valuable, these functionalities have to be done as fast as possible, while maintaining output accuracy and quality. Also, it should be an \emph{easy-to-use} interface with no required experience to use, only enter the description and edit what is needed. The output of our system can, then, be used in multiple applications of visual search and identification.
 
 \subsection{Project Outcomes}
-The project outcome is a web application that simply takes a description as voice, text or manual input and translates it into a complete realistic face portrait within a \emph{few seconds} in a \emph{fully-automated} way. Then, the application gives the user a chance to further refine the facial attributes to match the target face. Furthermore, the generated face can be rendered in multiple poses for better identification. Our system considers $32$ facial attributes for generation and $38$ facial attributes for refinement.
+The project outcome is a web application that simply takes a description as voice, text or manual input and translates it into a complete realistic face portrait within a \emph{few seconds} in a \emph{fully-automated} way. Then, the application gives the user a chance to further refine the facial attributes to match the target face. Furthermore, the generated face can be rendered in multiple poses for better identification. Our system considers $32$ facial attributes for generation and $38$ facial attributes for refinement. The facial attributes include \emph{age}, \emph{gender}, \emph{hair color} and \emph{eyes color}. 
 
 \subsection{Document Organization}
 The document is organized into $6$ chapters along with the appendices. Chapter $1$ introduces the main idea of the project, along with the formal definition of the problem, our motivation to work on this problem and the project outcome.
@@ -52,8 +56,8 @@ Chapter $3$ gives the necessary background information, along with previous rela
 
 Chapter $4$ is the main body of our document, where it discusses, in details, our system architecture and application design. This chapter further explains the implementation details of our modules. Finally, it discusses alternative approaches considered in our experimentation.
 
-Chapter $4$ explains the metrics, used to assess our system, and our system results. The testing is described both qualitatively and quantitatively. Also, we show the success and failures cases of our system.
+Chapter $5$ explains the metrics, used to assess our system, and our system results. The testing is described both qualitatively and quantitatively. Also, we show the success and failures cases of our system.
 
-Chapter $5$ concludes our document, lists the faced challenges and shows how our work can be extended and improved.
+Chapter $6$ concludes our document, lists the faced challenges and shows how our work can be extended and improved.
 
 Finally, we include $4$ appendices for describing development tools, project use cases, user guide and product feasibility study.

@@ -46,7 +46,7 @@ e.g. to train `bert-base-uncased` version
 
 
 # To use it as a sub-module in your work
-1. Download weights and config file from [Trained-Bert](https://drive.google.com/drive/folders/1fCu8Lat0IN2FN8hF71ygUWTGEIqXJIR9?usp=sharing) 
+1. Download weights and config file from [Trained-Bert](https://mega.nz/file/CchDlSJD#Oe3QmtiTCRaqqEIqZSXxlcoqycbXKka2mAjxUq3yJGI) 
 
 2. Unzip it and place its contents into `checkpoints` directory.
 

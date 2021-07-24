@@ -2,23 +2,30 @@ This is the first module in our pipeline, its responsibility is to get the textu
 
 \subsubsection{Functional Description}
 
-Our aim is to add functionality that the user can enter a speech description of the image to generate it, so we used an automatic speech recognition model based on Deep Speech2 paper, we used the Spectograms features from the audio and applied some preprocessing to those features before training. The target of the speech model is to detect the English spoken words and get their textual meaning so that it can be used to generate the Face Image and output the desired described Face.
+Our aim is to add functionality that the user can enter a speech description of the image to generate it, so we used an automatic speech recognition model based on \texttt{DeepSpeech2} \cite{amodei2015deep}, we used the Spectograms features from the audio and applied some preprocessing to those features before training. The target of the speech model is to detect the English spoken words and get their textual meaning so that it can be used to generate the Face Image and output the desired described Face.
 
 \begin{itemize}
     \item \textbf{Input :}
     \begin{itemize}
-        \item speech audio wav.
+        \item Speech audio wave.
     \end{itemize}
     \item \textbf{Output :}
     \begin{itemize}
-        \item the spoken words on the input audio.
+        \item The spoken words on the input audio (textual description).
     \end{itemize}
 \end{itemize}
 
 \subsubsection{Modular Decomposition}
 
-As mentioned we use deep speech 2 with connectionist temporal classification (CTC) losses as our speech recognition model. The model takes as input features from the audio in the form of spectrograms compressed by frequency and time masking to separate the spectrograms in time and frequency domains. \\
-The model architecture consists of one convolutional layer followed by 3 residual CNNs and 5 bidirectional gated recurrent units GRUs. \\
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/speech.png}
+    \caption{Modified DeepSpeech2 network architecture.}
+    \label{fig:speechModel}
+\end{figure}
+
+As mentioned, we use \texttt{DeepSpeech2} with connectionist temporal classification (CTC) losses as a base to our speech recognition model. The model takes as input features from the audio in the form of spectrograms compressed by frequency and time masking to separate the spectrograms in time and frequency domains. \\
+The model architecture (shown in figure \ref{fig:speechModel}) consists of one convolutional layer followed by 3 residual CNNs and 5 bidirectional gated recurrent units GRUs. \\
 
 The first convolution layer used to compress the audio information in low dimension space, The residual CNN consists of layer normalization over the time axis of the speech then 2 convolution layers summed with the original input to the resCNN. \\
 
