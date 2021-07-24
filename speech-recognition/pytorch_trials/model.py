@@ -18,6 +18,7 @@ class ResCNN(nn.Module):
         self.CNN2 = nn.Conv2d(outChannels, outChannels, kernel, 1, padding=kernel//2)
         self.dropOut = nn.Dropout(dropOut)
         self.layerNorm = nn.LayerNorm(features)
+        self.layerNorm2 = nn.LayerNorm(features)
 
     def forward(self, x):
         residual = x  # keep the original input
@@ -31,7 +32,7 @@ class ResCNN(nn.Module):
         x = self.dropOut(x)
         x = self.CNN1(x)
         x = x.transpose(2,3).contiguous()
-        x = self.layerNorm(x)
+        x = self.layerNorm2(x)
         x = x.transpose(2,3).contiguous()
         x = F.gelu(x)
         x = self.dropOut(x)
@@ -83,7 +84,7 @@ class SpeechRecognition:
             x = self.resCNN(x)
         sizes = x.size()
         x = x.view(sizes[0], sizes[1] * sizes[2], sizes[3])  # (batch, feature, time)
-        x = x.transpose(1, 2) # (batch, time, feature)
+        x = x.transpose(1, 2)                                # (batch, time, feature)
         x = self.fc(x)
         x = self.BIDRNN_F
         for i in range (self.RNN_number-1):

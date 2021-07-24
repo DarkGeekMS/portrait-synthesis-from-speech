@@ -43,7 +43,7 @@ class Trainer():
         self.optimizer = AdamW(self.model.parameters(), lr=5e-5)
 
         # scheduler
-        self.scheduler = lr_scheduler.StepLR(self.optimizer, step_size=self.lr_decay_step_size, gamma=self.lr_decay)
+        # self.scheduler = lr_scheduler.StepLR(self.optimizer, step_size=self.lr_decay_step_size, gamma=self.lr_decay)
         
         # loss
         self.loss_criterion = MSELoss()
@@ -72,7 +72,7 @@ class Trainer():
             # save checkpoint
             self.checkpoint_tracker.save_checkpoint(self.model)
 
-            self.scheduler.step()
+            # self.scheduler.step()
 
 
 
