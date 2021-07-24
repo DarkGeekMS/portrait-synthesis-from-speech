@@ -160,3 +160,6 @@ roberta-base.pth
 distilbert-base-uncased.pth
 # paraphrasing files
 last_desc_generated.npy
+
+# speech models
+speech-recognition/pytorch_trials/SpeechModel.pt

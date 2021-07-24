@@ -105,22 +105,22 @@ def Inference(predictions, text_transform):
                 decode.append(index.item())
                 continue
             if index != args[j-1]:
-                decode.append(index.item)
+                decode.append(index.item())
         decodes.append(text_transform.toString(decode))
     return decodes
 
 
 def GreedyDecoder(predictions, labels, label_lengths,text_transform ):
     # first select the highest probability character 
-	arg_maxes = torch.argmax(predictions, dim=2)
+    arg_maxes = torch.argmax(predictions, dim=2)
     # arrays to hold the results
-	decodes = []
-	targets = []
+    decodes = []
+    targets = []
     # loop over each data item in the batch
-	for i, args in enumerate(arg_maxes):
+    for i, args in enumerate(arg_maxes):
         # first get the transcript text using texttransform mapping function
         #if not inference:
-	    targets.append(text_transform.toString(labels[i][:label_lengths[i]].tolist()))
+        targets.append(text_transform.toString(labels[i][:label_lengths[i]].tolist()))
         decode = []         # hold the decode of each example
         # loop over each time at each example, if new character exists add it to decode list else ignore it
         for j , index in enumerate(args):
@@ -136,9 +136,9 @@ def GreedyDecoder(predictions, labels, label_lengths,text_transform ):
                 decode.append(index.item())
 
         # convert the indecies of each sample to string and save the them in decodes
-		decodes.append(text_transform.toString(decode))
+        decodes.append(text_transform.toString(decode))
     # return the target strings
-	return decodes, targets
+    return decodes, targets
 
 
 def _levenshtein_distance(str1, str2):

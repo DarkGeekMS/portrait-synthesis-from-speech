@@ -112,10 +112,10 @@ def inference(model, device, inputPath, text_transform):
 
     with torch.no_grad():
         # read the audio
-        _, data = wavfile.read(inputPath)
+        data, sample_rate = torchaudio.load(inputPath, normalization=True)
         # convert it to spectograms
-        spectrograms = torchaudio.transforms.MelSpectrogram()(data).squeeze(0).transpose(0, 1) 
-        spectrograms = nn.utils.rnn.pad_sequence(spectrograms, batch_first=True).unsqueeze(1).transpose(2, 3)
+        spectrograms = torchaudio.transforms.MelSpectrogram(sample_rate)(data).squeeze(0).transpose(0, 1) 
+        spectrograms = nn.utils.rnn.pad_sequence([spectrograms], batch_first=True).unsqueeze(1).transpose(2, 3)
         spectrograms = spectrograms.to(device)
         # feed the model with the audio
         output = model(spectrograms)
@@ -210,7 +210,7 @@ def main():
     operation = sys.argv[1]
     if operation == 'i' :
         text_transform = TextTransform()
-        model = SpeechRecognition( CNN_number=NoCNNs, RNN_number=NoRNNs, RNNCells=RNNCells, NoClasses=NoClasses, features=Nofeatrues, dropOut=0.1).to(device)
+        model = SpeechRecognition(CNN_number=NoCNNs, RNN_number=NoRNNs, RNNCells=RNNCells, NoClasses=NoClasses, features=Nofeatrues, dropOut=0.1).to(device)
         checkpoint = torch.load(sys.argv[2])
         model.load_state_dict(checkpoint['model_state_dict'])
         inference(model= model, device=device, inputPath=sys.argv[3], text_transform=text_transform)
@@ -218,3 +218,5 @@ def main():
         loadSavedModel(sys.argv[2])
     else:
         startTrain()
+
+main()

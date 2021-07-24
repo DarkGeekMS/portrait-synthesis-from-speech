@@ -56,7 +56,7 @@ class BidirectionalGRU(nn.Module):
         x = self.dropOut(x)
         return x
 
-class SpeechRecognition:
+class SpeechRecognition(nn.Module):
     def __init__(self, CNN_number, RNN_number, RNNCells, NoClasses, features, dropOut=0.1):
         super(SpeechRecognition, self).__init__()
 
@@ -65,11 +65,11 @@ class SpeechRecognition:
         self.CNN = nn.Conv2d(1, 32, 3, stride=2, padding=1)  # cnn for extracting heirachal features
 
         # n residual cnn layers with filter size of 32
-        self.resCNN = ResCNN(inChannels=32,outChannels=32,kernel=3,dropOut=dropOut,featrues=features)
+        self.resCNN = ResCNN(inChannels=32,outChannels=32,kernel=3,dropOut=dropOut,features=features)
 
         self.fc = nn.Linear(features*32, RNNCells)
-        self.BIDRNN_F = BidirectionalGRU(RNNDim=RNNCells,hiddenSize=RNNCells,dropOut=dropOut, batchFirst=1)
-        self.BIDRNN   = BidirectionalGRU(RNNDim=RNNCells*2 , hiddenSize=RNNCells, dropOut=dropOut, batchFirst=0)
+        self.BIDRNN_F = BidirectionalGRU(RNNDim=RNNCells,hiddenSize=RNNCells,dropOut=dropOut, batchFirst=True)
+        self.BIDRNN   = BidirectionalGRU(RNNDim=RNNCells*2 , hiddenSize=RNNCells, dropOut=dropOut, batchFirst=False)
 
         self.classifier = nn.Sequential(
             nn.Linear(RNNCells*2, RNNCells),  # birnn returns rnn_dim*2
@@ -86,7 +86,7 @@ class SpeechRecognition:
         x = x.view(sizes[0], sizes[1] * sizes[2], sizes[3])  # (batch, feature, time)
         x = x.transpose(1, 2)                                # (batch, time, feature)
         x = self.fc(x)
-        x = self.BIDRNN_F
+        x = self.BIDRNN_F(x)
         for i in range (self.RNN_number-1):
             x = self.BIDRNN(x)
         x = self.classifier(x)
